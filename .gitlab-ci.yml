@@ -71,12 +71,12 @@ include:
       stage: docker
 
   # Run Playwright tests
-  - component: $CI_SERVER_FQDN/2pisoftware/pipelines/playwright/test@v1.0.5
+  - component: $CI_SERVER_FQDN/2pisoftware/pipelines/playwright/test@v1.0.6
     inputs:
       image: mcr.microsoft.com/playwright:v1.49.0-jammy
       directory: ./test/playwright/
       test_results_dir: ./test/playwright/test-results
-      run_cmd: npm run build && npm run test --reporter=junit
+      run_cmd: npm run build && npm run test --reporter=list,junit
       wait_on: http-get://test-website
 
 # Add core to the build job

@@ -198,7 +198,7 @@ export WORKERS=1
 # Retry failed tests, recommended 0 retries because of data consistency
 export RETRIES=0
 
-npm run test 
+npm run test --reporter=list,junit
 PLAYWRIGHT_TESTS_EXIT_CODE=$?
     if [ $PLAYWRIGHT_TESTS_EXIT_CODE -ne 0 ]; then
         echo "Playwright tests failed: $PLAYWRIGHT_TESTS_EXIT_CODE"
