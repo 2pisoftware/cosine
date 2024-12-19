@@ -106,7 +106,7 @@ playwright-test:
     # CI_DEBUG_SERVICES: "true"
     TEST_HOST: http://test-website
     TEST_PORT: 80
-    TIMEOUT: 40_000
+    TIMEOUT: 10_000
     ENVIRONMENT: development
     MYSQL_ROOT_PASSWORD: cosine
     MYSQL_HOST: cosine-db
@@ -119,6 +119,7 @@ playwright-test:
     DB_PASSWORD: cosine
   before_script:
     - cd core
+    - ls -la
     - cat .core-metadata
     - cd ..
     - ln -s core/system/ system
