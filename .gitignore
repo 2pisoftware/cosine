@@ -48,3 +48,5 @@ test/playwright/*.png
 
 # Banners
 /banner*.php
+
+junit.xml

@@ -48,6 +48,7 @@ prepare-core:
     cd core
     echo "Writing core metadata"
     git log -1 --pretty=format:"CORE_HASH=\"%H\"%nCORE_COMMIT_MSG=\"%s\"%nCORE_REF=\"%D\"" > .core-metadata
+    git log -n 1
     echo "== Compiling theme =="
     cd system/templates/base
     npm ci || npm install
