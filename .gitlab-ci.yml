@@ -126,8 +126,5 @@ playwright-test:
   dependencies:
     - buildvars
     - prepare-core
-  artifacts:
-    paths:
-      - cache/config.cache
-    expire_in: 1 day
+  
 
