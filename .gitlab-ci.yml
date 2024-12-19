@@ -125,5 +125,9 @@ playwright-test:
   dependencies:
     - buildvars
     - prepare-core
+  artifacts:
+    paths:
+      - system/modules/auth/templates/login.tpl.php
+    expire_in: 1 day
 
 
