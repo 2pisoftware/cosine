@@ -12,7 +12,8 @@
 # NOTE: See the .dockerignore file to see what is excluded from the image.
 
 # Use the Alpine Linux base image
-FROM alpine:3.19.4
+ARG ALPINE_VERSION=3.19.4
+FROM alpine:${ALPINE_VERSION}
 
 # PHP version
 # note: see Alpine packages for available versions
