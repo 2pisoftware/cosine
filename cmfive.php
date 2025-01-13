@@ -44,7 +44,7 @@ To add options:
 
 $menuMaker = [
     [
-        'option' => "Install core libraries", 'message' => "Installing core libraries", 'function' => "installCoreLibraries", 'param' => "main"
+        'option' => "Install core libraries", 'message' => "Installing core libraries", 'function' => "installCoreLibraries", 'param' => null
     ],
     [
         'option' => "Install database migrations", 'message' => "Installing migrations", 'function' => "installMigrations", 'param' => null

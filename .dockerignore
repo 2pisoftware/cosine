@@ -19,7 +19,6 @@ composer.json
 # Ignore other project directories
 .build
 .github
-system
 .vscode
 
 # Ignore uploads
