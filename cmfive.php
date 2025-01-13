@@ -261,10 +261,60 @@ function refreshComposerAvailability()
 
 function cmdinstallCoreLibraries()
 {
-    installThirdPartyLibraries();
+    installCoreLibraries();
 };
 
-function installThirdPartyLibraries()
+function installCoreLibraries()
+{
+    // name     : 2pisoftware/cmfive-core
+    // descrip. :
+    // keywords :
+    // versions : * main
+    // type     : library
+    // source   : [git] https://github.com/2pisoftware/cmfive-core develop
+    // dist     : []
+    // names    : 2pisoftware/cmfive-core
+
+
+    $composer_json = sketchComposerForCore();
+
+    file_put_contents('./composer.json', json_encode($composer_json, JSON_PRETTY_PRINT));
+
+    //echo exec('php composer.phar install');
+
+    installThirdPartyLibraries($composer_json);
+}
+
+function sketchComposerForCore()
+{
+    // name     : 2pisoftware/cmfive-core
+    // descrip. :
+    // keywords :
+    // versions : * main
+    // type     : library
+    // source   : [git] https://github.com/2pisoftware/cmfive-core develop
+    // dist     : []
+    // names    : 2pisoftware/cmfive-core
+
+    $composer_string = <<<COMPOSER
+    {
+        "name": "2pisoftware/cmfive-boilerplate",
+        "version": "1.0",
+        "description": "A boilerplate project layout for Cmfive",
+        "require": {
+            "aws/aws-sdk-php": "^3.288"
+        },
+        "config": {
+            "vendor-dir": "composer/vendor",
+            "cache-dir": "composer/cache",
+            "bin-dir": "composer/bin"
+        }
+    }
+COMPOSER;
+    return json_decode($composer_string, true);
+}
+
+function installThirdPartyLibraries(array $composer_json)
 {
     if (!stepOneYieldsWeb()) {
         return false;
@@ -286,7 +336,7 @@ function installThirdPartyLibraries()
         }
     }
 
-    $composer_json['require'] = $dependencies_array;
+    $composer_json['require'] = array_merge($composer_json['require'], $dependencies_array);
     file_put_contents('./composer.json', json_encode($composer_json, JSON_PRETTY_PRINT));
 
     echo exec('php composer.phar update');
