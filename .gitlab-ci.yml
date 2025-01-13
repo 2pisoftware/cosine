@@ -38,9 +38,7 @@ build-theme:
     npm run prod || npm run production
   artifacts:
     paths:
-      - system/templates/base
-    exclude:
-      - system/templates/base/node_modules/**/*
+      - system/templates/base/dist
     expire_in: 1 day
   needs:
     - buildvars
