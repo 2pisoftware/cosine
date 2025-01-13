@@ -259,7 +259,7 @@ function refreshComposerAvailability()
     }
 }
 
-function cmdinstallCoreLibraries($pCount, $parameters = [])
+function cmdinstallCoreLibraries()
 {
     installThirdPartyLibraries();
 };
