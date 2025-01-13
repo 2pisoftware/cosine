@@ -62,6 +62,11 @@ fi
 
 echo "🏗️  Setting up Cosine"
 
+if [ ! -d "./composer" ]; then
+    echo "Installing core"
+    php cmfive.php install core
+fi
+
 # Copy the config template if config.php doesn't exist
 if [ ! -s config.php ]; then
     echo "Installing config.php"
