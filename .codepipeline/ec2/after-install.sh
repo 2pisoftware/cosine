@@ -30,7 +30,7 @@ mv /var/www/cmfive-boilerplate/.[!.]* /var/www/html
 cd /var/www/html
 
 # Create symlink to system.
-sudo ln -s /var/www/html/composer/vendor/2pisoftware/cmfive-core/system /var/www/html/system
+#sudo ln -s /var/www/html/composer/vendor/2pisoftware/cmfive-core/system /var/www/html/system
 
 # Run migrations.
 php cmfive.php install migrations

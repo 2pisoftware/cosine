@@ -30,7 +30,6 @@ nbproject/
 /vendor/
 composer.json
 composer.lock
-system
 /test/Codeception
 /test/Services/chromedriver
 

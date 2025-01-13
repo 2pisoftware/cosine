@@ -296,22 +296,6 @@ function installCoreLibraries($branch = null, $phpVersion = null)
 
     $msg = "";
     $out = 0;
-    try {
-        if (strtoupper(substr(PHP_OS, 0, 3)) === 'WIN') {
-            echo exec('mklink /J system composer\vendor\2pisoftware\cmfive-core\system', $msg, $out);
-        } else {
-            echo exec('ln -s composer/vendor/2pisoftware/cmfive-core/system system', $msg, $out);
-        }
-    } catch (Exception $e) {
-        echo $e->getMessage();
-        $out = 1;
-    }
-    if ($out !== 0) {
-        echo "\nFailed Linking for : \nsystem <---> composer/vendor/2pisoftware/cmfive-core/system";
-        echo "\nComposer dependencies will not install for a missing system path";
-        echo "\n(Check any permissions, fs mounts, host_vs_container links etc)";
-        echo "\nYou may need to rerun this step!\n\n";
-    }
 
     installThirdPartyLibraries($composer_json);
 }
@@ -350,7 +334,6 @@ function sketchComposerForCore($reference, $phpVersion)
         "version": "1.0",
         "description": "A boilerplate project layout for Cmfive",
         "require": {
-            "2pisoftware/cmfive-core": "dev-$reference",
             "aws/aws-sdk-php": "^3.288"
         },
         "config": {
@@ -360,22 +343,7 @@ function sketchComposerForCore($reference, $phpVersion)
             "platform": {
                 "php": "$phpVersion"
             }
-        },
-        "repositories": [
-            {
-
-                "type": "package",
-                "package": {
-                "name": "2pisoftware/cmfive-core",
-                "version": "dev-$reference",
-                "source": {
-                    "url": "https://github.com/2pisoftware/cmfive-core",
-                    "type": "git",
-                    "reference": "$reference"
-                    }
-                }
-            }
-        ]
+        }
     }
 COMPOSER;
     return json_decode($composer_string, true);

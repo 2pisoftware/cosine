@@ -74,28 +74,12 @@ Here is some detail on the menu options provided:
 - **Generate Encryption Keys**: Generate new encryption keys used by Cmfive for secure Database fields
 - **Tests**: Runs a chosen test in the Cmfive test suite
 
-### Development on the cmfive-core repository
-
-When the development environment has started the cmfive-core git repository is cloned on to the boilerplate. If you want to make changes to the core repository you can do so by navigating to the core directory:
-
-```sh
-cd composer/vendor/2pisoftware/cmfive-core
-```
-
-If you're using Visual Studio Code you can open a terminal then use this command to open the core in a new window:
-
-```sh
-code composer/vendor/2pisoftware/cmfive-core
-```
-
-For more information about developing on the core repository please refer to the [cmfive-core repository](https://github.com/2pisoftware/cmfive-core).
-
 ### Theme development
 
-The theme is located in the core and you can find it in this directory:
+The theme is located in this directory:
 
 ```sh
-cd composer/vendor/2pisoftware/cmfive-core/system/templates/base
+cd system/templates/base
 ```
 
 As part of the development environment there is a container which compiles the theme as you change it. To view the output of the theme development container run the following command:
@@ -151,14 +135,14 @@ Here is an example of how to run a cmfive container with docker:
 
 ```sh
 # Define the configuration details
-export DB_DATABASE=cmfive
-export DB_USERNAME=cmfive
-export DB_PASSWORD=cmfive
+export DB_DATABASE=cosine
+export DB_USERNAME=cosine
+export DB_PASSWORD=cosine
 export DB_ROOT_PW=root
-export CMFIVE_IMAGE=ghcr.io/2pisoftware/cmfive:latest
+export COSINE_IMAGE=ghcr.io/2pisoftware/cmfive:latest
 
 # Create a network
-docker network create cmfive
+docker network create cosine
 
 # Run the mysql container
 docker run --name mysql-8 -d -p 3306:3306 \
@@ -166,11 +150,11 @@ docker run --name mysql-8 -d -p 3306:3306 \
     -e MYSQL_DATABASE=$DB_DATABASE \
     -e MYSQL_USER=$DB_USERNAME \
     -e MYSQL_PASSWORD=$DB_PASSWORD \
-    --network=cmfive \
+    --network=cosine \
     mysql:8
 
-# Run the cmfive container
-docker run --name cmfive -d -p 3000:80 \
+# Run the cosine container
+docker run --name cosine -d -p 3000:80 \
     -v ./storage:/var/www/html/storage \
     -v ./uploads:/var/www/html/uploads \
     -v ./backups:/var/www/html/backups \
@@ -179,14 +163,14 @@ docker run --name cmfive -d -p 3000:80 \
     -e DB_PASSWORD=$DB_PASSWORD \
     -e DB_DATABASE=$DB_DATABASE \
     -e ENVIRONMENT=production \
-    --network=cmfive \
-    $CMFIVE_IMAGE
+    --network=cosine \
+    $COSINE_IMAGE
 ```
 
 You can then proceed to set up an admin user with:
 
 ```sh
-docker exec -it -u cmfive cmfive php cmfive.php
+docker exec -it -u cmfive cosine php cmfive.php
 ```
 
 The following options can be used with the Docker image. You may choose to use for example vanilla docker, docker-compose or Kubernetes. Please consult the documentation for these tools for more information on how to use the options below.

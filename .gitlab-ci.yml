@@ -4,6 +4,7 @@ stages:
   - docker
   - test
 
+# Set up the environment
 buildvars:
   image: alpine:latest
   stage: setup
@@ -22,48 +23,31 @@ buildvars:
     echo "== Saving full tag name to tag.env =="
     echo "DOCKER_TAG=$FULL_TAG" > .env
     echo ""
-    echo "== Setting up core branch =="
-    if [ "$CI_COMMIT_REF_NAME" = "$CI_DEFAULT_BRANCH" ]; then
-      export COSINE_CORE_BRANCH="main"
-    else
-      export COSINE_CORE_BRANCH="develop"
-    fi
-    echo "Core branch is $COSINE_CORE_BRANCH"
-    echo "BUILT_IN_CORE_BRANCH=$COSINE_CORE_BRANCH" >> .env
-    echo ""
   artifacts:
     reports:
       dotenv: .env
 
-prepare-core:
+# Build the theme
+build-theme:
   stage: core
   image: node:alpine
   script: |
-    echo "== Preparing a core for tag: $DOCKER_TAG =="
-    echo "== Downloading core =="
-    apk add --no-cache git
-    echo "Path: $COSINE_CORE_PROJECT"
-    echo "Branch: $BUILT_IN_CORE_BRANCH"
-    git clone --branch $BUILT_IN_CORE_BRANCH --depth=1 https://gitlab-ci-token:${CI_JOB_TOKEN}@$CI_SERVER_FQDN/$COSINE_CORE_PROJECT.git core
-    cd core
-    echo "Writing core metadata"
-    git log -1 --pretty=format:"CORE_HASH=\"%H\"%nCORE_COMMIT_MSG=\"%s\"%nCORE_REF=\"%D\"" > .core-metadata
-    git log -n 1
     echo "== Compiling theme =="
     cd system/templates/base
     npm ci || npm install
     npm run prod || npm run production
   artifacts:
     paths:
-      - core
+      - system/templates/base
     exclude:
-      - core/system/templates/base/node_modules/**/*
+      - system/templates/base/node_modules/**/*
     expire_in: 1 day
   needs:
     - buildvars
   dependencies:
     - buildvars
 
+# Include the steps for docker and playwright
 include:
   # Build the Docker image
   - component: $CI_SERVER_FQDN/2pisoftware/pipelines/docker/build@v1.1.0
@@ -80,18 +64,15 @@ include:
       run_cmd: npm run build && npm run test --reporter=list,junit
       wait_on: http-get://test-website
 
-# Add core to the build job
+# Add dependencies to the docker build
 docker-build:
   before_script: |
-    echo "== Core information =="
-    cd core
-    ls -la
     echo "== Building tag: $DOCKER_TAG =="
-    cd ..
   dependencies:
     - buildvars
-    - prepare-core
+    - build-theme
 
+# Run the Playwright tests
 playwright-test:
   services:
     # Database
@@ -117,14 +98,8 @@ playwright-test:
     DB_USERNAME: root
     MYSQL_PASSWORD: cosine
     DB_PASSWORD: cosine
-  before_script:
-    - cd core
-    - ls -la
-    - cat .core-metadata
-    - cd ..
-    - ln -s core/system/ system
   dependencies:
     - buildvars
-    - prepare-core
+    - build-theme
   
 
