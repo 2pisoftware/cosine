@@ -1,0 +1,9 @@
+.card {
+    @include theme((background-color: 'white-black', color: 'dark-grey'));
+
+    .list-group {
+        .list-group-item {
+            @include theme((background-color: 'white-black', color: 'dark-grey'));
+        }
+    }
+}  

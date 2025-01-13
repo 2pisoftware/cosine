@@ -1,0 +1,5 @@
+composer/*
+/composer.lock
+/composer.json
+/composer/
+/tests/vendor
