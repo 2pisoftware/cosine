@@ -74,28 +74,12 @@ Here is some detail on the menu options provided:
 - **Generate Encryption Keys**: Generate new encryption keys used by Cmfive for secure Database fields
 - **Tests**: Runs a chosen test in the Cmfive test suite
 
-### Development on the cmfive-core repository
-
-When the development environment has started the cmfive-core git repository is cloned on to the boilerplate. If you want to make changes to the core repository you can do so by navigating to the core directory:
-
-```sh
-cd composer/vendor/2pisoftware/cmfive-core
-```
-
-If you're using Visual Studio Code you can open a terminal then use this command to open the core in a new window:
-
-```sh
-code composer/vendor/2pisoftware/cmfive-core
-```
-
-For more information about developing on the core repository please refer to the [cmfive-core repository](https://github.com/2pisoftware/cmfive-core).
-
 ### Theme development
 
-The theme is located in the core and you can find it in this directory:
+The theme is located in this directory:
 
 ```sh
-cd composer/vendor/2pisoftware/cmfive-core/system/templates/base
+cd system/templates/base
 ```
 
 As part of the development environment there is a container which compiles the theme as you change it. To view the output of the theme development container run the following command:
@@ -151,14 +135,14 @@ Here is an example of how to run a cmfive container with docker:
 
 ```sh
 # Define the configuration details
-export DB_DATABASE=cmfive
-export DB_USERNAME=cmfive
-export DB_PASSWORD=cmfive
+export DB_DATABASE=cosine
+export DB_USERNAME=cosine
+export DB_PASSWORD=cosine
 export DB_ROOT_PW=root
-export CMFIVE_IMAGE=ghcr.io/2pisoftware/cmfive:latest
+export COSINE_IMAGE=ghcr.io/2pisoftware/cmfive:latest
 
 # Create a network
-docker network create cmfive
+docker network create cosine
 
 # Run the mysql container
 docker run --name mysql-8 -d -p 3306:3306 \
@@ -166,11 +150,11 @@ docker run --name mysql-8 -d -p 3306:3306 \
     -e MYSQL_DATABASE=$DB_DATABASE \
     -e MYSQL_USER=$DB_USERNAME \
     -e MYSQL_PASSWORD=$DB_PASSWORD \
-    --network=cmfive \
+    --network=cosine \
     mysql:8
 
-# Run the cmfive container
-docker run --name cmfive -d -p 3000:80 \
+# Run the cosine container
+docker run --name cosine -d -p 3000:80 \
     -v ./storage:/var/www/html/storage \
     -v ./uploads:/var/www/html/uploads \
     -v ./backups:/var/www/html/backups \
@@ -179,14 +163,14 @@ docker run --name cmfive -d -p 3000:80 \
     -e DB_PASSWORD=$DB_PASSWORD \
     -e DB_DATABASE=$DB_DATABASE \
     -e ENVIRONMENT=production \
-    --network=cmfive \
-    $CMFIVE_IMAGE
+    --network=cosine \
+    $COSINE_IMAGE
 ```
 
 You can then proceed to set up an admin user with:
 
 ```sh
-docker exec -it -u cmfive cmfive php cmfive.php
+docker exec -it -u cmfive cosine php cmfive.php
 ```
 
 The following options can be used with the Docker image. You may choose to use for example vanilla docker, docker-compose or Kubernetes. Please consult the documentation for these tools for more information on how to use the options below.
@@ -293,3 +277,116 @@ Run `php cmfive.php` and:
 Navigate to the theme directory (composer/vendor/2pisoftware/cmfive-core/system/templates/base) and run `npm install`.
 
 After that, you can build the production theme with `npm run production`.
+
+## Developing Modules
+
+#### The modules
+A typical module layout will look like this (bold entries are required):
+* **actions**
+* assets
+* **install**
+ * **migrations**
+* **models**
+* **templates**
+* **config.php**
+
+##### Actions
+An action is a function that is executed from web(.php) as a result of matching the current URL against the modular structure of cmfive. The path of a URL consists of:
+```
+[HEAD|GET|POST] https://localhost/<module>/<action>
+or
+[HEAD|GET|POST] https://localhost/<module>-<submodule>/<action>
+```
+
+A submodule is just another folder inside the actions folder and serves primarily as a way to organise multiple actions in a module.
+
+The function in the action follows the following naming convention:
+```php
+<?php
+
+function <action name>_<verb>(Web $w) { // Where "verb" is either HEAD, GET or POST
+
+}
+```
+e.g:
+```php
+<?php
+
+function listsongs_GET(Web $W){
+	$songs = $w->Music->getSongs();
+	
+	// Do something with songs
+	
+	$w->ctx('song_list', $songs); // ctx() exposes the $songs to the template now as the variable "$song_list"
+}
+```
+
+#### Assets
+
+A place to keep static assets, can be called anything that suits you.
+
+#### Install
+
+The install folder can be used to keep report code and templates, but its main purpose is to house the migrations and database seeds. Inside the install folder needs to be a folder called "migrations". To create a new migration, goto admin -> migrations -> Individual (tab). Go to your module in the list and click "Create a new migration". Enter a name for the migration and click save. See migrations in the system/modules folder for easy ways to create migrations (documentation coming soon).
+
+#### Models
+
+The models folder is used to store Cmfives database ORM objects called "DbObject"(s). A DbObject class name should relate to it's matching table name, but without underscores, and camel cased. E.g:
+
+| Table | DbObject |
+|-------|----------|
+|user   | User     |
+|task_group_member|TaskGroupMember|
+
+This conversion is done automatically by Cmfive, but you can override this by setting by adding the static propery "$\_db_table" to your DbObject and setting it to the name of the responsible table.
+
+The models folder can also store Service classes, called "DbService". These classes provide a global interface to your module via the Web class. Generally, each module has at least one, named after the module itself, e.g. if your module was called "music":
+```php
+<?php
+
+class MusicService extends DbService { // The "Service" suffix is required
+	public function getSong($id) {
+		return $this->getObject("Song", $id);
+	}
+	
+	public function getSongs() {
+		return $this->getObjects("Song", ['is_deleted' => 0]);
+	}
+}
+```
+
+Everything in the models folder gets autoloaded, so all you need to do to invoke this function from anywhere (via an instance of Web), is to call:
+```php
+$my_song = $w->Music->getSong($the_id);
+```
+
+Any other classes that you want autoloaded, like generic interfaces, static helper classes etc., can be put in the models folder.
+
+#### Templates
+
+Templates act as a compliment to an action. For Cmfive to match a template to an action, it should have the same submodule layout as its action counterpart and follow this naming convention:
+```
+<action name>.tpl.php
+```
+e.g.
+```html
+<!-- /music/templates/listsongs.tpl.php -->
+<ul>
+	<?php foreach($song_list as $song): ?>
+		<li><?php echo $song; ?></li>
+	<?php endforeach; ?>
+</ul>
+```
+
+#### config.php
+
+The most cruical part to a module, Cmfive first looks for a config file to load the module, if this is missing then your module won't be used at all by Cmfive. The config.php file uses a static class called Config which is essentially a key value store. A module config requires three values, here is a full example to explain each one:
+```php
+<?php
+
+Config::set('music', [
+	'active' 	=> true,		// the active flag lets us disable modules that we don't want to use
+	'path'		=> 'modules',	// tells Cmfive exactly where this module can be found (Config values are cached)
+	'topmenu'	=> 'My music'	// Set to false to not show in the top menu, or set to true to infer the menu name from the name of the module (in this case "Music")
+]);
+

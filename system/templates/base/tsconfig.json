@@ -1,0 +1,19 @@
+{
+    "compilerOptions": {
+        "module": "CommonJS",
+        "moduleResolution": "Node",
+        "noImplicitAny": false,
+        "removeComments": true,
+        "preserveConstEnums": true,
+        "sourceMap": true,
+        "experimentalDecorators": true,
+        "allowSyntheticDefaultImports": true,
+    },
+    "include": [
+        "src/**/*.ts",
+        "src/**/*.vue",
+        "../../modules/*/assets/ts/*",
+        "../../../../../../../modules/*/assets/ts/*"
+    ],
+    "exclude": ["node_modules", "**/*.spec.ts"],
+}

@@ -1,11 +1,15 @@
 stages:
-  - .pre
-  - build
+  - setup
+  - core
+  - docker
+  - test
 
-setup:
-  image: alpine
-  stage: .pre
+# Set up the environment
+buildvars:
+  image: alpine:latest
+  stage: setup
   script: |
+    echo $CI_JOB_TOKEN
     echo "== Setting up environment =="
     if [ "$CI_COMMIT_REF_NAME" = "$CI_DEFAULT_BRANCH" ]; then
       export TAG="latest"
@@ -17,14 +21,83 @@ setup:
     export FULL_TAG=${CI_REGISTRY_IMAGE}:${TAG}
     echo "🏷️ DOCKER_TAG will be $FULL_TAG"
     echo "== Saving full tag name to tag.env =="
-    echo "DOCKER_TAG=$FULL_TAG" > tag.env
+    echo "DOCKER_TAG=$FULL_TAG" > .env
     echo ""
   artifacts:
     reports:
-      dotenv: tag.env
+      dotenv: .env
 
-#build docker image
+# Build the theme
+build-theme:
+  stage: core
+  image: node:alpine
+  script: |
+    echo "== Compiling theme =="
+    cd system/templates/base
+    npm ci || npm install
+    npm run prod || npm run production
+  artifacts:
+    paths:
+      - system/templates/base/dist
+    expire_in: 1 day
+  needs:
+    - buildvars
+  dependencies:
+    - buildvars
+
+# Include the steps for docker and playwright
 include:
+  # Build the Docker image
   - component: $CI_SERVER_FQDN/2pisoftware/pipelines/docker/build@v1.1.0
     inputs:
-      tag: $DOCKER_TAG
+      tag: "$DOCKER_TAG"
+      stage: docker
+
+  # Run Playwright tests
+  - component: $CI_SERVER_FQDN/2pisoftware/pipelines/playwright/test@v1.0.6
+    inputs:
+      image: mcr.microsoft.com/playwright:v1.49.0-jammy
+      directory: ./test/playwright/
+      test_results_dir: ./test/playwright/test-results
+      run_cmd: npm run build && npm run test --reporter=list,junit
+      wait_on: http-get://test-website
+
+# Add dependencies to the docker build
+docker-build:
+  before_script: |
+    echo "== Building tag: $DOCKER_TAG =="
+  dependencies:
+    - buildvars
+    - build-theme
+
+# Run the Playwright tests
+playwright-test:
+  services:
+    # Database
+    - name: mysql:8.0
+      alias: cosine-db
+      command: [ "--default-authentication-plugin=mysql_native_password" ]
+    # Cosine
+    - name: $DOCKER_TAG
+      alias: test-website
+  variables:
+    FF_NETWORK_PER_BUILD: 1
+    # CI_DEBUG_SERVICES: "true"
+    TEST_HOST: http://test-website
+    TEST_PORT: 80
+    TIMEOUT: 40_000
+    ENVIRONMENT: development
+    MYSQL_ROOT_PASSWORD: cosine
+    MYSQL_HOST: cosine-db
+    DB_HOST: cosine-db
+    MYSQL_DATABASE: cosine
+    DB_DATABASE: cosine
+    MYSQL_USER: cosine
+    DB_USERNAME: root
+    MYSQL_PASSWORD: cosine
+    DB_PASSWORD: cosine
+  dependencies:
+    - buildvars
+    - build-theme
+  
+

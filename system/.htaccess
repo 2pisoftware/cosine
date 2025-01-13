@@ -1,0 +1,6 @@
+Options All -Indexes
+
+<Files ~ "\.php$">
+    Order allow,deny
+    Require all denied
+</Files>
