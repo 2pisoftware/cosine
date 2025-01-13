@@ -60,8 +60,7 @@ $menuMaker = [
 $cmdMaker = [
     'install' => [
         [
-            'request' => "core", 'message' => "Installing core libraries", 'function' => "cmdinstallCoreLibraries", 'args' => true,
-            'hint' => "cmfive-core reference (default is 'main')", "default" => ['branch' => "main"]
+            'request' => "core", 'message' => "Installing core libraries", 'function' => "cmdinstallCoreLibraries", 'args' => false
         ],
         [
             'request' => "migration", 'message' => "Installing migrations", 'function' => "installMigrations", 'args' => false
@@ -262,94 +261,10 @@ function refreshComposerAvailability()
 
 function cmdinstallCoreLibraries($pCount, $parameters = [])
 {
-    installCoreLibraries(($pCount > 2) ? $parameters[2] : null, ($pCount > 3) ? $parameters[3] : null);
+    installThirdPartyLibraries();
 };
 
-function installCoreLibraries($branch = null, $phpVersion = null)
-{
-    // name     : 2pisoftware/cmfive-core
-    // descrip. :
-    // keywords :
-    // versions : * main
-    // type     : library
-    // source   : [git] https://github.com/2pisoftware/cmfive-core develop
-    // dist     : []
-    // names    : 2pisoftware/cmfive-core
-
-    if (is_null($branch)) {
-        echo ("No branch from core repository was specified.\n");
-    } else {
-        echo ("Installing {$branch} from core repository.\n");
-    }
-
-    if (is_null($phpVersion)) {
-        echo ("No PHP version for Composer was specified.\n");
-    } else {
-        echo ("Asserting PHP version ({$phpVersion}) for Composer.\n");
-    }
-
-    $composer_json = sketchComposerForCore($branch, $phpVersion);
-
-    file_put_contents('./composer.json', json_encode($composer_json, JSON_PRETTY_PRINT));
-
-    echo exec('php composer.phar install');
-
-    $msg = "";
-    $out = 0;
-
-    installThirdPartyLibraries($composer_json);
-}
-
-function sketchComposerForCore($reference, $phpVersion)
-{
-    // name     : 2pisoftware/cmfive-core
-    // descrip. :
-    // keywords :
-    // versions : * main
-    // type     : library
-    // source   : [git] https://github.com/2pisoftware/cmfive-core develop
-    // dist     : []
-    // names    : 2pisoftware/cmfive-core
-
-    if (is_null($reference) || is_null($phpVersion)) {
-        if (PHP_MAJOR_VERSION === 7 && PHP_MINOR_VERSION === 0) {
-            $reference = "legacy/PHP7.0";
-            $phpVersion = "7.0";
-        }
-        if (PHP_MAJOR_VERSION === 7 && PHP_MINOR_VERSION === 4) {
-            $reference = "legacy/PHP7.4";
-            $phpVersion = "7.4";
-        }
-        if (is_null($reference) || is_null($phpVersion)) {
-            $reference = is_null($reference) ? "main" : $reference;
-            $phpVersion = is_null($phpVersion) ? (PHP_MAJOR_VERSION .".". PHP_MINOR_VERSION) : $phpVersion;
-        }
-    }
-
-    echo ("Composer has ref's as " . $reference . " & " . $phpVersion . ".\n");
-
-    $composer_string = <<<COMPOSER
-    {
-        "name": "2pisoftware/cmfive-boilerplate",
-        "version": "1.0",
-        "description": "A boilerplate project layout for Cmfive",
-        "require": {
-            "aws/aws-sdk-php": "^3.288"
-        },
-        "config": {
-            "vendor-dir": "composer/vendor",
-            "cache-dir": "composer/cache",
-            "bin-dir": "composer/bin",
-            "platform": {
-                "php": "$phpVersion"
-            }
-        }
-    }
-COMPOSER;
-    return json_decode($composer_string, true);
-}
-
-function installThirdPartyLibraries(array $composer_json)
+function installThirdPartyLibraries()
 {
     if (!stepOneYieldsWeb()) {
         return false;
@@ -371,7 +286,7 @@ function installThirdPartyLibraries(array $composer_json)
         }
     }
 
-    $composer_json['require'] = array_merge($composer_json['require'], $dependencies_array);
+    $composer_json['require'] = $dependencies_array;
     file_put_contents('./composer.json', json_encode($composer_json, JSON_PRETTY_PRINT));
 
     echo exec('php composer.phar update');
