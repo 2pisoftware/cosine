@@ -40,7 +40,10 @@ if (scriptPath.includes('cmfive-boilerplate')) {
     } else {
         throw new Error('Could not determine root directory of project');
     }
-} 
+} else {
+    //change for mono repo
+    scriptPath = scriptPath.split('system')[0];
+}
 
 console.log("scriptPath", scriptPath);
 
