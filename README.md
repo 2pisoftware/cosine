@@ -1,9 +1,6 @@
 # Cosine
-[![Docker Image](https://github.com/2pisoftware/cmfive-boilerplate/actions/workflows/docker-image.yml/badge.svg)](https://github.com/2pisoftware/cmfive-boilerplate/actions/workflows/docker-image.yml)
-[![CI](https://github.com/2pisoftware/cmfive-boilerplate/actions/workflows/ci.yml/badge.svg)](https://github.com/2pisoftware/cmfive-boilerplate/actions/workflows/ci.yml)
-[![CodeQL](https://github.com/2pisoftware/cmfive-boilerplate/actions/workflows/github-code-scanning/codeql/badge.svg)](https://github.com/2pisoftware/cmfive-boilerplate/actions/workflows/github-code-scanning/codeql)
 
-Welcome! Cosine is a framework designed for fast ERP and CRM business software solutions. This project is a modular platform that consists of the boilerplate, a core and optionally additional modules. This is the boilerplate repository which contains everything you need to develop and run Cosine.
+Welcome! Cosine is a framework designed for fast ERP and CRM business software solutions. This project is a modular platform that allows you to build custom solutions for your business through the use of modules.
 
 The full documentation is located at [cmfive.com](https://cmfive.com).
 
@@ -117,7 +114,7 @@ docker compose exec -u cmfive cosine tools tests unit all
 
 ### Docker
 
-A docker image for Cosine is available on [GitHub Container Registry](https://github.com/2pisoftware/cmfive-boilerplate/pkgs/container/cmfive). 
+A docker image for Cosine is available on [GitHub Container Registry](https://github.com/orgs/2pisoftware/packages/container/package/cosine). 
 
 You will need to run a mysql or compatible container and link it to the Cosine container. See more information about the mysql container on the [Docker Hub page](https://hub.docker.com/_/mysql).
 
@@ -269,7 +266,7 @@ Run `php cmfive.php` and:
 - Seed Admin User
 - Generate Encryption Keys
 
-Navigate to the theme directory (composer/vendor/2pisoftware/cmfive-core/system/templates/base) and run `npm install`.
+Navigate to the theme directory (system/templates/base) and run `npm install`.
 
 After that, you can build the production theme with `npm run production`.
 
