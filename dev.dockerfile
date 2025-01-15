@@ -1,4 +1,5 @@
-FROM ghcr.io/2pisoftware/cosine:develop
+ARG BASE_IMAGE=ghcr.io/2pisoftware/cosine:develop
+FROM $BASE_IMAGE
 
 # Copy dev tools installer
 COPY .codepipeline/docker/cmfive_dev_tools.sh .codepipeline/docker/cmfive_dev_tools.sh

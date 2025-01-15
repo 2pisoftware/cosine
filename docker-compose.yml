@@ -1,9 +1,8 @@
 services:
 
   mysqldb:
-    image: mysql:8
+    image: mysql:8.0
     container_name: mysql-8
-    hostname: mysql-8
     environment:
       MYSQL_ROOT_PASSWORD: root
       MYSQL_USER: cmfive
@@ -21,12 +20,13 @@ services:
       timeout: 5m
       retries: 20
 
-  webapp:
+  cosine:
     build:
       context: .
       dockerfile: dev.dockerfile
-    container_name: cmfive
-    hostname: nginx-php8.1
+      args:
+        - BASE_IMAGE=${BASE_IMAGE-ghcr.io/2pisoftware/cosine:develop}
+    container_name: cosine
     environment:
       TZ: Australia/Sydney
       DB_HOST: mysqldb
@@ -72,7 +72,7 @@ services:
     restart: unless-stopped
     user: "1000:1000"
     depends_on:
-      webapp:
+      cosine:
         condition: service_healthy
 
 volumes:
