@@ -25,7 +25,7 @@ services:
       context: .
       dockerfile: dev.dockerfile
       args:
-        - BASE_IMAGE=${BASE_IMAGE-ghcr.io/2pisoftware/cosine:develop}
+        - BASE_IMAGE=${COSINE_IMAGE-ghcr.io/2pisoftware/cosine:develop}
     container_name: cosine
     environment:
       TZ: Australia/Sydney

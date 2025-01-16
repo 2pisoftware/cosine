@@ -180,7 +180,9 @@ Cosine container environment variables:
 
 Development environment variables (stored in .env):
 
-- **BASE_IMAGE**: Custom cosine base image to use
+- **COSINE_IMAGE**: Custom cosine base image to use
+- **COMPILER_IMAGE**: Custom compiler image to use
+- **MYSQL_IMAGE**: Custom mysql image to use
 
 #### Build args
 
