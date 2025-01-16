@@ -1,9 +1,6 @@
-# Cmfive Boilerplate
-[![Docker Image](https://github.com/2pisoftware/cmfive-boilerplate/actions/workflows/docker-image.yml/badge.svg)](https://github.com/2pisoftware/cmfive-boilerplate/actions/workflows/docker-image.yml)
-[![CI](https://github.com/2pisoftware/cmfive-boilerplate/actions/workflows/ci.yml/badge.svg)](https://github.com/2pisoftware/cmfive-boilerplate/actions/workflows/ci.yml)
-[![CodeQL](https://github.com/2pisoftware/cmfive-boilerplate/actions/workflows/github-code-scanning/codeql/badge.svg)](https://github.com/2pisoftware/cmfive-boilerplate/actions/workflows/github-code-scanning/codeql)
+# Cosine
 
-Welcome! Cmfive is a framework designed for fast ERP and CRM business software solutions. This project is a modular platform that consists of the boilerplate, a core and optionally additional modules. This is the boilerplate repository which contains everything you need to develop and run Cmfive.
+Welcome! Cosine is a framework designed for fast ERP and CRM business software solutions. This project is a modular platform that allows you to build custom solutions for your business through the use of modules.
 
 The full documentation is located at [cmfive.com](https://cmfive.com).
 
@@ -15,34 +12,23 @@ See [Deploying](#deploying).
 
 ### Quick Start
 
-Follow these steps to get up and running with Cmfive development.
+Follow these steps to get up and running with Cosine development.
 
-Cmfive development requires Docker and Docker Compose. If you don't have these installed you can download them or follow the instructions from the [Docker website](https://docs.docker.com/get-docker/).
+Cosine development requires Docker and Docker Compose. If you don't have these installed you can download them or follow the instructions from the [Docker website](https://docs.docker.com/get-docker/).
 
-First clone this repository and navigate to the directory:
-
-```sh
-git clone https://github.com/2pisoftware/cmfive-boilerplate.git
-cd cmfive-boilerplate
-```
-
-Next, pull the latest docker images for cmfive:
-
-```sh
-docker compose pull
-```
+First clone this repository and navigate to the directory in a terminal.
 
 Then run the following command to start the development environment:
 
 ```sh
-docker compose up -d --wait
+docker compose up -d --wait --pull=always
 ```
 
-This will start the development environment and run it in the background. Once it's running, you can access the Cmfive installation at [http://localhost:3000](http://localhost:3000). 
+This will start the development environment and run it in the background. Once it's running, you can access the Cosine installation at [http://localhost:3000](http://localhost:3000). 
 
 The development username is `admin` and the password is `admin`.
 
-The files in the boilerplate repository will now be mounted to **/var/www/html** in the container. You can make changes to the files in the repository and they will be reflected in the container.
+The files in this repository will now be mounted to **/var/www/html** in the container. You can make changes to the files in the repository and they will be reflected in the container.
 
 To stop the development environment, run:
 
@@ -56,23 +42,23 @@ docker compose down -v
 
 ### Contributing
 
-For further information on developing and contributing to cmfive please refer to [CONTRIBUTING.md](CONTRIBUTING.md). 
+For further information on developing and contributing to Cosine please refer to [CONTRIBUTING.md](CONTRIBUTING.md). 
 
-### Accessing the cmfive installation tools menu
+### Accessing the Cosine installation tools menu
 
-The installation tools menu contains maintenance, setup and testing tools for cmfive. You can access it with the following command:
+The installation tools menu contains maintenance, setup and testing tools for Cosine. You can access it with the following command:
 
 ```sh
-docker compose exec -it -u cmfive webapp php cmfive.php
+docker compose exec -it -u cmfive cosine tools
 ```
 
 Here is some detail on the menu options provided:
 
-- **Install Core Libraries**: This will install any third party libraries Cmfive requires via Composer
-- **Install Database Migrations**: This will install all Cmfive database migrations
-- **Seed Admin User**: Sets up an administrator user which is needed to log in to a production Cmfive install
-- **Generate Encryption Keys**: Generate new encryption keys used by Cmfive for secure Database fields
-- **Tests**: Runs a chosen test in the Cmfive test suite
+- **Install Core Libraries**: This will install any third party libraries Cosine requires via Composer
+- **Install Database Migrations**: This will install all Cosine database migrations
+- **Seed Admin User**: Sets up an administrator user which is needed to log in to a production Cosine install
+- **Generate Encryption Keys**: Generate new encryption keys used by Cosine for secure Database fields
+- **Tests**: Runs a chosen test in the Cosine test suite
 
 ### Theme development
 
@@ -88,15 +74,15 @@ As part of the development environment there is a container which compiles the t
 docker compose logs -f compiler
 ```
 
-### Accessing the cmfive container shell
+### Accessing the Cosine container shell
 
-You can access the cmfive container shell with the following command:
+You can access the Cosine container shell with the following command:
 
 ```sh
-# for cmfive user access
-docker compose exec -it -u cmfive webapp sh
+# for standard web user access
+docker compose exec -it -u cmfive cosine sh
 # or for root access
-docker compose exec -it -u root webapp sh
+docker compose exec -it -u root cosine sh
 ```
 
 ### Debugging and testing
@@ -110,7 +96,8 @@ Ensure you have installed the dev tools first. You can do this by running the fo
 #### Xdebug
 
 Once you have the dev tools installed you can start debugging in VS Code by running the `Listen for Xdebug` configuration. This will start the debugger and you can set breakpoints in your code.
-
+-rf .codepipeline                                                                                              0.0s
+ => CACHED [17/23] RUN ln 
 #### Playwright
 
 To set up and test with playwright, follow the instructions in the [Playwright README](test/playwright/README.md).
@@ -120,18 +107,18 @@ To set up and test with playwright, follow the instructions in the [Playwright R
 To run the PHPUnit tests, you can run the following command:
 
 ```sh
-docker compose exec -u cmfive webapp php cmfive.php tests unit all
+docker compose exec -u cmfive cosine tools tests unit all
 ```
 
 ## Deploying
 
 ### Docker
 
-A docker image for cmfive is available on [GitHub Container Registry](https://github.com/2pisoftware/cmfive-boilerplate/pkgs/container/cmfive). 
+A docker image for Cosine is available on [GitHub Container Registry](https://github.com/orgs/2pisoftware/packages/container/package/cosine). 
 
-You will need to run a mysql or compatible container and link it to the cmfive container. See more information about the mysql container on the [Docker Hub page](https://hub.docker.com/_/mysql).
+You will need to run a mysql or compatible container and link it to the Cosine container. See more information about the mysql container on the [Docker Hub page](https://hub.docker.com/_/mysql).
 
-Here is an example of how to run a cmfive container with docker:
+Here is an example of how to run a Cosine container with docker:
 
 ```sh
 # Define the configuration details
@@ -139,7 +126,7 @@ export DB_DATABASE=cosine
 export DB_USERNAME=cosine
 export DB_PASSWORD=cosine
 export DB_ROOT_PW=root
-export COSINE_IMAGE=ghcr.io/2pisoftware/cmfive:latest
+export COSINE_IMAGE=ghcr.io/2pisoftware/cosine:latest
 
 # Create a network
 docker network create cosine
@@ -151,13 +138,16 @@ docker run --name mysql-8 -d -p 3306:3306 \
     -e MYSQL_USER=$DB_USERNAME \
     -e MYSQL_PASSWORD=$DB_PASSWORD \
     --network=cosine \
-    mysql:8
+    mysql:8.0
+
+# Create some directories for data persistence
+mkdir -p cosine/storage cosine/uploads cosine/backups
 
 # Run the cosine container
 docker run --name cosine -d -p 3000:80 \
-    -v ./storage:/var/www/html/storage \
-    -v ./uploads:/var/www/html/uploads \
-    -v ./backups:/var/www/html/backups \
+    -v ./cosine/storage:/var/www/html/storage \
+    -v ./cosine/uploads:/var/www/html/uploads \
+    -v ./cosine/backups:/var/www/html/backups \
     -e DB_HOST=mysql-8 \
     -e DB_USERNAME=$DB_USERNAME \
     -e DB_PASSWORD=$DB_PASSWORD \
@@ -170,12 +160,16 @@ docker run --name cosine -d -p 3000:80 \
 You can then proceed to set up an admin user with:
 
 ```sh
-docker exec -it -u cmfive cosine php cmfive.php
+docker exec -it -u cmfive cosine tools seed admin
 ```
+
+You can access the cosine installation at [http://localhost:3000](http://localhost:3000).
 
 The following options can be used with the Docker image. You may choose to use for example vanilla docker, docker-compose or Kubernetes. Please consult the documentation for these tools for more information on how to use the options below.
 
 #### Environment variables
+
+Cosine container environment variables:
 
 - **DB_HOST:** The hostname of the MySQL database server
 - **DB_DATABASE:** The name of the database
@@ -183,13 +177,17 @@ The following options can be used with the Docker image. You may choose to use f
 - **DB_PASSWORD:** The password to connect to the database
 - **CUSTOM_COFIG:** (optional) Custom configuration to add to the config.php file.
 - **ENVIRONMENT:** (optional) The environment to run in (development, production). Defaults to production.
-- **INSTALL_CORE_BRANCH:** (optional) The branch of the cmfive-core repository to switch to while the container is starting. If not specified it will use the built-in core. Note: If this method is used, the theme will not be compiled automatically for the specified branch.
+
+Development environment variables (stored in .env):
+
+- **COSINE_IMAGE**: Custom cosine base image to use
+- **COMPILER_IMAGE**: Custom compiler image to use
+- **MYSQL_IMAGE**: Custom mysql image to use
 
 #### Build args
 
 The following build args are optional and can be used to customise the Docker image if you are building a custom one:
 
-- **BUILT_IN_CORE_BRANCH:** The branch of the cmfive-core repository to bake in at build-time. The theme will also be compiled for this branch. Defaults to `main`.
 - **PHP_VERSION:** The version of PHP to use. See alpine linux packages for available versions. Defaults to the version in the Dockerfile (eg 81).
 - **UID:** The user ID to use for the cmfive user. Defaults to 1000.
 - **GID:** The group ID to use for the cmfive user. Defaults to 1000.
@@ -248,7 +246,7 @@ The following ports are exposed by the container, you can map them to different 
 
 ### Manual setup
 
-Here are the steps to set up cmfive without Docker. Please note that your environment may differ and you may need to adjust these steps accordingly.
+Here are the steps to set up Cosine without Docker. Please note that your environment may differ and you may need to adjust these steps accordingly.
 
 Install the following software
 
@@ -257,11 +255,7 @@ Install the following software
 - Nginx
 - NodeJS
 
-Clone the repository
-
-```sh
-git clone http://github.com/2pisoftware/cmfive-boilerplate.git
-```
+Clone the repository.
 
 Set up a cmfive database and user on MySQL. Consult the MySQL documentation for more information.
 
@@ -274,7 +268,7 @@ Run `php cmfive.php` and:
 - Seed Admin User
 - Generate Encryption Keys
 
-Navigate to the theme directory (composer/vendor/2pisoftware/cmfive-core/system/templates/base) and run `npm install`.
+Navigate to the theme directory (system/templates/base) and run `npm install`.
 
 After that, you can build the production theme with `npm run production`.
 

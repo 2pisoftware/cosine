@@ -52,6 +52,7 @@ RUN apk --no-cache add \
     php$PHP_VERSION-fileinfo \
     nginx \
     mysql-client \
+    mariadb-connector-c-dev \
     supervisor \
     bash \
     openssl \
@@ -92,9 +93,12 @@ WORKDIR /var/www/html
 # Remove .codepipeline
 RUN rm -rf .codepipeline
 
+# Create a link to installation tools
+RUN ln -s /var/www/html/cmfive.php /usr/local/bin/tools
+
 # Install composer modules
 RUN touch /var/www/html/config.php
-RUN su cmfive -c 'INSTALL_ENV=docker php cmfive.php install core'
+RUN su cmfive -c 'INSTALL_ENV=docker tools install core'
 
 # Fix permissions
 RUN chmod -R ugo=rwX cache/ storage/ uploads/ && \

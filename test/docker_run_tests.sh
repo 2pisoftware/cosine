@@ -9,11 +9,11 @@ set +e
 # Node version can be specified, WARNING Playwright&Cosine will not be expected to support all node versions!
 # usage: ./docker_run.sh --fresh
 # usage: ./docker_run.sh --node_ver 18
-# usage: ./docker_run.sh --cosine_container [default is 'cmfive']
+# usage: ./docker_run.sh --cosine_container [default is 'cosine']
 
 freshen_all=""
 test_node_version=""
-cosine_container="cmfive"
+cosine_container="cosine"
 
 while test $# != 0
 do
@@ -79,7 +79,7 @@ if [ -z "$IS_PLAYWRIGHT_CONTAINER" ]; then
 
     # Explicitly prep DB for testing:
     echo "Backup and snaphsot DB with migrations"
-    docker exec -u cmfive $cosine_container sh -c "DB_HOST=mysql-8 DB_USERNAME=$DB_USERNAME DB_PASSWORD=$DB_PASSWORD DB_DATABASE=$DB_DATABASE DB_PORT=3306 php cmfive.php testDB setup"
+    docker exec -u cmfive $cosine_container sh -c "DB_HOST=mysqldb DB_USERNAME=$DB_USERNAME DB_PASSWORD=$DB_PASSWORD DB_DATABASE=$DB_DATABASE DB_PORT=3306 php cmfive.php testDB setup"
     DB_SETUP_EXIT_CODE=$?
     if [ $DB_SETUP_EXIT_CODE -ne 0 ]; then
         echo "Warning: Failed to setup test DB"
@@ -88,7 +88,7 @@ if [ -z "$IS_PLAYWRIGHT_CONTAINER" ]; then
     echo "Success: Setup test DB"
 
     # First, Run Unit Tests
-    docker exec -u cmfive $cosine_container sh -c "DB_HOST=mysql-8 DB_USERNAME=$DB_USERNAME DB_PASSWORD=$DB_PASSWORD DB_DATABASE=$DB_DATABASE DB_PORT=3306 php cmfive.php tests unit all; exit \$?"
+    docker exec -u cmfive $cosine_container sh -c "DB_HOST=mysqldb DB_USERNAME=$DB_USERNAME DB_PASSWORD=$DB_PASSWORD DB_DATABASE=$DB_DATABASE DB_PORT=3306 php cmfive.php tests unit all; exit \$?"
     UNIT_TESTS_EXIT_CODE=$?
     if [ $UNIT_TESTS_EXIT_CODE -ne 0 ]; then
         echo "Unit tests failed: $UNIT_TESTS_EXIT_CODE"
