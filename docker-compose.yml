@@ -1,7 +1,7 @@
 services:
 
   mysqldb:
-    image: mysql:8.0
+    image: ${MYSQL_IMAGE-mysql:8.0}
     container_name: mysql-8
     environment:
       MYSQL_ROOT_PASSWORD: root
@@ -55,7 +55,7 @@ services:
       - "host.docker.internal:host-gateway"
 
   compiler:
-    image: node:20-alpine
+    image: ${COMPILER_IMAGE-node:20-alpine}
     container_name: node-compiler
     volumes:
       - ./:/var/www/html
