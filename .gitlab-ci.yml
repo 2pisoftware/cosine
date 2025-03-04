@@ -6,7 +6,7 @@ stages:
 
 # Set up the environment
 buildvars:
-  image: alpine:latest
+  image: $CI_REGISTRY/utility/alpine-runner:latest
   stage: setup
   script: |
     echo $CI_JOB_TOKEN
@@ -30,7 +30,7 @@ buildvars:
 # Build the theme
 build-theme:
   stage: core
-  image: node:alpine
+  image: $CI_REGISTRY/utility/alpine-runner:latest
   script: |
     echo "== Compiling theme =="
     cd system/templates/base

@@ -1,4 +1,4 @@
-FROM mcr.microsoft.com/playwright:latest
+FROM mcr.microsoft.com/playwright:v1.49.0-jammy
 # Australianise things:
 RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y locales && \
     locale-gen en_AU.UTF-8 && \
