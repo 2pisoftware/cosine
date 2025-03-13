@@ -31,29 +31,41 @@ const upload = async (e: SubmitEvent) => {
     disableSubmit.value = true;
 
     for (const file of files.value) {
-        const upload_id = await s3.beginMultipartUpload(file, endpoint.value);
-
-        progress.value++;
-
+        let upload_id: string | undefined = undefined;
         try {
+            upload_id = await s3.beginMultipartUpload(file, endpoint.value);
+
+            progress.value++;
+
             await s3.uploadParts(file, upload_id);
+
+            progress.value++;
+
+            await s3.completeUpload(upload_id);
+
+            progress.value++;
+            success_count.value++;
         }
         catch (e) {
-            await s3.abortUpload(upload_id);
+            if (upload_id)
+                await s3.abortUpload(upload_id).catch(() => { });
             failed_count.value++;
+
             continue;
         }
-
-        progress.value++;
-
-        await s3.completeUpload(upload_id);
-
-        progress.value++;
-        success_count.value++;
     }
 
     disableUpload.value = false;
     done.value = true;
+
+    // This is kind of awful, sorry
+    //@ts-ignore
+    cmfiveEventBus
+        .dispatchEvent(new CustomEvent("multipart-upload-success", {
+            detail: {
+                files: files.value,
+            }
+        }));
 };
 
 const updateFilePreview = (event: ChangeEvent<HTMLInputElement>) => {
@@ -93,14 +105,16 @@ const disableUpload = ref(false);
         </div>
 
         <form @submit.prevent="upload">
-            <fieldset id="multipart_uploader_fieldset" class="d-flex gap-2 align-items-center pt-0">
-                <label for="multipart_uploader_files" :class="disableUpload ? 'opacity-50' : ''" style="cursor: pointer">
+            <fieldset id="multipart_uploader_fieldset" class="d-flex gap-2 align-items-center pt-0 shadow-none">
+                <label for="multipart_uploader_files" :class="disableUpload ? 'opacity-50' : ''"
+                    style="cursor: pointer">
                     <p class="mb-0 form-control">Select Files <i class="bi bi-cloud-arrow-up"></i></p>
                 </label>
-                <input id="multipart_uploader_files" :disabled="disableUpload" @change="updateFilePreview" name="files" type="file" multiple
-                    hidden>
-                <input id="multipart_uploader_submit" :disabled="disableSubmit" type="submit" class="btn btn-primary" value="Upload"
-                    style="color: white">
+                <input id="multipart_uploader_files" :disabled="disableUpload" @change="updateFilePreview" name="files"
+                    type="file" multiple hidden>
+                <button id="multipart_uploader_submit" :disabled="disableSubmit" type="submit" class="btn btn-primary">
+                    Upload
+                </button>
             </fieldset>
         </form>
 
