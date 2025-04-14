@@ -1,36 +1,11 @@
 stages:
-  - setup
   - core
   - docker
   - test
 
-# Set up the environment
-buildvars:
-  image: $CI_REGISTRY/utility/alpine-runner:latest
-  stage: setup
-  script: |
-    echo $CI_JOB_TOKEN
-    echo "== Setting up environment =="
-    if [ "$CI_COMMIT_REF_NAME" = "$CI_DEFAULT_BRANCH" ]; then
-      export TAG="latest"
-    elif [ $CI_MERGE_REQUEST_IID ]; then
-      export TAG="mr-$CI_MERGE_REQUEST_IID"
-    else
-      export TAG=$CI_COMMIT_REF_SLUG
-    fi
-    export FULL_TAG=${CI_REGISTRY_IMAGE}:${TAG}
-    echo "🏷️ DOCKER_TAG will be $FULL_TAG"
-    echo "== Saving full tag name to tag.env =="
-    echo "DOCKER_TAG=$FULL_TAG" > .env
-    echo ""
-  artifacts:
-    reports:
-      dotenv: .env
-
 # Build the theme
 build-theme:
   stage: core
-  image: $CI_REGISTRY/utility/alpine-runner:latest
   script: |
     echo "== Compiling theme =="
     cd system/templates/base
@@ -40,17 +15,12 @@ build-theme:
     paths:
       - system/templates/base/dist
     expire_in: 1 day
-  needs:
-    - buildvars
-  dependencies:
-    - buildvars
 
 # Include the steps for docker and playwright
 include:
   # Build the Docker image
-  - component: $CI_SERVER_FQDN/2pisoftware/pipelines/docker/build@v1.1.0
+  - component: $CI_SERVER_FQDN/2pisoftware/pipelines/docker/build@v1.2.0
     inputs:
-      tag: "$DOCKER_TAG"
       stage: docker
 
   # Run Playwright tests
@@ -64,10 +34,7 @@ include:
 
 # Add dependencies to the docker build
 docker-build:
-  before_script: |
-    echo "== Building tag: $DOCKER_TAG =="
   dependencies:
-    - buildvars
     - build-theme
 
 # Run the Playwright tests
@@ -97,7 +64,6 @@ playwright-test:
     MYSQL_PASSWORD: cosine
     DB_PASSWORD: cosine
   dependencies:
-    - buildvars
+    - docker-build
     - build-theme
   
-
