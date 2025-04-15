@@ -177,6 +177,8 @@ Cosine container environment variables:
 - **DB_PASSWORD:** The password to connect to the database
 - **CUSTOM_COFIG:** (optional) Custom configuration to add to the config.php file.
 - **ENVIRONMENT:** (optional) The environment to run in (development, production). Defaults to production.
+- **REDIRECT_HTTP_TO_HTTPS:** (optional) If set to `true`, configures Nginx to redirect HTTP traffic to HTTPS.
+- **REDIRECT_HOST:** (optional) The hostname to use for the HTTPS redirect. Defaults to the same hostname as the request.
 
 Development environment variables (stored in .env):
 
