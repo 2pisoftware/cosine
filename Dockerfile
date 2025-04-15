@@ -82,6 +82,7 @@ COPY /.codepipeline/docker/configs/nginx/nginx.conf /etc/nginx/nginx.conf
 COPY /.codepipeline/docker/configs/nginx/default.conf /etc/nginx/conf.d/default.conf
 COPY /.codepipeline/docker/configs/fpm/ /etc/php/
 COPY /.codepipeline/docker/setup.sh /bootstrap/setup.sh
+COPY /.codepipeline/docker/start.sh /bootstrap/start.sh
 COPY /.codepipeline/docker/config.default.php /bootstrap/config.default.php
 
 # Copy source
