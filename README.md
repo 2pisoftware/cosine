@@ -110,6 +110,16 @@ To run the PHPUnit tests, you can run the following command:
 docker compose exec -u cmfive cosine tools tests unit all
 ```
 
+### Mailpit (Email Testing)
+
+The development stack includes [Mailpit](https://github.com/axllent/mailpit) for capturing outgoing emails. You can use it to view emails sent by Cosine, such as password resets.
+
+- **Access Mailpit UI:** Open [http://localhost:8025](http://localhost:8025) in your browser.
+- **Test password reset:** 
+  1. Go to the Cosine login page at [http://localhost:3000](http://localhost:3000).
+  2. Click "Forgot password?" and enter the username `admin`.
+  3. Check Mailpit for the password reset email and follow the instructions in the email.
+
 ## Deploying
 
 ### Docker
@@ -385,4 +395,5 @@ Config::set('music', [
 	'path'		=> 'modules',	// tells Cmfive exactly where this module can be found (Config values are cached)
 	'topmenu'	=> 'My music'	// Set to false to not show in the top menu, or set to true to infer the menu name from the name of the module (in this case "Music")
 ]);
+```
 
