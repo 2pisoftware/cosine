@@ -9,6 +9,7 @@
 /log
 
 .phpunit.result.cache
+.core-metadata
 
 desktop.ini
 docker-compose.override.yml
@@ -29,7 +30,6 @@ nbproject/
 /vendor/
 composer.json
 composer.lock
-system
 /test/Codeception
 /test/Services/chromedriver
 
@@ -44,3 +44,18 @@ test/playwright/node_modules/
 test/playwright/test-results/
 test/playwright/src/
 test/playwright/*.png
+
+# Banners
+/banner*.php
+
+junit.xml
+
+# Core/System
+/.externalToolBuilders/
+/system/composer.json
+/system/tests/vendor
+/system/tests/_output
+/system/tests/composer.phar
+/system/tests/composer.lock
+/system/tests/support/_generated
+system/system

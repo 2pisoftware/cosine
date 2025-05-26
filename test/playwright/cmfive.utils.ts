@@ -7,13 +7,13 @@ export const GLOBAL_TIMEOUT = +(process.env.TIMEOUT ?? 30_000);
 export class CmfiveHelper {
     static randomID = (prefix: string) => prefix + (Math.random() + 1).toString(36).substring(7)
 
-    static async login(page: Page, user: string, password: string)
+    static async login(page: Page, user: string, password: string, redirect_url = "/main/index")
     {
         await page.goto(HOST + "/auth/login");
         await page.locator("#login").fill(user);
         await page.locator("#password").fill(password);
         await page.getByRole("button", {name: "Login"}).click();
-        await page.waitForURL(HOST + "/main/index")   
+        await page.waitForURL(HOST + redirect_url);
     }
 
     static async logout(page: Page)
@@ -49,6 +49,12 @@ export class CmfiveHelper {
 
         if (bootstrap5 || isMobile) {
             await navbarCategory.click();
+            // check that nav menu is open
+            const menuOpen = await page.locator("#topnav_" + category.toLowerCase().split(" ").join("_") + "_dropdown_link").getAttribute("aria-expanded"); // toHaveAttribute("aria-expanded", "true")
+            if (bootstrap5 && menuOpen != "true") {
+                await navbarCategory.click();
+            }
+
         } else { // Foundation
             await navbarCategory.hover();
         }
@@ -61,9 +67,9 @@ export class CmfiveHelper {
     }
 
     // Call exactly once per test before any dialogs pop up
-    static async acceptDialog(page: Page)
+    static acceptDialog(page: Page)
     {
-        page.on('dialog', dialog => dialog.accept());
+        page.on('dialog', dialog => void dialog.accept());
     }
 
     static async fillDatePicker(page: Page, datePickerTitle: string, field: string, date: DateTime) {          
@@ -78,9 +84,17 @@ export class CmfiveHelper {
     }   
 
     static async fillAutoComplete(page: Page, field: string, search: string, value: string) {
-        await page.locator('#acp_' + field).click();
-        await page.keyboard.type(search);
-        await page.locator('.ui-menu-item :text("' + value + '")').click();
+		if (await this.isBootstrap5(page)) {
+			await page.locator(`#${field}-ts-control`).locator("..").click();
+			await page.keyboard.type(search);
+			await page.locator(`#${field}-ts-dropdown`).getByText(value).click();
+			// await page.keyboard.press("Escape");
+		}
+		else {
+			await page.locator('#acp_' + field).click();
+			await page.keyboard.type(search);
+			await page.locator('.ui-menu-item :text("' + value + '")').click();
+		}
     }
 
     // Finds substring in string with given position

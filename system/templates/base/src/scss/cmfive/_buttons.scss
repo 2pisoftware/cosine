@@ -1,0 +1,75 @@
+
+.btn {
+    @include font-size('body');
+    display: inline-block;
+    padding: 6px 12px;
+    margin: 4px 0px;
+    border-radius: 2px;
+    text-align: center;
+    text-decoration: if($link-decoration == none, null, none);
+    vertical-align: middle;
+    user-select: none;
+
+    &.btn-sm {
+        @include font-size('caption');
+        padding: 6px 10px !important;
+    }
+
+    &:not(:first-child) {
+        margin-left: 8px;
+    }
+
+    @each $key, $value in $colours {
+        &.btn-#{$key} {
+            background-color: map-get($value, "background-color");
+            color: map-get($value, "color");
+
+            &:hover {
+                background-color: darken(map-get($value, "background-color"), 10%) !important;
+            }
+        }
+
+        &.btn-outline-#{$key} {
+            @include theme((background-color: $white));
+            border-width: 1px;
+            border-style: solid;
+            @include theme((border-color: $value));
+            // @include theme((color: map-get($value, "color")));
+            // border-color: map-get($value, "background-color");
+            // color: map-get($value, "background-color");
+
+            &:hover {
+                @include theme((background-color: map-get($value, "background-color")));
+                // @include theme((color: map-get($value, "color")));
+                // background-color: map-get($value, "background-color") !important;
+                // color: map-get($value, "color") !important;
+            }
+        }
+    }
+}
+
+// Remove button - needs consistent styling
+.bi.bi-x {
+    display: inline-block;
+    border-radius: 50%;
+    height: 20px;
+    width: 20px;
+    bottom: 2px;
+    text-align: center;
+    line-height: 22px;
+
+    &:hover {
+        cursor: pointer;
+        @include theme((background-color: 'mid-grey', color: 'white-black'));
+    }
+}
+
+.btn-info:active,
+.btn-info.active,
+.show > .btn-info.dropdown-toggle {
+    color: #ffffff !important;
+}
+
+.btn-info:hover {
+    border-color: #878787 !important;
+}

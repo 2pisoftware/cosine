@@ -5,50 +5,15 @@
 # This image provides a fully working Cosine instance
 
 # It provides the following build arguments:
-# - CORE_BRANCH: The branch to clone from the cmfive-core repository
 # - PHP_VERSION: The version of PHP to use
 # - UID: The user ID of the cmfive user
 # - GID: The group ID of the cmfive group
 
 # NOTE: See the .dockerignore file to see what is excluded from the image.
 
-# --------------------------------------------------------------------------
-# == Core stage ==
-# --------------------------------------------------------------------------
-
-# This stage clones the cmfive-core repository and compiles the theme
-
-# Use the Node.js base image
-FROM node:20-alpine AS core
-
-# Install git
-RUN apk --no-cache add \
-    git
-
-# Set the default branch to clone
-ARG BUILT_IN_CORE_BRANCH=main
-# Invalidate the cache if the branch has changed
-ADD https://api.github.com/repos/2pisoftware/cmfive-core/git/refs/heads/$BUILT_IN_CORE_BRANCH /version.json
-# Clone github.com/2pisoftware/cmfive-core
-RUN git clone --depth 1 https://github.com/2pisoftware/cmfive-core.git -b $BUILT_IN_CORE_BRANCH
-
-# Get the repo metadata
-RUN cd /cmfive-core && \
-    git log -1 --pretty=format:"CORE_HASH=\"%H\"%nCORE_COMMIT_MSG=\"%s\"%nCORE_REF=\"%D\"" > /.core-metadata
-
-# Compile the theme
-RUN cd /cmfive-core/system/templates/base && \
-    npm ci && \
-    npm run production
-
-# --------------------------------------------------------------------------
-# == Cosine stage ==
-# --------------------------------------------------------------------------
-
-# This stage builds the final Cosine image
-
 # Use the Alpine Linux base image
-FROM alpine:3.19.4
+ARG ALPINE_VERSION=3.19.4
+FROM alpine:${ALPINE_VERSION}
 
 # PHP version
 # note: see Alpine packages for available versions
@@ -86,6 +51,8 @@ RUN apk --no-cache add \
     php$PHP_VERSION-simplexml \
     php$PHP_VERSION-fileinfo \
     nginx \
+    mysql-client \
+    mariadb-connector-c-dev \
     supervisor \
     bash \
     openssl \
@@ -115,6 +82,7 @@ COPY /.codepipeline/docker/configs/nginx/nginx.conf /etc/nginx/nginx.conf
 COPY /.codepipeline/docker/configs/nginx/default.conf /etc/nginx/conf.d/default.conf
 COPY /.codepipeline/docker/configs/fpm/ /etc/php/
 COPY /.codepipeline/docker/setup.sh /bootstrap/setup.sh
+COPY /.codepipeline/docker/start.sh /bootstrap/start.sh
 COPY /.codepipeline/docker/config.default.php /bootstrap/config.default.php
 
 # Copy source
@@ -126,39 +94,21 @@ WORKDIR /var/www/html
 # Remove .codepipeline
 RUN rm -rf .codepipeline
 
-# Copy the core
-COPY --chown=cmfive:cmfive \
-    --from=core \
-    /cmfive-core/system/ \
-    composer/vendor/2pisoftware/cmfive-core/system/
+# Create a link to installation tools
+RUN ln -s /var/www/html/cmfive.php /usr/local/bin/tools
 
-# Metadata for core
-COPY --chown=cmfive:cmfive \
-    --from=core \
-    /.core-metadata \
-    /.core-metadata
-
-# Link system
-RUN ln -s composer/vendor/2pisoftware/cmfive-core/system/ system
-
-# Install core
-RUN su cmfive -c 'INSTALL_ENV=docker php cmfive.php install core'
-
-# Copy theme
-COPY --chown=cmfive:cmfive \
-    --from=core \
-    /cmfive-core/system/templates/base/dist \
-    system/templates/base/dist
-    
-# Copy theme node modules
-COPY --chown=cmfive:cmfive \
-    --from=core \
-    /cmfive-core/system/templates/base/node_modules \
-    system/templates/base/node_modules
+# Install composer modules
+RUN touch /var/www/html/config.php
+RUN su cmfive -c 'INSTALL_ENV=docker tools install core'
 
 # Fix permissions
 RUN chmod -R ugo=rwX cache/ storage/ uploads/ && \
     chown -R cmfive:cmfive /var/lib/nginx /var/log/nginx
+
+# Install startup banner
+COPY --chown=cmfive:cmfive /.codepipeline/docker/banner_starting.php /var/www/html/banner.php
+COPY --chown=cmfive:cmfive /.codepipeline/docker/banner_starting.php /bootstrap/banner_starting.php
+COPY --chown=cmfive:cmfive /.codepipeline/docker/banner_error.php /bootstrap/banner_error.php
 
 # Expose HTTP, HTTPS
 EXPOSE 80 443
@@ -168,6 +118,5 @@ HEALTHCHECK --interval=15s --timeout=5m --start-period=5s --retries=15 \
   CMD supervisorctl status nginx | grep -q "RUNNING" && \
       supervisorctl status php-fpm | grep -q "RUNNING" && \
       test -f /home/cmfive/.cmfive-installed
-
 # Start supervisord
 CMD ["supervisord", "--nodaemon", "--configuration", "/etc/supervisord.conf"]

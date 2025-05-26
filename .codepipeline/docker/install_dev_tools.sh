@@ -14,7 +14,7 @@ PHPUNIT=10
 
 # If CONTAINER is not defined, default to the container name of the webapp service in docker compose
 if [ -z "$CONTAINER" ]; then
-    CONTAINER=$(docker compose ps -q webapp)
+    CONTAINER=$(docker compose ps -q cosine)
     if [ -z "$CONTAINER" ]; then
         echo "❌  Error: Could not find container name. Please specify the container name with CONTAINER=container_name"
         exit 1
