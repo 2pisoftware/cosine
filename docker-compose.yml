@@ -37,6 +37,13 @@ services:
       ENVIRONMENT: development
       CUSTOM_CONFIG: |
         Config::set('tests', ['testrunner' => 'ENABLED']);
+        Config::append('email', [
+            "layer"    => "smtp",
+            "host"     => "mailpit",
+            "port"     => 1025,
+            "auth"     => false,
+        ]);
+        Config::append('main', ['company_support_email'=>"admin@example.com"]);
     volumes:
       - ./:/var/www/html:rw
     ports:
@@ -74,6 +81,21 @@ services:
     depends_on:
       cosine:
         condition: service_healthy
+
+  mailpit:
+    image: axllent/mailpit:latest
+    container_name: mailpit
+    ports:
+      - "8025:8025"
+    networks:
+      - default
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8025"]
+      interval: 10s
+      timeout: 5m
+      retries: 20
+
 
 volumes:
   dbdata:
