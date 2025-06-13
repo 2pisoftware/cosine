@@ -44,43 +44,86 @@ To add options:
 
 $menuMaker = [
     [
-        'option' => "Install core libraries", 'message' => "Installing core libraries", 'function' => "installCoreLibraries", 'param' => null
+        'option' => "Install core libraries",
+        'message' => "Installing core libraries",
+        'function' => "installCoreLibraries",
+        'param' => null
     ],
     [
-        'option' => "Install database migrations", 'message' => "Installing migrations", 'function' => "installMigrations", 'param' => null
+        'option' => "Install database migrations",
+        'message' => "Installing migrations",
+        'function' => "installMigrations",
+        'param' => null
     ],
     [
-        'option' => "Seed admin user", 'message' => "Setting up admin user", 'function' => "seedAdminUser", 'param' => null
+        'option' => "Seed admin user",
+        'message' => "Setting up admin user",
+        'function' => "seedAdminUser",
+        'param' => null
     ],
     [
-        'option' => "Generate encryption keys", 'message' => "Generating encryption keys", 'function' => "generateEncryptionKeys", 'param' => null
+        'option' => "Seed user",
+        'message' => "Create a new User and Contact. Generates a random password.",
+        'function' => "seedUser",
+        'param' => null
+    ],
+    [
+        'option' => "Generate encryption keys",
+        'message' => "Generating encryption keys",
+        'function' => "generateEncryptionKeys",
+        'param' => null
     ],
 ];
 
 $cmdMaker = [
     'install' => [
         [
-            'request' => "core", 'message' => "Installing core libraries", 'function' => "cmdinstallCoreLibraries", 'args' => false
+            'request' => "core",
+            'message' => "Installing core libraries",
+            'function' => "cmdinstallCoreLibraries",
+            'args' => false
         ],
         [
-            'request' => "migration", 'message' => "Installing migrations", 'function' => "installMigrations", 'args' => false
+            'request' => "migration",
+            'message' => "Installing migrations",
+            'function' => "installMigrations",
+            'args' => false
         ],
         [
-            'request' => "migrations", 'message' => "Installing migrations", 'function' => "installMigrations", 'args' => false
+            'request' => "migrations",
+            'message' => "Installing migrations",
+            'function' => "installMigrations",
+            'args' => false
         ]
     ],
     'seed' => [
         [
-            'request' =>  "admin", 'message' => "Setting up admin user", 'function' => "cmdSeedAdminUser", 'args' => true,
+            'request' =>  "admin",
+            'message' => "Setting up admin user",
+            'function' => "cmdSeedAdminUser",
+            'args' => true,
             'hint' => "F_name L_name email user password"
         ],
         [
-            'request' =>  "encryption", 'message' => "Creating encryption keys", 'function' => "generateEncryptionKeys", 'args' => false
+            'request' =>  "encryption",
+            'message' => "Creating encryption keys",
+            'function' => "generateEncryptionKeys",
+            'args' => false
+        ],
+        [
+            "request" => "user",
+            "message" => "Create a new User and Contact. Generates a random password.",
+            "function" => "cmdSeedUser",
+            "args" => true,
+            "hint" => "[first] [last] [email] [login] [roles comma separated, defaults `user`]"
         ]
     ],
     'cmfive' => [
         [
-            'request' => "help", 'message' => "Command line options", 'function' => "synopsis", 'args' => false
+            'request' => "help",
+            'message' => "Command line options",
+            'function' => "synopsis",
+            'args' => false
         ]
     ]
 
@@ -143,11 +186,17 @@ function process_default_arguments($parameters, $defaults)
 
 $menuMaker[] =
     [
-        'option' => "List command options", 'message' => "Command line options", 'function' => "synopsis", 'param' => null
+        'option' => "List command options",
+        'message' => "Command line options",
+        'function' => "synopsis",
+        'param' => null
     ];
 $menuMaker[] =
     [
-        'option' => "Exit (0)", 'message' => "Exiting", 'function' => "justQuit", 'param' => null
+        'option' => "Exit (0)",
+        'message' => "Exiting",
+        'function' => "justQuit",
+        'param' => null
     ];
 
 while (true) {
@@ -206,7 +255,7 @@ function synopsis()
     foreach ($cmdMaker as $command => $does) {
         foreach ($does as $doing) {
             echo //__FILE__
-                $_SERVER['SCRIPT_NAME'] . " " . $command . " " . $doing['request'];
+            $_SERVER['SCRIPT_NAME'] . " " . $command . " " . $doing['request'];
             if ($doing['args'] && !isset($doing['implied'])) {
                 echo " ["
                     . (isset($doing['hint']) ? $doing['hint'] : "args...")
@@ -364,6 +413,68 @@ function installMigrations()
     } catch (Exception $e) {
         echo $e->getMessage();
     }
+}
+
+function cmdSeedUser($pCount, $parameters)
+{
+    return seedUser($parameters);
+}
+
+function seedUser($parameters = [])
+{
+    @[
+        $firstName,
+        $lastName,
+        $email,
+        $login,
+        $roles,
+    ] = array_slice($parameters, 2);
+
+    if (strtoupper(substr(PHP_OS, 0, 3)) === 'WIN') {
+        echo exec('del .\cache\config.cache');
+    } else {
+        echo exec('rm -f cache/config.cache');
+    }
+
+    if (!stepOneYieldsWeb()) {
+        return false;
+    }
+
+    $w = new Web();
+    $w->initDB();
+
+    // Set up fake session to stop warnings
+    $_SESSION = [];
+
+    $contact = new Contact($w);
+    $contact->firstname = $firstName ?? readConsoleLine("First name:");
+    $contact->lastname = $lastName ?? readConsoleLine("Last name:");
+    $contact->email = $email ?? readConsoleLine("Email:");
+    $contact->insert();
+
+    $user = new User($w);
+    $user->contact_id = $contact->id;
+    $user->login = $login ?? readConsoleLine("Login:");
+    $user->is_admin = 0;
+    $user->is_active = 1;
+    $user->insert();
+
+    $password = bin2hex(random_bytes(12));
+
+    $user->setPassword($password);
+    $user->update();
+
+    $roles = !empty($roles) ? explode(",", $roles) : ["user"];
+
+    foreach ($roles as $roleName) {
+        $role = new UserRole($w);
+        $role->user_id = $user->id;
+        $role->role = $roleName;
+        $role->insert();
+    }
+
+    echo "User $login created with password $password\n\n";
+    return true;
 }
 
 function cmdSeedAdminUser($pCount, $parameters = [])
