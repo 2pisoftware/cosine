@@ -473,7 +473,7 @@ function seedUser($parameters = [])
         $role->insert();
     }
 
-    echo "User $login created with password $password\n\n";
+    echo "User $user->id created with password $password\n\n";
     return true;
 }
 
