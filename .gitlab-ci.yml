@@ -19,9 +19,10 @@ build-theme:
 # Include the steps for docker and playwright
 include:
   # Build the Docker image
-  - component: $CI_SERVER_FQDN/2pisoftware/pipelines/docker/build@v1.2.0
+  - component: $CI_SERVER_FQDN/2pisoftware/pipelines/docker/build@v1.3.0
     inputs:
       stage: docker
+      auto_platforms: true # build ARM on main/develop
 
   # Run Playwright tests
   - component: $CI_SERVER_FQDN/2pisoftware/pipelines/playwright/test@v1.0.6
