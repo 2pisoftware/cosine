@@ -2155,7 +2155,7 @@ class Web
      *
      * @return null
      */
-    public function header(string $string, ?string $value)
+    public function header(string $string, ?string $value = '')
     {
         if (!headers_sent($file, $line)) {
             if (!empty($value)) {
