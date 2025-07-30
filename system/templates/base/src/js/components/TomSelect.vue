@@ -30,7 +30,7 @@ import {
 } from "vue";
 
 /* @ts-ignore */
-import TomSelect from "@/../node_modules/tom-select";
+import TomSelect from "~/tom-select";
 
 // const emit = defineEmits(['change','input'])
 const props = defineProps(["modelValue", "settings"]);
