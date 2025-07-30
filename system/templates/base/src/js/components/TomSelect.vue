@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
 /*
 import TomSelect from "@/js/components/TomSelect.vue";
 
@@ -32,7 +32,9 @@ import {
 /* @ts-ignore */
 import TomSelect from "~/tom-select";
 
-// const emit = defineEmits(['change','input'])
+const emit = defineEmits<{
+	update: [string]
+}>();
 const props = defineProps(["modelValue", "settings"]);
 const el = ref(null);
 
@@ -54,7 +56,8 @@ defineExpose({
 
 
 <template>
-	<select ref="el" @input="$emit('update:modelValue', $event.target.value)" v-bind="$attrs" :value="props.modelValue">
+	<select ref="el" @input="(e) => emit('update', (e.target as HTMLSelectElement).value)" v-bind="$attrs"
+		:value="props.modelValue">
 		<slot></slot>
 	</select>
 </template>
