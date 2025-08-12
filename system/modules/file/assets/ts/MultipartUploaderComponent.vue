@@ -33,7 +33,7 @@ const upload = async (e: SubmitEvent) => {
     for (const file of files.value) {
         let upload_id: string | undefined = undefined;
         try {
-            upload_id = await s3.beginMultipartUpload(file, endpoint.value);
+            upload_id = await s3.beginMultipartUpload(file, file.name, endpoint.value);
 
             progress.value++;
 
@@ -59,13 +59,15 @@ const upload = async (e: SubmitEvent) => {
     done.value = true;
 
     // This is kind of awful, sorry
-    //@ts-ignore
-    cmfiveEventBus
-        .dispatchEvent(new CustomEvent("multipart-upload-success", {
-            detail: {
-                files: files.value,
-            }
-        }));
+    if (failed_count.value === 0) {
+        //@ts-ignore
+        cmfiveEventBus
+            .dispatchEvent(new CustomEvent("multipart-upload-success", {
+                detail: {
+                    files: files.value,
+                }
+            }));
+    }
 };
 
 const updateFilePreview = (event: ChangeEvent<HTMLInputElement>) => {

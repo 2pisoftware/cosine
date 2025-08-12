@@ -803,6 +803,11 @@ class Web
 
                 $this->header("Strict-Transport-Security", "max-age=63072000");
                 $this->header("X-Content-Type-Options", "nosniff");
+                if (Config::get('system.include_frame_options_header', true) === true) {
+                    $this->header("X-Frame-Options", "SAMEORIGIN");
+                }
+                $this->header("Referrer-Policy", "strict-origin-when-cross-origin");
+
                 //  $this->sendHeader("X-Frame-Options", "DENY");
                 $this->header("X-XSS-Protection", "1; mode=block");
 
@@ -2150,9 +2155,13 @@ class Web
      *
      * @return null
      */
-    public function header($string)
+    public function header(string $string, ?string $value = '')
     {
         if (!headers_sent($file, $line)) {
+            if (!empty($value)) {
+                $string = $string . ": " . $value;
+            }
+
             header($string);
         } else {
             LogService::getInstance($this)->error("Attempted to resend header {$string}, output started in {$file} on line {$line}");
