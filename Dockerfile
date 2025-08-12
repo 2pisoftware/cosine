@@ -11,8 +11,32 @@
 
 # NOTE: See the .dockerignore file to see what is excluded from the image.
 
-# Use the Alpine Linux base image
+# Define the Alpine version to use
 ARG ALPINE_VERSION=3.19.4
+
+# ==========================================================================
+# STAGE 1: Build the theme
+# ==========================================================================
+
+FROM --platform=$BUILDPLATFORM node:20 AS theme-build
+WORKDIR /var/www/html
+
+# Copy modules for the build
+COPY system/modules/ system/modules/
+COPY modules/ modules/
+
+# Install dependencies
+COPY system/templates/base/package*.json system/templates/base/
+RUN cd system/templates/base/ && (npm ci || npm install)
+
+# Build the theme
+COPY system/templates/base/ system/templates/base/
+RUN cd system/templates/base/ && npm run prod
+
+# ==========================================================================
+# STAGE 2: Build the final image
+# ==========================================================================
+
 FROM alpine:${ALPINE_VERSION}
 
 # PHP version
@@ -104,6 +128,9 @@ RUN su cmfive -c 'INSTALL_ENV=docker tools install core'
 # Fix permissions
 RUN chmod -R ugo=rwX cache/ storage/ uploads/ && \
     chown -R cmfive:cmfive /var/lib/nginx /var/log/nginx
+
+# Install the theme
+COPY --from=theme-build /var/www/html/system/templates/base/dist /var/www/html/system/templates/base/dist
 
 # Install startup banner
 COPY --chown=cmfive:cmfive /.codepipeline/docker/banner_starting.php /var/www/html/banner.php
