@@ -1,27 +1,14 @@
 stages:
-  - core
   - docker
   - test
-
-# Build the theme
-build-theme:
-  stage: core
-  script: |
-    echo "== Compiling theme =="
-    cd system/templates/base
-    npm ci || npm install
-    npm run prod || npm run production
-  artifacts:
-    paths:
-      - system/templates/base/dist
-    expire_in: 1 day
 
 # Include the steps for docker and playwright
 include:
   # Build the Docker image
-  - component: $CI_SERVER_FQDN/2pisoftware/pipelines/docker/build@v1.2.0
+  - component: $CI_SERVER_FQDN/2pisoftware/pipelines/docker/build@v1.3.0
     inputs:
       stage: docker
+      platforms: linux/amd64,linux/arm64
 
   # Run Playwright tests
   - component: $CI_SERVER_FQDN/2pisoftware/pipelines/playwright/test@v1.0.6
@@ -32,12 +19,7 @@ include:
       run_cmd: npm run build && npm run test --reporter=list,junit
       wait_on: http-get://test-website
 
-# Add dependencies to the docker build
-docker-build:
-  dependencies:
-    - build-theme
-
-# Run the Playwright tests
+# Configure Playwright tests
 playwright-test:
   services:
     # Database
@@ -65,5 +47,4 @@ playwright-test:
     DB_PASSWORD: cosine
   dependencies:
     - docker-build
-    - build-theme
   
