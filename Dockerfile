@@ -21,6 +21,10 @@ ARG ALPINE_VERSION=3.19.4
 FROM --platform=$BUILDPLATFORM node:20 AS theme-build
 WORKDIR /var/www/html
 
+# Copy modules for the build
+COPY system/modules/ system/modules/
+COPY modules/ modules/
+
 # Install dependencies
 COPY system/templates/base/package*.json system/templates/base/
 RUN cd system/templates/base/ && (npm ci || npm install)
