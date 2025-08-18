@@ -50,6 +50,7 @@ RUN apk --no-cache add \
     php$PHP_VERSION-session \
     php$PHP_VERSION-simplexml \
     php$PHP_VERSION-fileinfo \
+    php$PHP_VERSION-opcache \
     nginx \
     mysql-client \
     mariadb-connector-c-dev \
