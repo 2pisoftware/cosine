@@ -19,9 +19,10 @@ function ajax_multipart_POST(Web $w)
 
     $upload = FileMultipartUploadService::getInstance($w)
         ->startMultipart(
-            $key,
-            $mime,
-            Config::get("file.adapters.s3.bucket")
+            key: $key,
+            mime: $mime,
+            bucket: Config::get("file.adapters.s3.bucket"),
+            display_name: $filename,
         );
 
     $w->out(json_encode(["id" => $upload->id]));
