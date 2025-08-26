@@ -11,12 +11,11 @@ function addwidget_GET(Web $w) {
         return !empty($names);
     });
 
-    $form = array(__("Add a widget") => array(
+    $form = [__("Add a widget") => [
         // array(array("Add widget for", "select", "destination_module", $module, $w->modules())),
-        array(array(__("Source module"), "select", "source_module", null, $modules)),
-        array(array(__("Widget Name"), "select", "widget_name", null, array())),
-    ),
-    );
+        [[__("Source module"), "select", "source_module", null, $modules]],
+        [[__("Widget Name"), "select", "widget_name", null, []]],
+    ]];
 
     $w->ctx("widgetform", HtmlBootstrap5::multiColForm($form, "/main/addwidget/{$module}", "POST", __("Add")));
 }
@@ -35,6 +34,7 @@ function addwidget_POST(Web $w) {
 
     $widget = new WidgetConfig($w);
     $widget->destination_module = $module;
+    $widget->custom_config = "";
     $widget->fill($_POST);
     $widget->user_id = AuthService::getInstance($w)->user()->id;
     $response = $widget->insert();
