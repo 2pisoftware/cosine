@@ -46,7 +46,7 @@
     "svelte": "^4.2.18",
     "svelte-preprocess": "^6.0.2",
     "ts-loader": "^9.5.1",
-    "vite": "^5.4.2",
+    "vite": "^5.4.20",
     "vite-plugin-commonjs": "^0.10.1",
     "vite-plugin-static-copy": "^2.2.0",
     "vue-loader": "^17.4.2",
