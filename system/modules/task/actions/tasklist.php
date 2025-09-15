@@ -7,7 +7,7 @@ function tasklist_ALL(Web $w)
 {
     History::add("List Tasks");
     $page = Request::int("page", 1);
-    $page_size = 1;
+    $page_size = 50;
 
     $w->ctx("page", $page);
     $w->ctx("page_size", $page_size);
