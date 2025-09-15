@@ -5,6 +5,29 @@
     }
 </style>
 
+<div class="d-flex justify-content-between">
+    <h1>Task List</h1>
+
+    <?php
+    // base url for pagination
+    // we need to keep the filter values in the url
+    // and remove any pagination parameters as they will be re-appended by the links
+    $base_url = $_SERVER['REQUEST_URI'];
+
+    $base_url = preg_replace("/&?page=\d*&?/", "", $base_url);
+    $base_url = preg_replace("/&?ps=\d*&?/", "", $base_url);
+    $base_url = preg_replace("/&?tr=\d*&?/", "", $base_url);
+
+    echo $w->partial("simple_pagination", [
+        "current" => $page,
+        "total" => $total,
+        "page_size" => $page_size,
+        "param" => "page",
+        "base_url" => $base_url
+    ], "main");
+    ?>
+</div>
+
 <?php
 echo HtmlBootstrap5::filter("Filter Tasks", $filter_data, "/task/tasklist", "GET");
 

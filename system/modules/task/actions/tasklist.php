@@ -1,11 +1,16 @@
 <?php
+
 use Html\Form\Html5Autocomplete;
 use Html\Form\Select;
 
 function tasklist_ALL(Web $w)
 {
     History::add("List Tasks");
-    $w->ctx("title", "Task List");
+    $page = Request::int("page", 1);
+    $page_size = 1;
+
+    $w->ctx("page", $page);
+    $w->ctx("page_size", $page_size);
 
     // Look for reset
     $reset = Request::string("reset");
@@ -31,66 +36,42 @@ function tasklist_ALL(Web $w)
         $taskgroup = TaskService::getInstance($w)->getTaskGroup($task_group_id);
     }
 
-    // Make the query manually
-    $query_object = $w->db->get("task")->leftJoin("task_group")->where("task_group.is_deleted", 0);
+    $query_object = createQuery(
+        $w,
+        $task_group_id,
+        $assignee_id,
+        $creator_id,
+        $task_type,
+        $task_priority,
+        $task_status,
+        $dt_from,
+        $dt_to,
+        $page,
+        $page_size
+    );
 
-    // We can now make ID queries directly to the task_group table because of left join
-    if (!empty($task_group_id)) {
-        $query_object->where("task.task_group_id", $task_group_id);
-    }
-
-    // Repeat above for everything else
-    if (!empty($assignee_id)) {
-        // Unassigned has a value of 'unassigned' in filter but 0 in db
-        if ($assignee_id == 'unassigned') {
-            $query_object->where("task.assignee_id", 0);
-        } else {
-            $query_object->where("task.assignee_id", $assignee_id);
-        }
-    }
-    if (!empty($creator_id)) {
-        $query_object->leftJoin("object_modification on object_modification.object_id = task.id and object_modification.table_name = 'task'")
-            ->where("object_modification.creator_id", $creator_id);
-    }
-    if (!empty($task_type)) {
-        $query_object->where("task.task_type", $task_type);
-    }
-    if (!empty($task_priority)) {
-        $query_object->where("task.priority", $task_priority);
-    }
-    if (!empty($task_status)) {
-        $query_object->where("task.status", $task_status);
-    }
-    //    if (!empty($is_closed)) {
-    //        $query_object->where("task.is_closed", ((is_null($is_closed) || $is_closed == 0) ? 0 : 1));
-    //    } else {
-    //        $query_object->where("task.is_closed", 0);
-    //    }
-    // This part is why we want to make our query manually
-    if (!empty($dt_from)) {
-        if ($dt_from == "NULL") {
-            $query_object->where("task.dt_due", null);
-        } else {
-            $query_object->where("task.dt_due >= ?", $dt_from);
-        }
-    }
-    if (!empty($dt_to)) {
-        if ($dt_to == "NULL") {
-            $query_object->where("task.dt_due", null);
-        } else {
-            $query_object->where("task.dt_due <= ?", $dt_to);
-        }
-    }
-    $query_object->where("task.is_active", 1);
-
-
-
-    // Standard wheres
-    $query_object->where("task.is_deleted", [0, null]); //->where("task_group.is_active", 1)->where("task_group.is_deleted", 0);
+    $query_object->paginate($page, $page_size);
 
     // Fetch dataset and get model objects for them
-    $tasks_result_set = $query_object->orderBy('task.id DESC')->fetchAll();
+    $tasks_result_set = $query_object->fetchAll();
     $task_objects = TaskService::getInstance($w)->getObjectsFromRows("Task", $tasks_result_set);
+
+    $count_query = createQuery(
+        $w,
+        $task_group_id,
+        $assignee_id,
+        $creator_id,
+        $task_type,
+        $task_priority,
+        $task_status,
+        $dt_from,
+        $dt_to,
+        $page,
+        $page_size
+    );
+    $count = $count_query->count();
+
+    $w->ctx("total", $count);
 
     // Filter in or out closed tasks based on given is_closed filter parameter
     if (!empty($task_objects) && empty($reset)) {
@@ -177,4 +158,80 @@ function tasklist_ALL(Web $w)
     ];
 
     $w->ctx("filter_data", $filter_data);
+}
+
+// not a very nice looking signature, sorry
+function createQuery(
+    Web $w,
+    $task_group_id,
+    $assignee_id,
+    $creator_id,
+    $task_type,
+    $task_priority,
+    $task_status,
+    $dt_from,
+    $dt_to,
+    $page,
+    $page_size
+) {
+    /**
+     * @var DbPDO
+     */
+    $query_object = $w->db->get("task")->leftJoin("task_group")->where("task_group.is_deleted", 0);
+
+    // We can now make ID queries directly to the task_group table because of left join
+    if (!empty($task_group_id)) {
+        $query_object->where("task.task_group_id", $task_group_id);
+    }
+
+    // Repeat above for everything else
+    if (!empty($assignee_id)) {
+        // Unassigned has a value of 'unassigned' in filter but 0 in db
+        if ($assignee_id == 'unassigned') {
+            $query_object->where("task.assignee_id", 0);
+        } else {
+            $query_object->where("task.assignee_id", $assignee_id);
+        }
+    }
+    if (!empty($creator_id)) {
+        $query_object->leftJoin("object_modification on object_modification.object_id = task.id and object_modification.table_name = 'task'")
+            ->where("object_modification.creator_id", $creator_id);
+    }
+    if (!empty($task_type)) {
+        $query_object->where("task.task_type", $task_type);
+    }
+    if (!empty($task_priority)) {
+        $query_object->where("task.priority", $task_priority);
+    }
+    if (!empty($task_status)) {
+        $query_object->where("task.status", $task_status);
+    }
+    //    if (!empty($is_closed)) {
+    //        $query_object->where("task.is_closed", ((is_null($is_closed) || $is_closed == 0) ? 0 : 1));
+    //    } else {
+    //        $query_object->where("task.is_closed", 0);
+    //    }
+    // This part is why we want to make our query manually
+    if (!empty($dt_from)) {
+        if ($dt_from == "NULL") {
+            $query_object->where("task.dt_due", null);
+        } else {
+            $query_object->where("task.dt_due >= ?", $dt_from);
+        }
+    }
+    if (!empty($dt_to)) {
+        if ($dt_to == "NULL") {
+            $query_object->where("task.dt_due", null);
+        } else {
+            $query_object->where("task.dt_due <= ?", $dt_to);
+        }
+    }
+    $query_object->where("task.is_active", 1);
+
+    // Standard wheres
+    $query_object->where("task.is_deleted", [0, null]); //->where("task_group.is_active", 1)->where("task_group.is_deleted", 0);
+
+    $query_object->orderBy('task.id DESC');
+
+    return $query_object;
 }
