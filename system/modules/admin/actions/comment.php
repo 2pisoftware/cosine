@@ -117,7 +117,7 @@ function comment_GET(Web $w)
     $w->ctx("comment", addcslashes($comment->comment, "\n\""));
 
     $w->ctx("comment_id", $comment_id == "{0}" ? "0" : $comment_id);
-    $w->ctx("viewers", json_encode($viewers));
+    $w->ctx("viewers", json_encode($viewers, JSON_HEX_APOS));
     $w->ctx("top_object_class_name", strtolower(preg_replace('/(?<=\\w)(?=[A-Z])/', "_$1", $parent_object_class_name)));
     $w->ctx("top_object_id", $parent_object_id);
     $w->ctx("new_owner", json_encode($new_owner));
