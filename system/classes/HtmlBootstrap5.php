@@ -647,7 +647,7 @@ class HtmlBootstrap5 extends Html
         $pagesize_query_param = "page_size",
         $total_results_query_param = "total_results",
         $sort_query_param = "sort",
-        $sort_direction_param = "sort_direction"
+        $sort_direction_param = "sort_direction",
     ) {
         // Build URL for pagination
         $url_parsed = parse_url($base_url);
