@@ -103,16 +103,32 @@
                     "login": formdata.get("login"),
                     "password": formdata.get("password"),
                     "mfa_code": formdata.get("mfa_code"),
-                })
+                }),
+                redirect: "manual"
             });
         } catch (e) {
             auth_form.reset();
             errors.innerText = e.message;
             errors.classList.remove("d-none");
             errors.classList.add("d-flex");
+
+            return;
         }
 
-        const json = await res.json();
+        if (res.type === "opaqueredirect") {
+            return window.location.reload();
+        }
+
+        let json;
+        try {
+            json = await res.json();
+        } catch (e) {
+            auth_form.reset();
+            errors.innerText = "An unknown error occurred. Please refresh the page and try again.";
+            errors.classList.remove("d-none");
+            errors.classList.add("d-flex");
+            return;
+        }
 
         if (json.data.redirect_url != null)
             return window.location.href = json.data.redirect_url;
