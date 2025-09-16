@@ -12,7 +12,6 @@
         has_notification_selection="<?php echo $has_notification_selection; ?>"
         is_restricted="<?php echo $is_restricted; ?>"
         is_parent_restricted="<?php echo $is_parent_restricted; ?>"
-        authed_user_id="<?php echo AuthService::getInstance($w)->user()->id; ?>"
-    >
+        authed_user_id="<?php echo AuthService::getInstance($w)->user()->id; ?>">
     </comments-modal-component>
 </div>
