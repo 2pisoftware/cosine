@@ -11,7 +11,7 @@ function tasklist_ALL(Web $w)
     // Get filter values
     $reset = Request::string("reset");
     $page = $w->sessionOrRequest("task__page", 1);
-    $page_size = $w->sessionOrRequest("task__page-size", 100);
+    $page_size = $w->sessionOrRequest("task__page-size", 10);
     $sort = $w->sessionOrRequest("task__sort", 'task.id');
     $sort_direction = $w->sessionOrRequest("task__sort-direction", 'desc');
 
