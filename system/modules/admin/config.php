@@ -23,7 +23,7 @@ Config::set('admin', [
         ]
     ],
     "dependencies" => [
-        "swiftmailer/swiftmailer" => "~6.2",
+        "symfony/mailer" => "^6.4.25",
         "twig/twig" => "3.3.*",
         "nesbot/carbon" => "2.55.2",
         "robmorgan/phinx" => "0.8.*",

@@ -5,6 +5,10 @@ use Html\Cmfive\QuillEditor;
 use Html\Form\Html5Autocomplete;
 use \Html\Form\InputField as InputField;
 use \Html\Form\Select as Select;
+use Symfony\Component\Console\Style\SymfonyStyle;
+use Symfony\Component\Mailer\Mailer;
+use Symfony\Component\Mime\Email;
+use Symfony\Component\Mime\Part\DataPart;
 
 function edit_GET($w)
 {
@@ -314,32 +318,45 @@ function edit_POST($w)
     }
 
     if (empty($task_id) && Config::get('task.ical.send') == true) {
-        $data = $task->getIcal();
+        $ical = $task->getIcal();
         $user = AuthService::getInstance($w)->getUser($task->assignee_id);
         $contact = !empty($user->id) ? $user->getContact() : AuthService::getInstance($w)->user()->getContact();
 
-        $messageObject = new Swift_Message("Invite to: " . $task->title);
-        $messageObject->setTo([$contact->email]);
-        $messageObject->setReplyTo([AuthService::getInstance($w)->user()->getContact()->email])
-            ->setFrom(Config::get("main.company_support_email"));
+        // TODO: This should be in the MailService
 
-        $messageObject->addPart("Your iCal is attached<br/><br/><a href='http://www.google.com/calendar/event?action=TEMPLATE&text={$task->title}" .
-            "&dates=" . date("Ymd", strtotime(str_replace('/', '-', $task->dt_due))) . "/" . date("Ymd", strtotime(str_replace('/', '-', $task->dt_due))) .
-            "&details=" . htmlentities($task->description) .
-            "&trp=false target='_blank' rel='nofollow'>Add to Google calendar</a><br/><br/>View the Task at: " . $task->toLink(null, null, $user), "text/html");
+        $gcalUrl = "http://www.google.com/calendar/event?action=TEMPLATE"
+            . "&text={$task->title}"
+            . "&dates=" . date("Ymd", strtotime(str_replace('/', '-', $task->dt_due))) . "/" . date("Ymd", strtotime(str_replace('/', '-', $task->dt_due)))
+            . "&details=" . htmlentities($task->description)
+            . "&trp=false";
 
-        $ics_content = $data;
-        $messageObject->addPart($ics_content, "text/calendar");
+        $taskLink = $task->toLink(user: $user);
 
-        file_put_contents(FILE_ROOT . "invite.ics", $data);
+        $body = <<<HEREDOC
+            Your iCal is attached
+            <br/><br/>
 
-        $ics_attachment = new Swift_Attachment(trim($ics_content), "invite.ics", "application/ics");
-        $messageObject->attach($ics_attachment);
+            <a href="$gcalUrl" target="_blank" rel="nofollow">Add to Google Calendar</a>
+            <br/>
+            
+            View the Task at $taskLink
+        HEREDOC;
 
-        $email_layer = Config::get('email.layer');
-        $swiftmailer_transport = new SwiftMailerTransport($w, $email_layer);
-        $mailObject = new Swift_Mailer($swiftmailer_transport->getTransport($email_layer));
-        $mailObject->send($messageObject);
+        file_put_contents(FILE_ROOT . "invite.ics", $ical);
+
+        $email = (new Email())
+            ->to($contact->email)
+            ->from(Config::get("main.company_support_email"))
+            ->replyTo(AuthService::getInstance($w)->user()->getContact()->email)
+            ->html($body)
+            ->addPart(new DataPart($ical, contentType: "text/calendar"))
+            ->attachFromPath("invite.ics", "task.ics", "application/ics");
+
+        $layer = Config::get("email.layer");
+        $transport = (new SymfonyMailerTransport($w, $layer))->getTransport($layer);
+
+        $mailer = new Mailer($transport);
+        $mailer->send($email);
 
         unlink(FILE_ROOT . "invite.ics");
     }
