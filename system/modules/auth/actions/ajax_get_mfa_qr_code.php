@@ -19,14 +19,7 @@ function ajax_get_mfa_qr_code_GET(Web $w)
         return;
     }
 
-    $issuer = str_replace(" ", "", Config::get("main.application_name", "Cmfive"));
-
-    // TODO: when updating to 3.0, this signature changes
-    // to require qrcodeprovider
-    $tfa = new TwoFactorAuth(
-        $issuer,
-        qrcodeprovider: new QRServerProvider(),
-    );
+    $tfa = AuthService::getInstance($w)->createTfaProvider();
 
     // TODO: in 3.0, the default secret length increases to 160
     $user->mfa_secret = $tfa->createSecret(bits: 160);
