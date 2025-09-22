@@ -574,12 +574,12 @@ class AuthService extends DbService
      */
     public function createTfaProvider()
     {
-        $issuer = str_replace(" ", "", Config::get("main.application_name", "Cmfive"));
+        $issuer = str_replace(" ", "", Config::get("main.application_name", "Cosine"));
 
         // TODO: when updating to 3.0, this signature changes
         // to require qrcodeprovider
         return new TwoFactorAuth(
-            $issuer,
+            issuer: $issuer,
             qrcodeprovider: new QRServerProvider(),
         );
     }
