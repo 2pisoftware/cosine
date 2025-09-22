@@ -127,9 +127,9 @@ $w->setLayout("layout")
         <div id="user_security_app">
             <user-security-component
                 user_id="<?php echo $user["id"]; ?>"
-                locked="false"
-                mfa_enabled="<?php echo $user["security"]["is_mfa_enabled"]; ?>"
-                pw_min_length="<?php echo Config::get('auth.login.password.min_length', 8); ?>">
+                :locked="false"
+                :mfa_enabled="<?php echo $user["security"]["is_mfa_enabled"]; ?>"
+                :pw_min_length="<?php echo Config::get('auth.login.password.min_length', 8); ?>">
             </user-security-component>
         </div>
     </div>
