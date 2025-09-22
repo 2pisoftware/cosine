@@ -41,7 +41,7 @@ FROM alpine:${ALPINE_VERSION}
 
 # PHP version
 # note: see Alpine packages for available versions
-ARG PHP_VERSION=81
+ARG PHP_VERSION=84
 ENV PHP_VERSION=$PHP_VERSION
 ARG UID=1000
 ARG GID=1000
