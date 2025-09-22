@@ -11,7 +11,7 @@ Config::set('auth', [
     ],
     'show_application_name' => true,
     "dependencies" => [
-        "sonata-project/google-authenticator" => "^2.2"
+        "robthree/twofactorauth" => "2.1.0"
     ],
     'login' => [
         'password' => [

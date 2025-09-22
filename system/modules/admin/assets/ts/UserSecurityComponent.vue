@@ -3,16 +3,16 @@ import { defineProps, ref, defineModel } from 'vue';
 
 const props = defineProps<{
 	user_id: string;
-	locked: "true" | "false";
-	mfa_enabled: "true" | "false";
-	pw_min_length: string;
+	locked: boolean;
+	mfa_enabled: boolean
+	pw_min_length: number;
 }>();
 
-const locked = ref(props.locked === "true");
+const locked = ref(props.locked);
 const user_id = props.user_id;
-const mfa_enabled = ref(props.mfa_enabled === "1");
+const mfa_enabled = ref(props.mfa_enabled);
 const pw_min_length = props.pw_min_length ? parseInt(props.pw_min_length) : 0;
- 
+
 const mfa_qr_code_url = ref<string>();
 const mfa_secret = ref<string>();
 const is_loading = ref(false);
@@ -65,11 +65,11 @@ const updatePassword = loadingBoundary("Failed to update password", () => {
 			repeat_new_password: new_password_repeat.value,
 		})
 	})
-	.then(x => {
-		if (x.ok) return x.json();
-		throw new Error();
-	})
-	.then(x => displayToast(x.message))
+		.then(x => {
+			if (x.ok) return x.json();
+			throw new Error();
+		})
+		.then(x => displayToast(x.message))
 })
 
 const unlockAccount = loadingBoundary("Failed to unlock account", () =>
@@ -79,14 +79,14 @@ const unlockAccount = loadingBoundary("Failed to unlock account", () =>
 			id: user_id,
 		})
 	})
-	.then(x => {
-		if (x.ok) return x.json();
-		throw new Error();
-	})
-	.then(() => {
-		locked.value = false;
-		displayToast("Account unlocked");
-	})
+		.then(x => {
+			if (x.ok) return x.json();
+			throw new Error();
+		})
+		.then(() => {
+			locked.value = false;
+			displayToast("Account unlocked");
+		})
 );
 
 const getMfaCode = loadingBoundary("Failed to fetch QR code", async () => {
@@ -113,14 +113,14 @@ const disableMfa = loadingBoundary("Failed to disable MFA", async () => {
 			id: user_id
 		})
 	})
-	.then(x => {
-		if (x.ok) return x.json();
-		throw new Error();
-	})
-	.then(() => {
-		displayToast("MFA disabled");
-		mfa_enabled.value = false;
-	})
+		.then(x => {
+			if (x.ok) return x.json();
+			throw new Error();
+		})
+		.then(() => {
+			displayToast("MFA disabled");
+			mfa_enabled.value = false;
+		})
 })
 
 const confirmMfaCode = loadingBoundary("Failed to enable MFA", async () => {
@@ -131,16 +131,16 @@ const confirmMfaCode = loadingBoundary("Failed to enable MFA", async () => {
 			mfa_code: mfa_code.value
 		})
 	})
-	.then(x => {
-		if (x.ok) return x.json();
-		throw new Error();
-	})
-	.then(() => {
-		mfa_qr_code_url.value = undefined;
-		mfa_secret.value = undefined;
-		mfa_enabled.value = true;
-		displayToast("MFA enabled");
-	})
+		.then(x => {
+			if (x.ok) return x.json();
+			throw new Error();
+		})
+		.then(() => {
+			mfa_qr_code_url.value = undefined;
+			mfa_secret.value = undefined;
+			mfa_enabled.value = true;
+			displayToast("MFA enabled");
+		})
 })
 </script>
 
@@ -163,30 +163,17 @@ const confirmMfaCode = loadingBoundary("Failed to enable MFA", async () => {
 					<form class="col">
 						<div class="mb-3">
 							<label for="password" class="form-label">New Password</label>
-							<input
-								name="password"
-								type="password"
-								required
-								:minlength="pw_min_length"
-								v-model="new_password"
-								class="form-control">
+							<input name="password" type="password" required :minlength="pw_min_length"
+								v-model="new_password" class="form-control">
 						</div>
 
 						<div class="mb-3">
 							<label for="repeat_password" class="form-label">Repeat New Password</label>
-							<input
-								name="repeat_password"
-								type="password"
-								required
-								:minlength="pw_min_length"
-								v-model="new_password_repeat"
-								class="form-control">
+							<input name="repeat_password" type="password" required :minlength="pw_min_length"
+								v-model="new_password_repeat" class="form-control">
 						</div>
-						
-						<button
-							@click.prevent="updatePassword"
-							:disabled="is_loading"
-							class="btn btn-primary m-0"
+
+						<button @click.prevent="updatePassword" :disabled="is_loading" class="btn btn-primary m-0"
 							type="submit">
 							Update Password
 						</button>
@@ -220,7 +207,7 @@ const confirmMfaCode = loadingBoundary("Failed to enable MFA", async () => {
 					<form>
 						<div class="mb-3">
 							<label class="form-label" for="mfa_code">Code</label>
-							<input v-model="mfa_code" name="mfa_code" required type="text" class="form-control"/>
+							<input v-model="mfa_code" name="mfa_code" required type="text" class="form-control" />
 						</div>
 
 						<button class="btn btn-primary m-0" @click.prevent="confirmMfaCode">Enable MFA</button>
