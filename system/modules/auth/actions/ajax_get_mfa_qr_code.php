@@ -1,8 +1,5 @@
 <?php
 
-use RobThree\Auth\Providers\Qr\QRServerProvider;
-use RobThree\Auth\TwoFactorAuth;
-
 function ajax_get_mfa_qr_code_GET(Web $w)
 {
     $w->setLayout(null);
