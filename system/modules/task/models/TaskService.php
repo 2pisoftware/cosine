@@ -837,13 +837,13 @@ class TaskService extends DbService
     /**
      * Create a new Task
      *
-     * @param unknown $task_type
-     * @param unknown $task_group_id
-     * @param unknown $title
-     * @param unknown $description
-     * @param unknown $priority
-     * @param unknown $dt_due
-     * @param unknown $first_assignee_id
+     * @param string $task_type
+     * @param string|int $task_group_id
+     * @param string $title
+     * @param string $description
+     * @param string $priority
+     * @param string $dt_due
+     * @param string|int $first_assignee_id
      */
     public function createTask($task_type, $task_group_id, $title, $description, $priority, $dt_due, $first_assignee_id, $_skip_creation_notification = false)
     {
@@ -864,15 +864,15 @@ class TaskService extends DbService
     /**
      * Create a new Taskgroup using all the form details of the taskgroup form
      *
-     * @param task_group_type, eg. "TaskGroupType_TaskTodo"
-     * @param title, the task group title
-     * @param can_assign, OWNER|MEMBER|GUEST
-     * @param can_view, OWNER|MEMBER|GUEST
-     * @param can_create, OWNER|MEMBER|GUEST
-     * @param is_active, 0|1
-     * @param is_deleted, 0|1
-     * @param description, a description
-     * @param default_assignee_id, a user_id or null
+     * @param string $task_group_type, eg. "TaskGroupType_TaskTodo"
+     * @param string $title, the task group title
+     * @param string $can_assign, OWNER|MEMBER|GUEST
+     * @param string $can_view, OWNER|MEMBER|GUEST
+     * @param string $can_create, OWNER|MEMBER|GUEST
+     * @param string|int|bool $is_active, 0|1
+     * @param string|int|bool $is_deleted, 0|1
+     * @param string $description, a description
+     * @param string|int|null $default_assignee_id, a user_id or null
      *
      * @return TaskGroup
      */

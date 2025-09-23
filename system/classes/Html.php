@@ -1,9 +1,9 @@
 <?php
 
-require_once "classes/html/GlobalAttributes.php";
-require_once "classes/html/a.php";
-require_once "classes/html/button.php";
-require_once "classes/html/form.php";
+// require_once "classes/html/GlobalAttributes.php";
+// require_once "classes/html/a.php";
+// require_once "classes/html/button.php";
+// require_once "classes/html/form.php";
 
 class Html
 {

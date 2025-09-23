@@ -68,9 +68,9 @@
  *    However this can be turned off by setting
  *    public $__use_auditing = false;
  *
- * @author carsten
- *
  */
+
+#[AllowDynamicProperties]
 class DbObject extends DbService
 {
 
@@ -83,8 +83,26 @@ class DbObject extends DbService
     private $_systemEncrypt = null;
     private $_systemDecrypt = null;
 
+    public $__old = [];
+
+    // protected $_modifiable = null;
+    // protected $_versionable = null;
+    // protected $_searchable = null;
+
     //This is list is depreciated, it has been left here for backwards compatability
-    static $_stopwords = "about above across after again against all almost alone along already also although always among and any anybody anyone anything anywhere are area areas around ask asked asking asks away back backed backing backs became because become becomes been before began behind being beings best better between big both but came can cannot case cases certain certainly clear clearly come could did differ different differently does done down downed downing downs during each early either end ended ending ends enough even evenly ever every everybody everyone everything everywhere face faces fact facts far felt few find finds first for four from full fully further furthered furthering furthers gave general generally get gets give given gives going good goods got great greater greatest group grouped grouping groups had has have having her here herself high higher highest him himself his how however important interest interested interesting interests into its itself just keep keeps kind knew know known knows large largely last later latest least less let lets like likely long longer longest made make making man many may member members men might more most mostly mrs much must myself necessary need needed needing needs never new newer newest next nobody non noone not nothing now nowhere number numbers off often old older oldest once one only open opened opening opens order ordered ordering orders other others our out over part parted parting parts per perhaps place places point pointed pointing points possible present presented presenting presents problem problems put puts quite rather really right room rooms said same saw say says second seconds see seem seemed seeming seems sees several shall she should show showed showing shows side sides since small smaller smallest some somebody someone something somewhere state states still such sure take taken than that the their them then there therefore these they thing things think thinks this those though thought thoughts three through thus today together too took toward turn turned turning turns two under until upon use used uses very want wanted wanting wants was way ways well wells went were what when where whether which while who whole whose why will with within without work worked working works would year years yet you young younger youngest your yours";
+    static $_stopwords = "about above across after again against all almost alone along already also although always among and any anybody anyone anything anywhere are area areas around ask asked
+    asking asks away back backed backing backs became because become becomes been before began behind being beings best better between big both but came can cannot case cases certain certainly clear
+    clearly come could did differ different differently does done down downed downing downs during each early either end ended ending ends enough even evenly ever every everybody everyone everything
+    everywhere face faces fact facts far felt few find finds first for four from full fully further furthered furthering furthers gave general generally get gets give given gives going good goods got
+    great greater greatest group grouped grouping groups had has have having her here herself high higher highest him himself his how however important interest interested interesting interests into
+    its itself just keep keeps kind knew know known knows large largely last later latest least less let lets like likely long longer longest made make making man many may member members men might
+    more most mostly mrs much must myself necessary need needed needing needs never new newer newest next nobody non noone not nothing now nowhere number numbers off often old older oldest once one
+    only open opened opening opens order ordered ordering orders other others our out over part parted parting parts per perhaps place places point pointed pointing points possible present presented
+    presenting presents problem problems put puts quite rather really right room rooms said same saw say says second seconds see seem seemed seeming seems sees several shall she should show showed
+    showing shows side sides since small smaller smallest some somebody someone something somewhere state states still such sure take taken than that the their them then there therefore these they
+    thing things think thinks this those though thought thoughts three through thus today together too took toward turn turned turning turns two under until upon use used uses very want wanted
+    wanting wants was way ways well wells went were what when where whether which while who whole whose why will with within without work worked working works would year years yet you young younger
+    youngest your yours";
 
     /**
      * Constructor
@@ -116,7 +134,7 @@ class DbObject extends DbService
     public function __get($name)
     {
         // cater for modifiable aspect!
-        if (isset($this->_modifiable)) {
+        if (!empty($this->_modifiable)) {
             if ($name == "dt_created") {
                 return $this->_modifiable->getCreatedDate();
             }
@@ -437,7 +455,7 @@ class DbObject extends DbService
     {
         foreach ($this->getObjectVars() as $k) {
             if (array_key_exists($k, $row)) {
-                $this->$k = ($convert ? $this->readConvert($k, $row[$k]) : $row[$k]);
+                $this->$k = $convert ? $this->readConvert($k, $row[$k]) : $row[$k];
             }
         }
         if (!empty($row["creator_id"]) && empty($this->creator_id)) {
@@ -455,9 +473,9 @@ class DbObject extends DbService
      * Creates a shallow copy of an object without saving to DB (by default)
      *
      * @param boolean saveToDB (optional, default false)
-     * @return Object
+     * @return static
      */
-    public function copy($saveToDB = false)
+    public function copy($saveToDB = false): static
     {
         $newObject = clone $this;
 
@@ -620,9 +638,10 @@ class DbObject extends DbService
      * core_dbobject_after_delete
      * core_dbobject_after_delete_[classname]
      *
-     * @param unknown $type eg. before / after
-     * @param unknown $action eg. insert / update / delete
+     * @param string $type eg. before / after
+     * @param string $action eg. insert / update / delete
      */
+    // phpcs:ignore
     private function _callHooks($type, $action)
     {
         $this->w->callHook("core_dbobject", $type . "_" . $action, $this);
@@ -645,7 +664,7 @@ class DbObject extends DbService
 
             if ($force_validation && property_exists($this, "_validation")) {
                 $valid_response = $this->validate();
-                if (!$valid_response['success']) {
+                if (!isset($valid_response['success'])) {
                     $this->rollbackTransaction();
                     return $valid_response;
                 }
@@ -847,7 +866,7 @@ class DbObject extends DbService
      *
      * @param $force
      */
-    public function delete($force = false)
+    public function delete(bool $force = false)
     {
         try {
             $this->startTransaction();
@@ -908,7 +927,7 @@ class DbObject extends DbService
      *
      * You can also override this function completely.
      *
-     * @return String
+     * @return string
      */
     public function getDbTableName()
     {
@@ -917,10 +936,8 @@ class DbObject extends DbService
         } elseif (isset(static::$_db_table)) {
             return static::$_db_table;
         } else {
-            // Help from: http://www.tech-recipes.com/rx/5626/php-camel-case-to-spaces-or-underscore/
             return strtolower(preg_replace('/(?<=\\w)(?=[A-Z])/', "_$1", get_class($this)));
         }
-        // return strtolower(get_class($this));
     }
 
     public function getDbTableColumnNames()
@@ -975,11 +992,11 @@ class DbObject extends DbService
      * get Creator user object if creator_id
      * property exists
      *
-     * @return User
+     * @return User|null
      */
     public function getCreator()
     {
-        if ($this->_modifiable) {
+        if (isset($this->_modifiable)) {
             return $this->_modifiable->getCreator();
         } elseif (property_exists(get_class($this), "creator_id")) {
             return AuthService::getInstance($this->w)->getUser($this->creator_id);
@@ -992,11 +1009,11 @@ class DbObject extends DbService
      * get Modifier user object if creator_id
      * property exists
      *
-     * @return User
+     * @return User|null
      */
     public function getModifier()
     {
-        if ($this->_modifiable) {
+        if (isset($this->_modifiable)) {
             return $this->_modifiable->getModifier();
         } elseif (property_exists(get_class($this), "modifier_id")) {
             return AuthService::getInstance($this->w)->getUser($this->modifier_id);
@@ -1030,10 +1047,6 @@ class DbObject extends DbService
         return true;
     }
 
-    // a list of english words that need not be searched against
-    // and thus do not need to be stored in an index
-
-
     /**
      * Consolidate all object fields into one big search friendly string.
      *
@@ -1041,16 +1054,14 @@ class DbObject extends DbService
      */
     public function getIndexContent($ignoreAdditional = true)
     {
-
         // -------------- concatenate all object fields ---------------------
         $str = "";
         $exclude = ["dt_created", "dt_modified", "w"];
 
         foreach (get_object_vars($this) as $k => $v) {
-            if (
-                substr($k, 0, 1) != "_" // ignore volatile vars
+            if (substr($k, 0, 1) != "_" // ignore volatile vars
                 && (!property_exists($this, "_exclude_index") // ignore properties that should be excluded
-                    || !in_array($k, $this->_exclude_index)) && stripos($k, "_id") === false && !in_array($k, $exclude)
+                || !in_array($k, $this->_exclude_index)) && stripos($k, "_id") === false && !in_array($k, $exclude)
             ) {
                 if ($k == "id") {
                     $str .= "id" . $v . " ";
@@ -1134,12 +1145,11 @@ class DbObject extends DbService
      * static $_<fieldname>_ui_select_objects_filter = array("is_deleted"=>0);
      * --> create a select filling it with the objects for the _class filtered by the _filter criteria
      *
-     * @param String $field
+     * @param string $field
      * @return array
      */
-    public function getSelectOptions($field)
+    public function getSelectOptions($field): array
     {
-
         // check whether this field has hints
         $prop_string = "_" . $field . "_ui_select_strings";
         $prop_lookup = "_" . $field . "_ui_select_lookup_code";
@@ -1163,27 +1173,33 @@ class DbObject extends DbService
                 return $this->getObjects($this->$prop_class, null, true);
             }
         }
+
+        return [];
     }
 
     /**
      * Validate the object's properties according to the rules
      * defined in $_validation array.
      *
-     * @return void|multitype:multitype: boolean
+     * @return array with keys:
+     *  - valid: array of valid field names
+     *  - invalid: array of invalid field names with reasons
+     *  - success: boolean whether or not the validation was successful
      */
     public function validate()
     {
-        if (!property_exists($this, "_validation")) {
-            return;
-        }
-
-        // Get table columns
-        $table_columns = get_object_vars($this);
         $response = [
             "valid" => [],
             "invalid" => [],
             "success" => false,
         ];
+
+        if (!property_exists($this, "_validation")) {
+            return $response;
+        }
+
+        // Get table columns
+        $table_columns = get_object_vars($this);
 
         // Get validation rules that may be declared static
         $validation_rules = null;
@@ -1292,17 +1308,6 @@ class DbObject extends DbService
         }
 
         return $response;
-
-        // if validation fails return to invoked page with errors... how to transport them though?
-        // this function is called deep in code so the initiator of the update or insert function may not know what's
-        // going on ... redirecting away to another page from here is ... rude.
-        // better to do the following:
-        // - update or insert just fail but send an exception containing the invalid messages
-        // - caller should call validate BEFORE update / insert to react to messages in a UI fashion (eg. redisplay form with message, etc)
-        //         if (count($response["invalid"]) > 0){
-        //             $_SESSION["errors"] = $response["invalid"];
-        //             $this->w->redirect($this->w->localUrl($_SERVER["REDIRECT_URL"]));
-        //         }
     }
 
     /**

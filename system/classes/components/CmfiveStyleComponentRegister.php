@@ -1,15 +1,17 @@
 <?php
 
-class CmfiveStyleComponentRegister extends CmfiveComponentRegister {
+declare(strict_types=1);
 
-	protected static $_register = [];
-	
-	public static function outputStyles() {
-		usort(static::$_register, ['CmfiveComponentRegister', 'compareWeights']);
+class CmfiveStyleComponentRegister extends CmfiveComponentRegister
+{
+    protected static $_register = [];
 
-		array_map(function($style) {
-			echo $style->_include() . "\n";
-		}, static::getComponents() ? : []);
-	}
+    public static function outputStyles(): void
+    {
+        usort(array: static::$_register, callback: ['CmfiveComponentRegister', 'compareWeights']);
 
+        array_map(callback: function ($style): void {
+            echo $style->include() . "\n";
+        }, array: static::getComponents() ?: []);
+    }
 }

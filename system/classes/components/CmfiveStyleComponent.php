@@ -1,17 +1,22 @@
 <?php
 
+declare(strict_types=1);
+
 use ScssPhp\ScssPhp\Compiler;
 
 class CmfiveStyleComponent extends CmfiveComponent
 {
-    public $_filename;
-    public $_dirname;
-    public $_extension = 'css';
-    public $_include_paths = [];
-    public $_external = false;
-    public static $_allowed_extensions = ['css', 'scss'];
+    public string $href;
+    public string $rel = 'stylesheet';
 
-    public function __construct($path, $include_paths = [], $is_external = false, $props = [])
+    public string $_filename;
+    public string $_dirname;
+    public string $_extension = 'css';
+    public array $_include_paths = [];
+    public bool $_external = false;
+    public static array $_allowed_extensions = ['css', 'scss'];
+
+    public function __construct(string $path, array $include_paths = [], bool $is_external = false, array $props = [])
     {
         if (!empty($props)) {
             foreach ($props as $key => $value) {
@@ -50,10 +55,10 @@ class CmfiveStyleComponent extends CmfiveComponent
         return $this;
     }
 
-    public function _include()
+    public function include(): string|null
     {
         switch ($this->_extension) {
-            case 'scss': {
+            case 'scss':
                 // Compile and store in cache directory
                 $scss = new Compiler();
                 if (!empty($this->_include_paths)) {
@@ -73,7 +78,7 @@ class CmfiveStyleComponent extends CmfiveComponent
                 } catch (Exception $e) {
                     // Could not compile SCSS
                     echo $e->getMessage();
-                    return;
+                    return null;
                 }
 
                 if (!is_dir(ROOT_PATH . '/cache/css/')) {
@@ -89,15 +94,14 @@ class CmfiveStyleComponent extends CmfiveComponent
                 file_put_contents(ROOT_PATH . '/cache/css/' . $this->_filename . '.css', $compiled_css);
                 $this->rel = 'stylesheet';
                 $this->href = '/cache/css/' . $this->_filename . '.css';
-                return parent::_include();
-            }
+                return parent::include();
             case 'css':
             default:
                 $this->rel = 'stylesheet';
                 if (!$this->_external) {
                     $this->href = $this->_dirname . '/' . $this->_filename . '.' . $this->_extension;
                 }
-                return parent::_include();
+                return parent::include();
         }
     }
 }

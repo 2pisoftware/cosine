@@ -1,11 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 abstract class CmfiveComponent
 {
-    public $tag = 'link';
-    public $has_closing_tag = false;
+    public string $tag = 'link';
+    public bool $has_closing_tag = false;
 
-    public $is_included = false;
+    public bool $is_included = false;
 
     // The weight is an integer that allows cmfive to organise the load order of components
     // Higher numbers will appear first
@@ -17,7 +19,7 @@ abstract class CmfiveComponent
      *
      * @return string component include code
      */
-    public function _include()
+    public function include()
     {
         if ($this->is_included) {
             return '';
@@ -41,7 +43,7 @@ abstract class CmfiveComponent
      *
      * @return string component
      */
-    public function display($binding_data = [])
+    public function display(array $binding_data = [])
     {
         return '';
     }

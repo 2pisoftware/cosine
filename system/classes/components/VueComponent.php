@@ -1,19 +1,20 @@
 <?php
 
+declare(strict_types=1);
+
 class VueComponent extends CmfiveComponent
 {
-    public $name;
-    public $js_path;
-    public $css_path;
-
-    public function __construct($name, $js_path, $css_path = '')
-    {
+    public function __construct(
+        public string $name,
+        public string $js_path,
+        public string $css_path = ''
+    ) {
         $this->name = $name;
         $this->js_path = $js_path;
         $this->css_path = $css_path;
     }
 
-    public function _include()
+    public function include()
     {
         if ($this->is_included) {
             return '';

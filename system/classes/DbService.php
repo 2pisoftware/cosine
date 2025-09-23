@@ -1,5 +1,7 @@
 <?php
 
+// require_once "SingletonTrait.php";
+
 /**
  * General Service class for subclassing in modules.
  *
@@ -9,6 +11,8 @@
  */
 class DbService
 {
+    use SingletonTrait;
+
     public $_db;
     public $w;
 
@@ -21,7 +25,6 @@ class DbService
     private static $_cache = []; // used for single objects
     public static $_cache2 = []; // used for lists of objects
     public static $_select_cache = [];
-    private static $instances = [];
 
     /**
      * This variable keeps track of active transactions
@@ -30,25 +33,6 @@ class DbService
      */
     public static $_active_trx = false;
 
-    /**
-     * Gets a new instance of the class.
-     *
-     * @param Web $w
-     * @return static
-     */
-    public static function getInstance(Web $w)
-    {
-        $class = get_called_class();
-        if (!isset(self::$instances[$class])) {
-            self::$instances[$class] = new $class($w);
-
-            if (method_exists(self::$instances[$class], "_web_init")) {
-                self::$instances[$class]->_web_init();
-            }
-        }
-
-        return self::$instances[$class];
-    }
 
     public static function getCache()
     {

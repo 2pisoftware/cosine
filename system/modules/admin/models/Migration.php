@@ -11,6 +11,8 @@ class Migration extends DbObject {
     public $posttext;
     public $description;
 
+    public $creator_id;
+
     /**
      * A static array of string arrays to be used for validaiton when creating forms with a Migration in it.
      *

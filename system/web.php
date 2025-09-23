@@ -25,12 +25,12 @@ define("SESSION_NAME", "CM5-SID");
 set_include_path(get_include_path() . PATH_SEPARATOR . LIBPATH);
 set_include_path(get_include_path() . PATH_SEPARATOR . SYSTEM_LIBPATH);
 
-require_once __DIR__ . "/db.php";
-require_once __DIR__ . "/html.php";
+// require_once __DIR__ . "/db.php";
+// require_once __DIR__ . "/html.php";
 require_once __DIR__ . "/functions.php";
-require_once __DIR__ . "/classes/CSRF.php";
+// require_once __DIR__ . "/classes/CSRF.php";
 require_once __DIR__ . "/classes/Config.php";
-require_once __DIR__ . "/classes/History.php";
+// require_once __DIR__ . "/classes/History.php";
 
 // Load system Composer autoloader
 if (file_exists(ROOT_PATH . "/composer/vendor/autoload.php")) {
@@ -94,6 +94,9 @@ class Web
     public $_scripts = [];
     public $_styles = [];
     public $sHttps = null;
+
+    public string $_webroot;
+    public string|null $_actionMethod;
 
     /**
      * Constructor
@@ -295,12 +298,12 @@ class Web
         $directory = $classes_directory . DS . 'components';
 
         if (file_exists($directory . DS . $name . '.php')) {
-            require_once $directory . DS . $name . '.php';
+            require_once ROOT_PATH . DS . $directory . DS . $name . '.php';
             return true;
         }
 
         if (file_exists($classes_directory . DS . $name . '.php')) {
-            require_once $classes_directory . DS . $name . '.php';
+            require_once ROOT_PATH . DS . $classes_directory . DS . $name . '.php';
             return true;
         }
 
@@ -527,8 +530,10 @@ class Web
             }
         }
 
-        bind_textdomain_codeset($domain ?? '', 'UTF-8');
-        textdomain($domain);
+        if (!empty($domain)) {
+            bind_textdomain_codeset($domain, 'UTF-8');
+            textdomain($domain);
+        }
     }
 
     /**
@@ -694,15 +699,15 @@ class Web
             }
 
             // configure translations lookup for this module
-            $this->initLocale();
+            // $this->initLocale();
 
-            try {
-                $this->setTranslationDomain('admin');
-                $this->setTranslationDomain('main');
-                $this->setTranslationDomain($this->currentModule());
-            } catch (Exception $e) {
-                LogService::getInstance($this)->setLogger('I18N')->error($e->getMessage());
-            }
+            // try {
+            //     $this->setTranslationDomain('admin');
+            //     $this->setTranslationDomain('main');
+            //     $this->setTranslationDomain($this->currentModule());
+            // } catch (Exception $e) {
+            //     LogService::getInstance($this)->setLogger('I18N')->error($e->getMessage());
+            // }
 
             if (!$this->_action) {
                 $this->_action = $this->_defaultAction;
@@ -814,7 +819,6 @@ class Web
                 try {
                     // call hooks, generic to specific
                     $this->_callWebHooks("before");
-
                     // Execute the action
                     $method = $this->_actionMethod;
                     $this->_action_executed = true;
@@ -1555,13 +1559,13 @@ class Web
 
         // set translations to partial module
         $oldModule = $this->currentModule();
-        if ($oldModule != $module) {
-            try {
-                $this->setTranslationDomain($module);
-            } catch (Exception $e) {
-                LogService::getInstance($this)->setLogger('I18N')->error($e->getMessage());
-            }
-        }
+        // if ($oldModule != $module) {
+            // try {
+            //     $this->setTranslationDomain($module);
+            // } catch (Exception $e) {
+            //     LogService::getInstance($this)->setLogger('I18N')->error($e->getMessage());
+            // }
+        // }
 
         // save current output buffer
         $oldbuf = $this->_buffer;
@@ -1640,13 +1644,13 @@ class Web
         $this->_context = $oldctx;
 
         // restore translations module
-        if ($oldModule != $module) {
-            try {
-                $this->setTranslationDomain($oldModule);
-            } catch (Exception $e) {
-                LogService::getInstance($this)->setLogger('I18N')->error($e->getMessage());
-            }
-        }
+        // if ($oldModule != $module) {
+        //     try {
+        //         $this->setTranslationDomain($oldModule);
+        //     } catch (Exception $e) {
+        //         LogService::getInstance($this)->setLogger('I18N')->error($e->getMessage());
+        //     }
+        // }
 
         return $currentbuf;
     }
@@ -1666,14 +1670,14 @@ class Web
         }
 
         // set translations to hook module
-        $oldModule = $this->currentModule();
-        if ($oldModule != $module) {
-            try {
-                $this->setTranslationDomain($module);
-            } catch (Exception $e) {
-                LogService::getInstance($this)->setLogger('I18N')->error($e->getMessage());
-            }
-        }
+        // $oldModule = $this->currentModule();
+        // if ($oldModule != $module) {
+        //     try {
+        //         $this->setTranslationDomain($module);
+        //     } catch (Exception $e) {
+        //         LogService::getInstance($this)->setLogger('I18N')->error($e->getMessage());
+        //     }
+        // }
 
         // Build _hook registry if empty
         if (empty($this->_hooks)) {
@@ -1741,18 +1745,18 @@ class Web
                     }
                 }
             } catch (Throwable $t) {
-                LogService::getInstance($this)->setLogger("CMFIVE")->error("Fatal error caught from hook {$t->getTraceAsString()}");
+                LogService::getInstance($this)->setLogger("CMFIVE")->error("Fatal error caught from hook: {$t->getMessage()}. {$t->getTraceAsString()}");
             }
         }
 
         // restore translations module
-        if ($oldModule != $module) {
-            try {
-                $this->setTranslationDomain($oldModule ?? '');
-            } catch (Exception $e) {
-                LogService::getInstance($this)->setLogger('I18N')->error($e->getMessage());
-            }
-        }
+        // if ($oldModule != $module) {
+        //     try {
+        //         $this->setTranslationDomain($oldModule ?? '');
+        //     } catch (Exception $e) {
+        //         LogService::getInstance($this)->setLogger('I18N')->error($e->getMessage());
+        //     }
+        // }
 
         return $buffer;
     }

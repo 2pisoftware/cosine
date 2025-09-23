@@ -4,9 +4,10 @@
  * PDO Extension class for Cmfive
  *
  * See: http://www.php.net/manual/en/book.pdo.php for the PDO Class reference
- *
- * @author Adam Buckley <adam@2pisoftware.com>
  */
+
+declare(strict_types=1);
+
 class DbPDO extends PDO
 {
     public $sql = null;
@@ -483,7 +484,7 @@ class DbPDO extends PDO
                  * NOTE: You only need to prefix the first method when chaining as the return value for
                  * the first call is a PDOStatement
                  */
-                return call_user_func_array("parent::" . $func, $args);
+                return call_user_func_array([parent::class, $func], $args);
         }
     }
 
@@ -538,17 +539,14 @@ class DbPDO extends PDO
      * PDO::lastInsertId will cause an infinite loop via FluentPDOs use of
      * the same function.
      */
-    // public function lastInsertId($seqname = null)
-    // {
-    //
-    // }
 
     /**
-     * Returns the lsat inserted id
+     * Returns the last inserted id
      *
      * @return int|null
      */
-    public function last_insert_id()
+    // phpcs:ignore
+    public function last_insert_id(string|null $name = null): string|false
     {
         if ($this->query !== null) {
             // Checks if execute hasn't been called yet, and calls it
@@ -557,11 +555,11 @@ class DbPDO extends PDO
             }
 
             $last_id = $this->query;
-			$this->query = null;
-			return $last_id;
+            $this->query = null;
+            return $last_id;
         }
 
-        return null;
+        return false;
     }
 
     /**

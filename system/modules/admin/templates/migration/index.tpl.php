@@ -118,23 +118,20 @@ use Carbon\Carbon; ?>
                         <ul id="migrations_list" class="list-group" role="tablist">
                             <?php
                             $active = true;
-                            foreach ($available as $module => $available_in_module) {
-                                $id = $module . "-tab";
-                                $target = "#" . $module;
-
-                                echo '<li class="list-group-item list-group-item-action d-flex justify-content-between align-items-start' . ($active ? ' active' : '') . '" id="' . $id . '" data-bs-toggle="list" href="' . $target . '" role="tab" aria-controls="' . $module . '">' . ucfirst($module);
-                                $active = false;
-
-                                // installed and non-installed migrations badges
-                                $installed_count = is_array($installed[$module]) ? count($installed[$module]) : 0;
-                                echo '<span class="right" role="status" aria-label="installation status">';
-                                echo $installed_count > 0 ? '<span class="badge bg-success rounded-pill" aria-label="installed">' . $installed_count . '</span>' : '';
-                                echo (count($available_in_module) - $installed_count) > 0 ? '<span class="badge bg-warning rounded-pill" style="margin-left: 5px" aria-label="not installed">' . (count($available_in_module) - $installed_count) . '</span>' : '';
-                                echo '</span>';
-
-                                echo '</li>';
-                            }
-                            ?>
+                            foreach ($available as $module => $available_in_module) : ?>
+                                <li class="list-group-item list-group-item-action d-flex justify-content-between align-items-start <?php echo $active ? 'active' : ''; ?>" id="<?php echo $module; ?>-tab" data-bs-toggle="list" href="#<?php echo $module; ?>" role="tab" aria-controls="<?php echo $module; ?>"><?php echo ucfirst($module); ?></li>
+                                    <?php $active = false;
+                                    $installed_count = is_array($installed[$module]) ? count($installed[$module]) : 0; ?>
+                                    <span class="right" role="status" aria-label="installation status">
+                                    <?php if ($installed_count > 0) : ?>
+                                        <span class="badge bg-success rounded-pill" aria-label="installed"><?php echo $installed_count; ?></span>
+                                    <?php endif;
+                                    if (count($available_in_module) - $installed_count > 0) : ?>
+                                        <span class="badge bg-warning rounded-pill" style="margin-left: 5px" aria-label="not installed"><?php echo (count($available_in_module) - $installed_count); ?></span>
+                                    <?php endif; ?>
+                                    </span>
+                                </li>
+                            <?php endforeach; ?>
                         </ul>
                     </div>
                     <div class="col-9">
@@ -147,7 +144,7 @@ use Carbon\Carbon; ?>
                                 $active = false;
 
                                 echo HtmlBootstrap5::box("/admin-migration/create/" . $module, "Create a" . (in_array($module[0], ['a', 'e', 'i', 'o', 'u']) ? 'n' : '') . ' ' . $module . " migration", true, false, null, null, null, null, "btn btn-sm btn-primary");
-
+                                
                                 if (count($available[$module]) > 0) {
                                     echo HtmlBootstrap5::b("/admin-migration/run/" . $module . "?ignoremessages=false&prevpage=individual", "Run all " . $module . " migrations", "Are you sure you want to run all outstanding migrations for this module?", null, false, "btn btn-sm btn-primary");
                                     $header = ["Name", "Description", "Date run", "Pre Text", "Post Text", "Actions"];
@@ -156,7 +153,17 @@ use Carbon\Carbon; ?>
                                         $row = [];
                                         $row[] = $migration_data['class_name'];
                                         $row[] = $migration_data['description'];
-                                        $row[] = MigrationService::getInstance($w)->isInstalled($migration_data['class_name']) ? "<span data-tooltip aria-haspopup='true' title='" . @formatDate(MigrationService::getInstance($w)->getMigrationByClassname($migration_data['class_name'])->dt_created, "d-M-Y \a\\t H:i") . "'>Run " . Carbon::createFromTimeStamp(MigrationService::getInstance($w)->getMigrationByClassname($migration_data['class_name'])->dt_created)->diffForHumans() . " by " . (!empty(MigrationService::getInstance($w)->getMigrationByClassname($migration_data['class_name'])->creator_id) && !empty(AuthService::getInstance($w)->getUser(MigrationService::getInstance($w)->getMigrationByClassname($migration_data['class_name'])->creator_id)) ? AuthService::getInstance($w)->getUser(MigrationService::getInstance($w)->getMigrationByClassname($migration_data['class_name'])->creator_id)->getContact()->getFullName() : "System") . "</span>" : "";
+                                        $migration = MigrationService::getInstance($w)->getMigrationByClassname($migration_data['class_name']);
+                                        echo gettype($migration->dt_created);
+                                        var_dump($migration->dt_created);
+
+                                        $row[] = MigrationService::getInstance($w)->isInstalled($migration_data['class_name']) ?
+                                                "<span data-tooltip aria-haspopup='true' title='" . @formatDate($migration->dt_created, "d-M-Y \a\\t H:i") . "'>Run " . Carbon::createFromTimeStamp($migration->dt_created)->diffForHumans() . " by " .
+                                                    (!empty($migration->creator_id) && !empty(AuthService::getInstance($w)->getUser($migration->creator_id)) ?
+                                                        AuthService::getInstance($w)->getUser($migration->creator_id)->getContact()->getFullName() :
+                                                        "System"
+                                                    ) . "</span>"
+                                                : "";
                                         $row[] = $migration_data['pretext'];
                                         $row[] = $migration_data['posttext'];
 

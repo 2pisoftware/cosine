@@ -29,6 +29,11 @@ class Task extends DbObject
     public $_searchable;
     public $rate; //rate used for calculating invoice values
     public $is_active;
+
+    public $creator_id;
+
+    public Taskgroup|null $_taskgroup = null;
+
     public static $_validation = [
         "title" => ['required'],
         "task_group_id" => ['required'],
@@ -56,11 +61,11 @@ class Task extends DbObject
     /**
      * add a subscriber to a task, if they aren't already subscribed
      *
-     * @param User $user
+     * @param User|null $user
      *
      * @return bool true if the user was not already a subscriber
      */
-    public function addSubscriber(User $user = null): bool
+    public function addSubscriber(User|null $user = null): bool
     {
         if (!empty($user) && !$this->isUserSubscribed($user->id)) {
             $subscriber = new TaskSubscriber($this->w);
@@ -68,9 +73,8 @@ class Task extends DbObject
             $subscriber->user_id = $user->id;
             $subscriber->insert();
             return true;
-        } else {
-            return false;
         }
+        return false;
     }
 
     public function addTaskGroupAsSubscribers()
@@ -118,17 +122,6 @@ class Task extends DbObject
             }
         }
         return implode(' ', $index);
-    }
-
-    public function __get($name)
-    {
-        // preload taskgroup if its called for
-        if ($name === "_taskgroup") {
-            $this->_taskgroup = $this->getTaskGroup();
-            return $this->_taskgroup;
-        } else {
-            return parent::__get($name);
-        }
     }
 
     public function isUrgent()
@@ -182,8 +175,8 @@ class Task extends DbObject
      *
      * Set an extra data value field
      *
-     * @param unknown_type $key
-     * @param unknown_type $value
+     * @param string $key
+     * @param string $value
      */
     public function setDataValue($key, $value)
     {
@@ -203,7 +196,7 @@ class Task extends DbObject
     }
 
     // get my membership object and compare my role with that required to view tasks given a task group ID
-    public function getCanIView(User $user = null)
+    public function getCanIView(User|null $user = null)
     {
         if (empty($user)) {
             $user = AuthService::getInstance($this->w)->user();
@@ -512,11 +505,12 @@ class Task extends DbObject
         return (!empty($this->title) ? htmlentities($this->title) : 'Task [' . $this->id . ']');
     }
 
-    public function getAssignee()
+    public function getAssignee(): User|null
     {
         if (!empty($this->assignee_id)) {
             return $this->getObject("User", $this->assignee_id);
         }
+        return null;
     }
 
     public function isStatusClosed()
@@ -534,10 +528,11 @@ class Task extends DbObject
     }
 
     /**
-     * (non-PHPdoc)
+     * DbObject::insert override
+     *
      * @see DbObject::insert()
      */
-    public function insert($force_validation = false)
+    public function insert($force_validation = false): void
     {
         try {
             $this->startTransaction();
@@ -639,7 +634,7 @@ class Task extends DbObject
      * (non-PHPdoc)
      * @see DbObject::update()
      */
-    public function update($force = false, $force_validation = false)
+    public function update($force = false, $force_validation = false): void
     {
 
         // 0. set the is_closed flag to make sure the task can be queried easily
@@ -783,7 +778,10 @@ class Task extends DbObject
 
     public function getTaskGroup()
     {
-        return TaskService::getInstance($this->w)->getTaskGroup($this->task_group_id);
+        if (empty($this->_taskgroup)) {
+            $this->_taskgroup = TaskService::getInstance($this->w)->getTaskGroup($this->task_group_id);
+        }
+        return $this->_taskgroup;
     }
 
     public function getIcal()

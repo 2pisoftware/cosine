@@ -1,12 +1,12 @@
 <div class='row'>
     <div class='col'>
-        <div class="card d-inline-block">
-            <div class="card-body d-flex align-items-center responsive-flex">
+        <div class="card d-block">
+            <div class="card-body d-flex flex-column">
                 <p class="me-3 mb-0">Server OS: <?php echo $server; ?></p>
                 <?php if (!empty($load)) : ?>
-                    <p class="me-3 mb-0">Load: <?php echo implode(' ', $load); ?></p>
-                <?php endif; ?>
-                <?php echo HtmlBootstrap5::b('/admin/phpinfo', "phpinfo", null, null, true, 'btn-sm btn-primary align-self-center'); ?>
+                    <p class="me-3 mb-0">Load: <?php echo implode(' ', array_map(fn ($l) => round($l, 3), $load)); ?></p>
+                <?php endif;
+                echo HtmlBootstrap5::b(href: '/admin/phpinfo', title: "phpinfo", newtab: true, class: 'btn-sm btn-primary w-25 mx-0 mt-4'); ?>
             </div>
         </div>
     </div>
