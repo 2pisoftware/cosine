@@ -71,7 +71,7 @@
                 <button type="submit" class="btn btn-primary w-100">Confirm</button>
             </div>
             <div class='col mt-3 mt-sm-0'>
-                <button class="btn btn-secondary w-100" onclick="back">Back</button>
+                <button type="button" class="btn btn-secondary w-100" onclick="back()">Back</button>
             </div>
         </div>
     </div>
