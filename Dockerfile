@@ -61,6 +61,8 @@ RUN apk --no-cache add \
     php$PHP_VERSION-cli \
     php$PHP_VERSION-curl \
     php$PHP_VERSION-gd \
+    php$PHP_VERSION-iconv \
+    php$PHP_VERSION-imap \
     php$PHP_VERSION-json \
     php$PHP_VERSION-mbstring \
     php$PHP_VERSION-mysqli \

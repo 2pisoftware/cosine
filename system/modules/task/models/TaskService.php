@@ -2,7 +2,6 @@
 
 class TaskService extends DbService
 {
-
     public $_tasks_loaded;
 
     public function getSubscriber($subscriber_id)

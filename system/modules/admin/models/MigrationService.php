@@ -6,6 +6,8 @@ defined('PROJECT_MODULE_DIRECTORY') || define('PROJECT_MODULE_DIRECTORY', 'modul
 defined('SYSTEM_MODULE_DIRECTORY') || define('SYSTEM_MODULE_DIRECTORY', 'system' . DS . 'modules');
 defined('SEED_MIGRATION_DIRECTORY') || define('SEED_MIGRATION_DIRECTORY', MIGRATION_DIRECTORY . DS . 'seeds');
 
+use \Phinx\Db\Adapter\MysqlAdapter;
+
 class MigrationService extends DbService
 {
     public static $_installed = [];
@@ -554,7 +556,7 @@ MIGRATION;
 
         $directory = SYSTEM_MODULE_DIRECTORY . DS . "admin" . DS . MIGRATION_DIRECTORY;
 
-        $mysql_adapter = new \Phinx\Db\Adapter\MysqlAdapter([
+        $mysql_adapter = new MysqlAdapter([
             'connection' => $this->w->db,
             'name' => Config::get('database.database')
         ]);
@@ -569,7 +571,7 @@ MIGRATION;
                     LogService::getInstance($this->w)->setLogger("MIGRATION")->info("Running migration: " . $migration);
 
                     // Run migration UP
-                    $migration_class = new $migration(1);
+                    $migration_class = new $migration(1, intval(formatDate(time(), "YmdHis")));
                     $migration_class->setAdapter($mysql_adapter);
                     $migration_class->up();
 

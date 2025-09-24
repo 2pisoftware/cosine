@@ -1,7 +1,6 @@
 <?php
 
 Config::set('channels', [
-    'version' => '0.8.0',
     'active' => true,
     'path' => 'system/modules',
     'topmenu' => true,
@@ -9,8 +8,7 @@ Config::set('channels', [
     'processors' => [
         'TestProcessor'
     ],
-    "dependencies" => [
-        "laminas/laminas-mail" => "~2.9",
-        "laminas/laminas-serializer" => "~2.9"
-    ]
+    'dependencies' => [
+        'ddeboer/imap' => '^1.21.0'
+    ],
 ]);

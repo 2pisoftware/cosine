@@ -1,7 +1,5 @@
 <?php
 
-use \Phinx\Db\Adapter\MysqlAdapter;
-
 class AdminInitialMigration extends CmfiveMigration
 {
 

@@ -4,7 +4,7 @@ class ChannelService extends DbService
 {
     /**
      * Returns all non-deleted channel objects
-     * @return Array<Channel> channels
+     * @return Channel[] channels
      */
     public function getChannels()
     {
@@ -14,7 +14,7 @@ class ChannelService extends DbService
 
     /**
      * Returns a non-deleted channel object
-     * @return Object channel
+     * @return Channel|null channel
      */
     public function getChannel($id)
     {
@@ -23,7 +23,7 @@ class ChannelService extends DbService
 
     /**
      * Returns a non-deleted email channel object
-     * @return Object emailchannel
+     * @return EmailChannelOption|null EmailChannelOption object
      */
     public function getEmailChannel($channel_id)
     {
@@ -33,7 +33,7 @@ class ChannelService extends DbService
 
     /**
      * Returns a non-deleted email channel object
-     * @return Object emailchannel
+     * @return WebChannelOption|null WebChannelOption object
      */
     public function getWebChannel($channel_id)
     {
@@ -43,7 +43,7 @@ class ChannelService extends DbService
 
     /**
      * Returns all non-deleted email channel objects
-     * @return Array<EmailChannelOption> emailchannels
+     * @return EmailChannelOption[] emailchannels
      */
     public function getEmailChannels()
     {
@@ -53,7 +53,7 @@ class ChannelService extends DbService
 
     /**
      * Returns all non-deleted email channel objects
-     * @return Array<EmailChannelOption> emailchannels
+     * @return WebChannelOption[] emailchannels
      */
     public function getWebChannels()
     {
@@ -63,7 +63,7 @@ class ChannelService extends DbService
 
     /**
      * Returns all non-deleted email channel objects
-     * @return Array<EmailChannelOption> emailchannels
+     * @return EmailChannelOption|WebChannelOption|null emailchannels
      */
     public function getChildChannel($id)
     {
@@ -77,7 +77,7 @@ class ChannelService extends DbService
 
     /**
      * Returns all non-deleted processor objects
-     * @return Array<ChannelProcessor> processors
+     * @return ChannelProcessor[] processors
      */
     public function getProcessors($channel_id = null)
     {
@@ -88,6 +88,10 @@ class ChannelService extends DbService
         return $this->getObjects("ChannelProcessor", $where);
     }
 
+    /**
+     * Returns all non-deleted processor objects
+     * @return ChannelProcessor[] processors
+     */
     public function getAllProcessors()
     {
         return $this->getObjects("ChannelProcessor", ["is_deleted" => 0]);
@@ -95,7 +99,7 @@ class ChannelService extends DbService
 
     /**
      * Returns a non-deleted processor object
-     * @return Object processor
+     * @return ChannelProcessor|null processor
      */
     public function getProcessor($id)
     {
@@ -105,7 +109,7 @@ class ChannelService extends DbService
 
     /**
      * Returns a parsed list of available processors
-     * @return Array list
+     * @return array list
      */
     public function getProcessorList()
     {
@@ -123,6 +127,12 @@ class ChannelService extends DbService
         return $list;
     }
 
+    /**
+     * Returns all non-deleted message objects
+     * @param mixed $channel_id Channel ID
+     * @param boolean $include_deleted Include deleted messages
+     * @return ChannelMessage[] messages
+     */
     public function getMessages($channel_id = null, $include_deleted = false)
     {
         $where = [];
@@ -136,11 +146,22 @@ class ChannelService extends DbService
         return $this->getObjects("ChannelMessage", $where, false, true, "dt_created desc");
     }
 
+    /**
+     * Returns a non-deleted message object
+     * @param mixed $id Message ID
+     * @return ChannelMessage|null message
+     */
     public function getMessage($id)
     {
         return $this->getObject("ChannelMessage", $id);
     }
 
+    /**
+     * Returns a message status object
+     * @param mixed $message_id Message ID
+     * @param mixed $processor_id Processor ID (optional)
+     * @return ChannelMessageStatus|null message status
+     */
     public function getMessageStatus($message_id, $processor_id = null)
     {
         $where = ["message_id" => $message_id];
@@ -151,6 +172,11 @@ class ChannelService extends DbService
         return $this->getObject("ChannelMessageStatus", $where);
     }
 
+    /**
+     * Returns all message status objects for a given message
+     * @param mixed $message_id Message ID
+     * @return ChannelMessageStatus[] message statuses
+     */
     public function getMessageStatuses($message_id)
     {
         $where = ["message_id" => $message_id];
@@ -163,10 +189,14 @@ class ChannelService extends DbService
      *
      * Use the ChannelProcessor::getNewMessages() / getFailedMessages() / getNewOrFailedMessages() instead
      *
-     * @param  Mixed $channel_id Channel ID
-     * @param  Mixed $processor_id Processor ID
-     * @return Array<ChannelMessage>
+     * @param mixed $channel_id Channel ID
+     * @param mixed $processor_id Processor ID
+     * @return ChannelMessage[]
      */
+    #[Deprecated(
+        message: "This function doesn't work as intended as it disregards both the \$channel_id and \$processor_id given. Use the ChannelProcessor::getNewMessages() / getFailedMessages() / getNewOrFailedMessages() instead",
+        since: "7.0.0"
+    )]
     public function getNewOrFailedMessages($channel_id, $processor_id)
     {
         // Get list of failed messages
@@ -210,6 +240,11 @@ class ChannelService extends DbService
         return (array_merge($new_message_objects, $failed_message_objects));
     }
 
+    /**
+     * Marks all unprocessed messages for a given channel as processed
+     * @param mixed $channel_id Channel ID
+     * @return void
+     */
     public function markMessagesAsProcessed($channel_id)
     {
         $this->w->db->update('channel_message', ['is_processed' => 1])->where('channel_id', $channel_id)
@@ -218,7 +253,7 @@ class ChannelService extends DbService
 
     /**
      * Channels naivgation function
-     * @return none
+     * @return array
      */
     public function navigation(Web $w, $title = null, $prenav = null)
     {
