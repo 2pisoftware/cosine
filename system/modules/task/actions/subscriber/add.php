@@ -5,7 +5,6 @@ use \Html\Form\InputField as InputField;
 
 function add_GET(Web $w)
 {
-
     $w->setLayout(null);
     list($task_id) = $w->pathMatch();
 

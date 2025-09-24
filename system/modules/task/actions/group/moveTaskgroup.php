@@ -1,9 +1,7 @@
 <?php
 
-use Html\Form\Autocomplete as Autocomplete;
-
 /**
- * Action function for moving the Taskgroup, uses Angular JS
+ * Action function for moving the Taskgroup
  *
  * @author Adam Buckley <adam@2pisoftware.com>
  * @param Web $w

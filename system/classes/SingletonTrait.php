@@ -4,7 +4,13 @@ trait SingletonTrait
 {
     private static $instances = [];
 
-    public static function getInstance(\Web|null $w = null)
+    /**
+     * Injectable singleton trait
+     *
+     * @param Web|null $w
+     * @return static
+     */
+    public static function getInstance(\Web|null $w = null): static
     {
         $class = get_called_class();
         if (!isset(self::$instances[$class])) {

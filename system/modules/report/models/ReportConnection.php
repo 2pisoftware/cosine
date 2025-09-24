@@ -2,9 +2,8 @@
 /**
  * This object stores connection data to other database sources
  * which can be used with reports.
- * 
- * @author careck
  *
+ * @author careck
  */
 class ReportConnection extends DbObject
 {
@@ -30,14 +29,7 @@ class ReportConnection extends DbObject
     {
         if (empty($this->db_conn)) {
             $this->decrypt();
-            $db_config = array(
-                'hostname' => $this->db_host,
-                'port' => $this->db_port,
-                'username' => $this->s_db_user,
-                'password' => $this->s_db_password,
-                'database' => $this->db_database,
-                'driver' => $this->db_driver,
-            );
+
             $port = isset($this->db_port) && !empty($this->db_port) ? ";port=".$this->db_port : "";
             $url = "{$this->db_driver}:host={$this->db_host};dbname={$this->db_database}{$port}";
 
@@ -51,5 +43,4 @@ class ReportConnection extends DbObject
     {
         return $this->db_driver.":".$this->db_database."@".$this->db_host;
     }
-
 }

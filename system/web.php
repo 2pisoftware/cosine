@@ -1405,7 +1405,7 @@ class Web
      */
     public function notFoundPage()
     {
-        LogService::getInstance($this)->warn("System: Action not found: " . $this->_module . "/" . $this->_action);
+        LogService::getInstance($this)->warning("System: Action not found: " . $this->_module . "/" . $this->_action);
         $this->ctx("w", $this);
 
         // We want to fail gracefully for ajax requests

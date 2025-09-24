@@ -92,8 +92,10 @@ class TaskService extends DbService
             $taskgroup_details["statuses"] = $taskgroup->getStatus();
             $taskgroup_details["priorities"] = $taskgroup->getPriority();
             $taskgroup_details["members"] = $this->getMembersInGroup($taskgroup->id);
-            $task_type_array = $taskgroup->getTaskGroupTypeObject()->getTaskTypeArray();
-            $taskgroup_details["types"][key($task_type_array)] = [$task_type_array[key($task_type_array)], key($task_type_array)];
+            $task_type_array = $taskgroup->getTaskGroupTypeObject()?->getTaskTypeArray();
+            if (!empty($task_type_array)) {
+                $taskgroup_details["types"][key($task_type_array)] = [$task_type_array[key($task_type_array)], key($task_type_array)];
+            }
         }
 
         return $taskgroup_details;
@@ -244,7 +246,7 @@ class TaskService extends DbService
     }
 
     // get a task group from the database by its ID
-    public function getTaskGroup($id)
+    public function getTaskGroup($id): TaskGroup|null
     {
         return $this->getObject("TaskGroup", $id);
     }
@@ -281,17 +283,17 @@ class TaskService extends DbService
     // prepare to get all task groups of type $class as defined in our tasks file
     public function getTaskGroupTypeObject($class)
     {
-        return $this->_getTaskObjectGeneric($class, "TaskGroupType_");
+        return $this->getTaskObjectGeneric($class, "TaskGroupType_");
     }
 
     // prepare to get all task types of type $class as defined in our tasks file
     public function getTaskTypeObject($class)
     {
-        return $this->_getTaskObjectGeneric($class, "TaskType_");
+        return $this->getTaskObjectGeneric($class, "TaskType_");
     }
 
     // get all task groups or task types of type $class as defined in our task file
-    public function _getTaskObjectGeneric($class, $type)
+    public function getTaskObjectGeneric($class, $type)
     {
         $this->_loadTaskFiles();
         $class = startsWith($class, $type) ? $class : $type . $class;
@@ -516,67 +518,8 @@ class TaskService extends DbService
         return $this->getObjects("Task", $where);
     }
 
-    // given a where clause, return all tasks created by a given user ID
-    // required to join with modifiable aspect to determine task creator
-    public function getCreatorTasks($id, $clause = null)
-    {
-        $where = '';
-        if (is_array($clause)) {
-            foreach ($clause as $name => $value) {
-                $where .= "and t." . $name . " = '" . $value . "' ";
-            }
-        } elseif ($clause != "") {
-            $where = " and " . $clause;
-        }
-        $where .= " and t.is_deleted = 0 and g.is_active = 1 and g.is_deleted = 0";
-
-        // check that task group is active and not deleted
-        $rows = $this->_db->sql("SELECT t.* from " . Task::$_db_table . " as t inner join " . ObjectModification::$_db_table . " as o on t.id = o.object_id inner join " . TaskGroup::$_db_table . " as g on t.task_group_id = g.id where o.creator_id = " . $this->_db->quote($id) . " and o.table_name = '" . Task::$_db_table . "' " . $this->_db->quote($where) . " order by t.id")->fetchAll();
-        $rows = $this->fillObjects("Task", $rows);
-        return $rows;
-    }
-
-    // return all resulting tasks from the database modified in the last week
-    public function getTaskWeek($group, $assignee, $from, $to)
-    {
-        $grps = $who = $grplist = "";
-
-        // if no group supplied, get all my groups
-        if ($group != "") {
-            $grplist = $group;
-        } else {
-            // list the groups i am a member of
-            $groups = $this->getMemberGroups($_SESSION['user_id']);
-            if ($groups) {
-                foreach ($groups as $group) {
-                    $grplist .= $group->task_group_id . ",";
-                }
-            } else {
-                return null;
-            }
-            $grplist = rtrim($grplist, ",");
-        }
-
-        if ($assignee != "") {
-            $who = " c.creator_id = " . $assignee . " and ";
-        }
-
-        // create where clause giving all active tasks which have shown activity in the last week
-        // need to check if task group is deleted
-        $grps = "t.task_group_id in (" . $grplist . ") and ";
-        $where = "where " . $grps . $who . " t.is_deleted = 0 and g.is_active = 1 and g.is_deleted = 0";
-        $where .= " and date_format(c.dt_modified,'%Y-%m-%d') >= '" . $this->date2db($from) . "' and date_format(c.dt_modified,'%Y-%m-%d') <= '" . $this->date2db($to) . "'";
-
-        // get and return tasks
-        $rowQry = "SELECT t.id, t.title, t.task_group_id, c.comment, c.creator_id, c.dt_modified from " . Task::$_db_table . " as t inner join "
-         . TaskComment::$_db_table . " as c on t.id = c.obj_id and c.obj_table = '" . Task::$_db_table . "' inner join "
-          . TaskGroup::$_db_table . " as g on t.task_group_id = g.id " . $where . " order by c.dt_modified desc";
-        $rows = $this->_db->sql($rowQry)->fetchAll();
-        return $rows;
-    }
-
     // get a task from the database given its ID
-    public function getTask($id)
+    public function getTask($id): Task|null
     {
         return $this->getObject("Task", $id);
     }

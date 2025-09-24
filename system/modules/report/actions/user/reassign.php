@@ -69,7 +69,7 @@ function reassign_POST(Web $w) {
 			}
 		}
 	} else {
-		LogService::getInstance($w)->warn("No reports found for user " . $user_id);
+		LogService::getInstance($w)->warning("No reports found for user " . $user_id);
 	}
 	
 	$w->msg("Users reports reassigned to " . $reassign_user->getFullName(), $redirect ? : "/admin/users");

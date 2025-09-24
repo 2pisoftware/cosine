@@ -6,6 +6,7 @@ function tasklist_ALL(Web $w)
 {
     History::add("List Tasks");
     $w->ctx("title", "Task List");
+    $w->ctx('layout-size', 'large');
 
     // Look for reset
     $reset = Request::string("reset");
@@ -61,11 +62,7 @@ function tasklist_ALL(Web $w)
     if (!empty($task_status)) {
         $query_object->where("task.status", $task_status);
     }
-    //    if (!empty($is_closed)) {
-    //        $query_object->where("task.is_closed", ((is_null($is_closed) || $is_closed == 0) ? 0 : 1));
-    //    } else {
-    //        $query_object->where("task.is_closed", 0);
-    //    }
+
     // This part is why we want to make our query manually
     if (!empty($dt_from)) {
         if ($dt_from == "NULL") {

@@ -379,19 +379,19 @@ class Task extends DbObject
     // return the task group title given a task group ID
     public function getTaskGroupTypeTitle()
     {
-        return (!empty($this->_taskgroup->id) ? $this->_taskgroup->title : null);
+        return $this->getTaskGroup()?->title;
     }
 
     // return the task types as array for a task group given a task group ID
     public function getTaskGroupTypes()
     {
-        return (!empty($this->_taskgroup->id) ? $this->_taskgroup->getTypes() : null);
+        return $this->getTaskGroup()?->getTypes();
     }
 
     // return the task statuses as array for a task group given a task group ID
     public function getTaskGroupStatus()
     {
-        return (!empty($this->_taskgroup->id) ? $this->_taskgroup->getTypeStatus() : null);
+        return $this->getTaskGroup()?->getTypeStatus();
     }
 
     // status array has the form array(<status>,true|false);
@@ -403,8 +403,8 @@ class Task extends DbObject
             return $this->is_closed;
         }
 
-        if (!empty($this->_taskgroup->id)) {
-            $statlist = $this->_taskgroup->getStatus();
+        if (!empty($this->getTaskGroup()->id)) {
+            $statlist = $this->getTaskGroup()->getStatus();
             if ($statlist) {
                 foreach ($statlist as $stat) {
                     $status[$stat[0]] = $stat[1];
@@ -417,7 +417,7 @@ class Task extends DbObject
     // return the task priorities as array given a task group ID
     public function getTaskGroupPriority()
     {
-        return (!empty($this->_taskgroup->id) ? $this->_taskgroup->getPriority() : null);
+        return $this->getTaskGroup()->getPriority();
     }
 
     // return list of time log entries for a task given task ID

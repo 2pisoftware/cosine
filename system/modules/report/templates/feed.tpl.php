@@ -1,6 +1,1 @@
-<?php
-
-echo $showreport;
-
-?>
-
+<?php echo $showreport;

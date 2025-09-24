@@ -4,13 +4,18 @@
     echo HtmlBootstrap5::alertBox('No report form data was returned', 'error');
 }
 ?>
-
 <script>
-    $("#report_partial_form").on('submit', function() {
-        var action = $(this).attr('action');
-        
-        action += "?dt_start=" + $("#dt_start").val() + "&dt_end=" + $("#dt_end").val() + "&format=" + $("input[name='format']:checked").val()
+    document.getElementById("report_partial_form").addEventListener('submit', function(e) {
+        var form = this;
+        var action = form.getAttribute('action');
+        var dtStart = document.getElementById("dt_start").value;
+        var dtEnd = document.getElementById("dt_end").value;
+        var format = document.querySelector("input[name='format']:checked").value;
 
-        $(this).attr('action', action);
-    })
+        action += "?dt_start=" + encodeURIComponent(dtStart) +
+                  "&dt_end=" + encodeURIComponent(dtEnd) +
+                  "&format=" + encodeURIComponent(format);
+
+        form.setAttribute('action', action);
+    });
 </script>

@@ -1,23 +1,16 @@
-<!--
-I did rewrite this into a HtmlBootstrap5::multiColForm,
-but it turns out that function doesn't support having multiple elements within a column,
-so I had to scrap it. How fun!
--->
-
-<h1><?php
+<?php
 
 use Html\Cmfive\QuillEditor;
 use Html\Form\Html5Autocomplete;
-use Html\Form\InputField;
 use Html\Form\InputField\Date;
 use Html\Form\InputField\Hidden;
 use Html\Form\InputField\Number;
 use Html\Form\InputField\Radio;
 use Html\Form\InputField\Time;
 use Html\Form\Select;
-use Html\Form\Textarea;
 
- echo !empty($timelog->id) ? "Update" : "Create" ?> Timelog</h1>
+?>
+<h1><?php echo !empty($timelog->id) ? "Update" : "Create" ?> Timelog</h1>
 <form
     action="/timelog/edit/<?php echo ($timelog->id ?? '') . ($redirect ? "?redirect={$redirect}" : '') ?>"
     method="POST"
@@ -37,9 +30,7 @@ use Html\Form\Textarea;
                 "class" => "form-select",
                 "required" => true,
                 "options" => $options
-            ]))->setSelectedOption(empty($timelog->id)
-            ? AuthService::getInstance($w)->user()->id
-            : (!empty($timelog->user_id) ? $timelog->user_id : null));
+            ]))->setSelectedOption(empty($timelog->id) ? AuthService::getInstance($w)->user()->id : (!empty($timelog->user_id) ? $timelog->user_id : null));
         } else {
             echo new Hidden([
                 "name" => "user_id",
@@ -75,10 +66,8 @@ use Html\Form\Textarea;
             <?php
             $usable_class = !empty($timelog->object_class) ? $timelog->object_class : (!empty($tracking_class) ? $tracking_class : (empty($select_indexes) ? null : $select_indexes[0][1]));
             $where_clause = [];
-            if (!empty($usable_class))
-            {
-                if (in_array('is_deleted', (new $usable_class($w))->getDbTableColumnNames()))
-                {
+            if (!empty($usable_class)) {
+                if (in_array('is_deleted', (new $usable_class($w))->getDbTableColumnNames())) {
                     $where['is_deleted'] = 0;
                 }
             }
@@ -141,9 +130,9 @@ use Html\Form\Textarea;
                             "name" => "select_end_method",
                             "class" => "",
                             "select" => "form-check-input",
-                            "value"        => "time",
-                            "checked"    => "true",
-                            "tabindex"    => -1
+                            "value" => "time",
+                            "checked" => "true",
+                            "tabindex" => -1
                         ]);
                     ?>
                 </span>
@@ -156,10 +145,10 @@ use Html\Form\Textarea;
                     echo new Time([
                         "id|name" => "time_end",
                         "class" => "form-control",
-                        "value"            => $timelog->getTimeEnd(),
-                        "pattern"        => "^(0?[0-9]|1[0-9]|2[0-3]):[0-5][0-9](\s+)?(AM|PM|am|pm)?$",
-                        "placeholder"    => "12hr format: 11:30pm or 24hr format: 23:30",
-                        "required"        => "true"
+                        "value" => $timelog->getTimeEnd(),
+                        "pattern" => "^(0?[0-9]|1[0-9]|2[0-3]):[0-5][0-9](\s+)?(AM|PM|am|pm)?$",
+                        "placeholder" => "12hr format: 11:30pm or 24hr format: 23:30",
+                        "required" => "true"
                     ])
                     ?>
                 </span>
@@ -173,8 +162,8 @@ use Html\Form\Textarea;
                             "name" => "select_end_method",
                             "class" => "",
                             "select" => "form-check-input",
-                            "value"        => "hours",
-                            "tabindex"    => -1
+                            "value" => "hours",
+                            "tabindex" => -1
                         ]);
                     ?>
                 </span>

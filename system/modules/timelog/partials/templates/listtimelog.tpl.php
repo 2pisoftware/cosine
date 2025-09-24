@@ -1,4 +1,3 @@
-
 <div class="d-flex align-items-center justify-content-between">
     <?php echo HtmlBootstrap5::box("/timelog/edit?class={$class}&id={$id}" . (!empty($redirect) ? "&redirect=$redirect" : ''), "Add new timelog", true, false, null, null, "isbox", null, "bg-primary"); ?>
     <h4> <?php echo TaskService::getInstance($w)->getFormatPeriod($total); ?> </h4>
@@ -32,4 +31,3 @@
 
         return $row;
     }, $timelogs), null, "tablesorter", $header);
-    ?>

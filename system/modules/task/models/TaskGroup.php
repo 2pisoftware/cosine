@@ -56,10 +56,20 @@ class TaskGroup extends DbObject
                 $new_notify->insert();
             }
         } else {
-            LogService::getInstance($this->w)->setLogger('TASK')->warn('$saveToDb is false, skipping copy of task group notify objects');
+            LogService::getInstance($this->w)->setLogger('TASK')->warning('$saveToDb is false, skipping copy of task group notify objects');
         }
 
         return $new_taskgroup;
+    }
+
+    public function printSearchUrl(): string
+    {
+        return "/task-group/viewmembergroup/" . $this->id;
+    }
+
+    public function printSearchTitle(): string
+    {
+        return $this->title;
     }
 
     public function getTaskGroupNotify()
