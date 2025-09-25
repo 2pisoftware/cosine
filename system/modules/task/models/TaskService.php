@@ -706,19 +706,19 @@ class TaskService extends DbService
     }
 
     // return a member object given the task_group_member database ID: targets specific member in specific task group
-    public function getMemberById($id)
+    public function getMemberById($id): ?TaskGroupMember
     {
         return $this->getObject("TaskGroupMember", ["id" => $id]);
     }
 
     // return a member object given a task group ID and a user ID
-    public function getMemberGroupById($group, $uid)
+    public function getMemberGroupById($group, $uid): ?TaskGroupMember
     {
         return $this->getObject("TaskGroupMember", ["task_group_id" => $group, "user_id" => $uid, "is_active" => 1]);
     }
 
     // return a users full name given their user ID
-    public function getUserById($id)
+    public function getUserById($id): string
     {
         $u = AuthService::getInstance($this->w)->getUser($id);
         return $u ? StringSanitiser::sanitise($u->getFullName()) : "";
@@ -743,12 +743,12 @@ class TaskService extends DbService
         $this->_tasks_loaded = true;
     }
 
-    public function getTaskGroupByUniqueTitle($title)
+    public function getTaskGroupByUniqueTitle($title): ?TaskGroup
     {
         return $this->getObject("TaskGroup", ["title" => $title, "is_deleted" => 0]);
     }
 
-    public function addMemberToTaskGroup($taskgroup_id, $user_id, $role = "GUEST")
+    public function addMemberToTaskGroup($taskgroup_id, $user_id, $role = "GUEST"): void
     {
         if (empty($taskgroup_id) || empty($user_id)) {
             return;
@@ -786,8 +786,10 @@ class TaskService extends DbService
      * @param string $priority
      * @param string $dt_due
      * @param string|int $first_assignee_id
+     * @param bool $_skip_creation_notification
+     * @return Task
      */
-    public function createTask($task_type, $task_group_id, $title, $description, $priority, $dt_due, $first_assignee_id, $_skip_creation_notification = false)
+    public function createTask(string $task_type, string|int $task_group_id, string $title, string $description, string $priority, string $dt_due, string|int $first_assignee_id, bool $_skip_creation_notification = false): Task
     {
         $task = new Task($this->w);
         $task->task_type = $task_type;

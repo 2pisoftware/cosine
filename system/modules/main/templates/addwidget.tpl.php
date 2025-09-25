@@ -1,31 +1,38 @@
 <?php echo $widgetform; ?>
-
 <script type="text/javascript">
+   (() => {
+        var widgetName = document.getElementById('widget_name');
+        // if (widgetName && widgetName.parentElement.tagName.toLowerCase() === 'tr') {
+        //     widgetName.parentElement.style.display = 'none';
+        // }
 
-	jQuery(function(){
-		jQuery("#widget_name").parent("tr").hide();
-	});
-
-	jQuery("#source_module").change(function(e) {
-		console.log(e);
-		if (e.target.selectedIndex > 0) {
-			jQuery.ajax({
-				url: "/main/ajax_getwidgetnames?source="+jQuery(this).val(),
-				type: "GET",
-				success: function(data) {
-					var parsed = JSON.parse(data);
-					jQuery("#widget_name").empty();
-					for(var i in parsed) {
-						jQuery("#widget_name").append("<option value='" + parsed[i] + "'>" + parsed[i] + "</option>");
-					}
-
-					jQuery("#widget_name").parent("tr").fadeIn();
-				}
-			});
-		} else {
-			jQuery("#widget_name").empty();
-			jQuery("#widget_name").append("<option>-- Select --</option>");
-		}
-	});
+        var sourceModule = document.getElementById('source_module');
+        if (sourceModule) {
+            sourceModule.addEventListener('change', function(e) {
+                console.log(e);
+                if (e.target.selectedIndex > 0) {
+                    fetch("/main/ajax_getwidgetnames?source=" + encodeURIComponent(sourceModule.value))
+                        .then(function(response) { return response.json(); })
+                        .then(function(parsed) {
+                            widgetName.innerHTML = '';
+                            for (var i in parsed) {
+                                var option = document.createElement('option');
+                                option.value = parsed[i];
+                                option.textContent = parsed[i];
+                                widgetName.appendChild(option);
+                            }
+                            if (widgetName.parentElement.tagName.toLowerCase() === 'tr') {
+                                widgetName.parentElement.style.display = '';
+                            }
+                        });
+                } else {
+                    widgetName.innerHTML = '';
+                    var option = document.createElement('option');
+                    option.textContent = '-- Select --';
+                    widgetName.appendChild(option);
+                }
+            });
+        }
+    })();
 
 </script>

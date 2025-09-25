@@ -91,12 +91,12 @@ class Web
     public $_module_loaded_hooks = []; //cache loaded module hook files
     private $_classdirectory; // used by the class auto loader
 
-    public $_scripts = [];
+    public array $_scripts = [];
     public $_styles = [];
     public $sHttps = null;
 
     public string $_webroot;
-    public string|null $_actionMethod;
+    public ?string $_actionMethod;
 
     /**
      * Constructor
@@ -346,7 +346,7 @@ class Web
      *        weight will load before one with 600)
      * ]
      *
-     * @param Array $script
+     * @param array $script
      */
     public function enqueueScript($script)
     {
@@ -388,7 +388,7 @@ class Web
      * already registered styles and helps prevent multiple additions of the same
      * library
      *
-     * @param Array $script
+     * @param array $script
      */
     public function enqueueStyle($style)
     {
@@ -1072,7 +1072,7 @@ class Web
      * and returns the submodule names
      *
      * @param string $module
-     * @return array|null
+     * @return ?array
      */
     public function getSubmodules($module)
     {
@@ -1469,13 +1469,14 @@ class Web
      * Returns the file path for a module if it exists,
      * otherwise returns null
      * @param string $module
-     * @return string|null
+     * @return ?string
      */
-    public function getModuleDir($module = null): ?string
+    public function getModuleDir(?string $module = null): ?string
     {
         if ($module == null) {
             $module = $this->_module;
         }
+
         // check for explicit module path first
         $basepath = $this->moduleConf($module, 'path');
         if (!empty($basepath)) {
@@ -1558,7 +1559,7 @@ class Web
         }
 
         // set translations to partial module
-        $oldModule = $this->currentModule();
+        // $oldModule = $this->currentModule();
         // if ($oldModule != $module) {
             // try {
             //     $this->setTranslationDomain($module);
@@ -1579,6 +1580,10 @@ class Web
 
         // getModuleDir can return path with trailing '/' but we dont want that
         $moduleDir = $this->getModuleDir($module);
+        if ($moduleDir === null) {
+            LogService::getInstance($this)->error("Could not find module directory for module: {$module}");
+            return '';
+        }
 
         if ($moduleDir[strlen($moduleDir) - 1] === '/') {
             $moduleDir = substr($moduleDir, 0, strlen($moduleDir) - 1);
@@ -2194,7 +2199,7 @@ class Web
      *
      * Shortcut for setting the title of a page
      *
-     * @param String $title
+     * @param string $title
      */
     public function setTitle($title)
     {
@@ -2209,9 +2214,10 @@ class Web
      * array['action'] = <action>
      * array['tail'] = (the rest of the url)
      *
-     * @param array
+     * @param ?string
+     * @return ?array
      */
-    public function parseUrl($url)
+    public function parseUrl(?string $url = null): ?array
     {
         if (empty($url)) {
             return null;

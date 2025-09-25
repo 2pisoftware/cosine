@@ -19,7 +19,7 @@ function ajaxGetExtraData_GET(Web $w)
     if (!empty($form_data[0])) {
         if (!empty($form_data[0][0]) && is_array($form_data[0][0])) {
             // Add title field
-            $title = "<label class='small-12 columns'>Time Type";
+            $title = "<label class='col-12'>Time Type";
 
             // IS this required?
             $required = null;
@@ -35,14 +35,14 @@ function ajaxGetExtraData_GET(Web $w)
             // We dont want the structure for multiColForm, we want it for a select
             $select = new \Html\Form\Select([
                 "name" => $form_data[0][0][2],
-                "options" => $form_data[0][0][4] // array_merge([["label" => "--- Select ---", "value" => ""]], )
+                "options" => $form_data[0][0][4]
             ]);
             if (!is_null($required)) {
                 $select->setRequired($required);
             }
-            echo $select->__toString()."</label>"; // HtmlBootstrap5::select($form_data[0][0][2], $form_data[0][0][4], null, null, null, "-- Select --", null, $required);
+            echo $select->__toString()."</label>";
         } elseif (is_a($form_data[0][0], "\Html\Form\Select")) {
-            $title = "<label class='small-12 columns'>Time Type";
+            $title = "<label class='col-12'>Time Type";
 
             // IS this required?
             $required = null;

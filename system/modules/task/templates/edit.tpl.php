@@ -123,13 +123,13 @@
                         <div class="row panel" id="task_subscribers">
                             <div class="col">
                                 <div class="d-flex align-items-center justify-content-between border-bottom pb-2 mb-2">
-                                    <p class="fs-4 m-0">Subscribers</p>
+                                    <p class="fs-5 m-0">Subscribers</p>
                                     <?php
                                     echo HtmlBootstrap5::box(
                                         href: '/task-subscriber/add/' . $task->id,
                                         title: 'Add',
                                         button: true,
-                                        class: 'bg-secondary'
+                                        class: 'bg-secondary btn-sm'
                                     )
                                     ?>
                                 </div>
@@ -156,12 +156,10 @@
                                                 </div>
                                                 <?php
                                                 echo HtmlBootstrap5::b(
-                                                    '/task-subscriber/delete/' . $subscriber->id,
-                                                    '×',
-                                                    'Are you sure you want to remove this subscriber?',
-                                                    null,
-                                                    false,
-                                                    'bg-warning d-inline text-dark'
+                                                    href: '/task-subscriber/delete/' . $subscriber->id,
+                                                    title: '×',
+                                                    confirm: 'Are you sure you want to remove this subscriber?',
+                                                    class: 'bg-warning btn-sm d-inline text-dark'
                                                 );
                                                 ?></td>
                                             </div>

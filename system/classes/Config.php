@@ -373,7 +373,7 @@ class Config
      * @return void
      * @throws Exception
      */
-    public static function setFromParameterStore(string $parameterName): void 
+    public static function setFromParameterStore(string $parameterName): void
     {
         if (!empty($parameterName)) {
             //retrieve JSON from paramater store and merge with config
@@ -382,7 +382,7 @@ class Config
                 self::$ssm_client = new SsmClient([
                     'region' => getenv('AWS_REGION') ?: 'ap-southeast-2',
                     'version' => 'latest'
-                    ]);
+                ]);
             }
             $result = self::$ssm_client->getParameter([
                     'Name' => $parameterName,
@@ -402,7 +402,7 @@ class Config
      * Will get an object from secrets manager and merge it with the existing config. The object
      * is expected to be valid JSON. If the JSON decode fails the function will fall back to using setFromS3Object or
      * an exception will be thrown.
-     * 
+     *
      * @param string $secretName
      * @return void
      * @throws Exception
@@ -416,7 +416,7 @@ class Config
                 self::$secrets_manager_client = new SecretsManagerClient([
                     'region' => getenv('AWS_REGION') ?: 'ap-southeast-2',
                     'version' => 'latest'
-                    ]);
+                ]);
             }
             $result = self::$secrets_manager_client->getSecretValue([
                 'SecretId' => $secretName
@@ -446,8 +446,8 @@ class ConfigDependencyLoader
     /**
      * Registers a module to be loaded
      *
-     * @param String $module
-     * @param Array $config
+     * @param string $module
+     * @param array $config
      */
     public static function registerModule($module, $config, $include_path)
     {
@@ -465,7 +465,7 @@ class ConfigDependencyLoader
      * Searches the dependency stack for a registered module
      *
      * @param string $module
-     * @return string|null registered module
+     * @return ?stdClass registered module
      */
     public static function getRegisteredModule($module)
     {
@@ -500,10 +500,10 @@ class ConfigDependencyLoader
      *     e.g module a -> module b -> module a
      *
      * @param stdClass $node
-     * @return null
+     * @return void
      * @throws Exception
      */
-    private static function visitNode($node)
+    private static function visitNode($node): void
     {
         $node->visited = true;
         if ($node->loaded === true) {

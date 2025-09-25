@@ -14,9 +14,4 @@ class Audit extends DbObject
     public $message;
 
     public $__use_auditing = false;
-
-    public function __construct()
-    {
-        $this->dynamic_prop = true;
-    }
 }

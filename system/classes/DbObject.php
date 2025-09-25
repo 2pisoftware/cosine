@@ -73,7 +73,6 @@
 #[AllowDynamicProperties]
 class DbObject extends DbService
 {
-
     public $id;
     private static $_object_vars = [];
     private static $_columns = [];
@@ -84,10 +83,6 @@ class DbObject extends DbService
     private $_systemDecrypt = null;
 
     public $__old = [];
-
-    // protected $_modifiable = null;
-    // protected $_versionable = null;
-    // protected $_searchable = null;
 
     //This is list is depreciated, it has been left here for backwards compatability
     static $_stopwords = "about above across after again against all almost alone along already also although always among and any anybody anyone anything anywhere are area areas around ask asked
@@ -109,7 +104,7 @@ class DbObject extends DbService
      *
      * @param $w
      */
-    public function __construct(Web &$w)
+    public function __construct(Web $w)
     {
         parent::__construct($w);
 
@@ -127,9 +122,6 @@ class DbObject extends DbService
 
         $this->establishEncryptionModel();
     }
-
-    // public function __clone(){
-    // }
 
     public function __get($name)
     {
@@ -188,11 +180,9 @@ class DbObject extends DbService
     public function decrypt()
     {
         foreach (get_object_vars($this) as $k => $v) {
-            if (strpos($k, "s_") === 0) {
-                if ($v) {
-                    $call_decrypt = $this->_systemDecrypt;
-                    $this->$k = $call_decrypt($v); //AESdecrypt($v, Config::get('system.password_salt'));
-                }
+            if (strpos($k, "s_") === 0 && $v) {
+                $call_decrypt = $this->_systemDecrypt;
+                $this->$k = $call_decrypt($v); //AESdecrypt($v, Config::get('system.password_salt'));
             }
         }
     }
@@ -235,7 +225,7 @@ class DbObject extends DbService
      */
     public function printSearchTitle()
     {
-        return get_class($this) . "[" . $this->id . "]";
+        return get_class($this) . " [" . $this->id . "]";
     }
 
     /**

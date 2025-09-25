@@ -1,8 +1,9 @@
 <?php
 
-class MainService extends DbService {
-
-    public function getUserRedirectURL() {
+class MainService extends DbService
+{
+    public function getUserRedirectURL()
+    {
         // Redirect to users redirect_url
         $redirect_url = "main/index";
         if (!empty(AuthService::getInstance($this->w)->user()->redirect_url)) {
@@ -19,5 +20,4 @@ class MainService extends DbService {
         }
         return $url;
     }
-    
 }

@@ -299,15 +299,11 @@ class HtmlBootstrap5 extends Html
             $buffer .= "<div class='row g-0 clearfix section-header'><h4 class='col'>{$section}<span class='changed_status position-absolute bg-danger rounded p-1 d-none' style='right: 1rem; top: 0.5rem; font-size: 1rem'>Changed</span></h4></div>";
 
             // Loop through each row
-            foreach ($rows as $row) {
-                if (empty($row)) {
-                    continue;
-                }
-
+            foreach (array_filter($rows) as $row) {
                 // Print each field
                 $buffer .= "<div class='row'>";
 
-                foreach ($row as $entry) {
+                foreach (array_filter($row) as $entry) {
                     // Backwards compatibility - provide option to pass additional data
                     $field = null;
                     $tooltip = null;

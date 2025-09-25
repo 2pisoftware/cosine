@@ -117,13 +117,15 @@ class ObjectModification extends DbObject
      * object which is attached to this
      * aspect.
      *
-     * @return User
+     * @return ?User
      */
-    public function getCreator()
+    public function getCreator(): ?User
     {
         if ($this->creator_id) {
             return AuthService::getInstance($this->w)->getUser($this->creator_id);
         }
+
+        return null;
     }
 
     /**
@@ -131,12 +133,14 @@ class ObjectModification extends DbObject
      * of the object which is attached
      * to this aspect.
      *
-     * @return User
+     * @return ?User
      */
-    public function getModifier()
+    public function getModifier(): ?User
     {
         if ($this->modifier_id) {
             return AuthService::getInstance($this->w)->getUser($this->modifier_id);
         }
+
+        return null;
     }
 }

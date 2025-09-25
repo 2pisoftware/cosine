@@ -2,7 +2,7 @@
 
 /**
  * Determines whether or not an object has overloaded a method
- * 
+ *
  * @param object $object
  * @param string $method
  * @return bool
@@ -153,7 +153,7 @@ function _en($key1, $key2, $n, $context = '', $domain = '')
  * Convert locale string to array of accepted versions
  *
  * @param string $base_locale
- * @return Array
+ * @return array|false
  */
 function getAllLocaleValues($base_locale)
 {
@@ -562,9 +562,9 @@ function in_multiarray($value, $array)
  *
  * Similar to above except it will return the value
  *
- * @param mixed $value
- * @param mixed $array
- * @return bool $in_multiarray
+ * @param mixed $key
+ * @param array $array
+ * @return ?mixed $in_multiarray
  */
 function getValueFromMultiarray($key, $array)
 {
