@@ -9,6 +9,7 @@ use \Html\Form\Select as Select;
 function edit_GET($w)
 {
     $p = $w->pathMatch("id");
+    /** @var Task $task */
     $task = (!empty($p["id"]) ? TaskService::getInstance($w)->getTask($p["id"]) : new Task($w));
 
     if ($task->is_deleted == 1) {
@@ -43,6 +44,7 @@ function edit_GET($w)
     $members = [];
 
     // Try and prefetch the taskgroup by given id
+    /** @var TaskGroup */
     $taskgroup = null;
     $taskgroup_id = Request::int("gid");
     // $assigned = 0;
@@ -256,6 +258,7 @@ function edit_POST($w)
 {
     $w->setLayout(null);
     list($task_id) = $w->pathMatch("id");
+    /** @var Task $task */
     $task = (!empty($task_id) ? TaskService::getInstance($w)->getTask($task_id) : new Task($w));
     $edit_array = Request::array('edit');
     $task->fill($edit_array);

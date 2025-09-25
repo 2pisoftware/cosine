@@ -48,7 +48,7 @@ class HtmlBootstrap5 extends Html
         </div>';
     }
 
-/**
+    /**
      * creates a simple one column form from the following array:
      * array(
      *       array("title","type","fieldname","value",{size | array(select options) | cols, rows}),
@@ -647,7 +647,7 @@ class HtmlBootstrap5 extends Html
         $pagesize_query_param = "page_size",
         $total_results_query_param = "total_results",
         $sort_query_param = "sort",
-        $sort_direction_param = "sort_direction"
+        $sort_direction_param = "sort_direction",
     ) {
         // Build URL for pagination
         $url_parsed = parse_url($base_url);
@@ -674,7 +674,7 @@ class HtmlBootstrap5 extends Html
             . '<div class="col-md-6 col-sm-12" style="margin-top: 5px;">Showing ' . $starting_item . ' - ' . ($starting_item + $count_items - 1) . ' of ' . $total_results . '</div>'
             . '<div class="col-md-6 col-sm-12">';
         if ($num_results > 0) {
-            $buffer .= '<div class="float-md-end">Page: <select class="form-select mb-4 mb-md-0" onchange="location = this.value;">';
+            $buffer .= '<div class="float-md-end d-flex gap-2 align-items-center">Page: <select class="form-select mb-4 mb-md-0" onchange="location = this.value;">';
             // Build URL for dropdown pagination
             $dropdown_url_string = $url_parsed['path'];
             $dropdown_url_string .= (empty($url_parsed['query']) ? "?" : '?' . $url_parsed['query'] . '&') . $sort_query_param . '=' . $sort . '&' . $sort_direction_param . '=' . $sort_direction;
@@ -946,34 +946,71 @@ class HtmlBootstrap5 extends Html
 
     public static function pagination($currentpage, $numpages, $pagesize, $totalresults, $baseurl, $pageparam = "p", $pagesizeparam = "ps", $totalresultsparam = "tr", $tab = null): string
     {
-        // Prepare buffer
-        $buf = '';
-        if ((isNumber($currentpage) && isNumber($numpages)) && ((!empty($tab)) || (isNumber($pagesize) && isNumber($totalresults)))) {
-            // Check that we're within range
-            if ($currentpage > 0 && $currentpage <= $numpages && $numpages > 1) {
-                $buf = "<nav aria-label='pagination'><ul class='pagination justify-content-center flex-wrap'" . ((!empty($tab)) ? " id='$tab-pagination-controls'" : "") . ">";
+        $parsed_url = parse_url($baseurl);
 
-                for ($page = 1; $page <= $numpages; $page++) {
-                    $buf .= "<li class='page-item" . ($currentpage == $page ? " active disabled' aria-current='page'" : "'") . ">";
+        $makeUrl = function (int $page) use ($parsed_url, $pageparam, $pagesizeparam, $pagesize, $totalresultsparam, $totalresults) {
+            $ret = $parsed_url["path"];
 
-                    if (!empty($tab)) { // Tabbed pagination
-                        $buf .= "<a class='page-link' data-tab='$tab' data-tabbed-pagination-page='$page'>$page</a>";
-                    } else { // Standard pagination
-                        $url_parsed = parse_url($baseurl);
-
-                        $url_string = $url_parsed['path'];
-                        $url_string .= (empty($url_parsed['query']) ? '?' : '?' . $url_parsed['query'] . '&') . $pageparam . '=' . $page . '&' . $pagesizeparam . '=' . $pagesize . '&' . $totalresultsparam . '=' . $totalresults;
-                        $url_string .= (!empty($url_parsed['fragment']) ? '#' . $url_parsed['fragment'] : '');
-
-                        $buf .= '<a class="page-link" href=\'' . $url_string . '\'>' . $page . '</a>';
-                    }
-
-                    $buf .= "</li>";
-                }
-
-                $buf .= "</ul></nav>";
+            if (!empty($parsed_url["fragment"])) {
+                $ret .= "#" . $parsed_url["fragment"];
             }
+
+            if (!empty($parsed_url["query"])) {
+                $ret .= "?" . $parsed_url["query"] . "&";
+            } else {
+                $ret .= "?";
+            }
+
+            $ret .= "$pageparam=$page&$pagesizeparam=$pagesize&$totalresultsparam=$totalresults";
+
+            return $ret;
+        };
+
+        $makeElem = function (int $page, bool $disabled) use ($makeUrl) {
+            $url = $makeUrl($page);
+
+            $class = $disabled ? "disabled" : "";
+
+            return <<<DOC
+                <li class="page-item $class">
+                    <a class="page-link" href="$url">
+                        $page
+                    </a>
+                </li>
+            DOC;
+        };
+
+        $links = [];
+
+        if ($currentpage > 1) {
+            $links[] = $makeElem(1, false);
         }
+
+        if ($currentpage > 2) {
+            $links[] = $makeElem($currentpage - 1, false);
+        }
+
+        $links[] = $makeElem($currentpage, true);
+
+        $lastPage = ceil($totalresults / $pagesize);
+
+        if ($currentpage < $lastPage - 1) {
+            $links[] = $makeElem($currentpage + 1, false);
+        }
+
+        if ($currentpage < $lastPage) {
+            $links[] = $makeElem($lastPage, false);
+        }
+
+        $links_str = implode("", $links);
+
+        $buf = <<<DOC
+            <nav aria-label="pagination">
+                <ul class="pagination justify-content-center flex-wrap">
+                    $links_str
+                </ul>
+            </nav>
+        DOC;
 
         return $buf;
     }
@@ -1004,7 +1041,7 @@ class HtmlBootstrap5 extends Html
         return $buffer . '</div></div>';
     }
 
-    
+
     public static function datePicker($name, $value = null, $size = null, $required = null)
     {
         return '<input class="form-control" type="date" name="' . $name . '" value="' . $value . '" size="' . $size . '" id="' . $name . '" ' . $required . ' />';
