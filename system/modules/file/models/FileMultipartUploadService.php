@@ -14,9 +14,10 @@ use Aws\S3\S3Client;
 class FileMultipartUploadService extends DbService
 {
     /**
-     * Start a multipart upload
+     * Start a multipart upload.
      *
-     * @param DbObject|null $parent
+     * @param DbObject|null $parent DbObject to assign the Attachment to once upload is completed
+     * @param array $args Additional options to pass to createMultipartUpload https://docs.aws.amazon.com/aws-sdk-php/v3/api/api-s3-2006-03-01.html#createmultipartupload
      */
     public function startMultipart(
         string $key,
@@ -24,6 +25,7 @@ class FileMultipartUploadService extends DbService
         string|null $bucket,
         $parent = null,
         string|null $display_name = null,
+        $args = [],
     ) {
         if (empty($bucket)) {
             $bucket = Config::get("file.adapters.s3.bucket");
@@ -32,6 +34,10 @@ class FileMultipartUploadService extends DbService
         $client = $this->makeClient();
 
         $ret = $client->createMultipartUpload([
+            ...$args,
+
+            // Do not allow user of this function to modify these parameters
+            // as they are used in our own tracking object
             "Bucket" => $bucket,
             "ContentType" => $mime,
             "Key" => $key,

@@ -6,6 +6,8 @@
  * specification doesn't come from W3C.
  *
  * @author Adam Buckley <adam@2pisoftware.com>
+ * 
+ * @deprecated Use Html5Autocomplete
  */
 class Autocomplete extends \Html\Form\FormElement {
 
