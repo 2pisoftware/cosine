@@ -1,5 +1,7 @@
 <?php
 
+use Html\a;
+
 class NotificationService extends DbService
 {
     const TYPE_EMAIL = 'email';
@@ -11,9 +13,9 @@ class NotificationService extends DbService
      * @param string $module
      * @param string $template_name
      * @param User $sending_user
-     * @param Array $recipient_users
-     * @param Array $template_data
-     * @param Array $attachments
+     * @param array $recipient_users
+     * @param array $template_data
+     * @param array $attachments
      * @return null
      */
     public function send(string $subject, string $module, string $template_name, User $sending_user, $recipient_user, array $template_data = [], array $attachments = [])
@@ -58,9 +60,8 @@ class NotificationService extends DbService
      * @param string $module
      * @param string $template_name
      * @param User $sending_user
-     * @param Array $recipient_users
-     * @param Array $template_data
-     * @param Array $attachments
+     * @param array $recipient_users
+     * @param callable $callback
      * @return null
      */
     public function sendToAllWithCallback(string $subject, string $module, string $template_name, User $sending_user, array $recipient_users, callable $callback)
@@ -86,9 +87,9 @@ class NotificationService extends DbService
      * @param string $module
      * @param string $template_name
      * @param User $sending_user
-     * @param Array $recipient_users
-     * @param Array $template_data
-     * @param Array $attachments
+     * @param array $recipient_users
+     * @param array $template_data
+     * @param array $attachments
      * @return null
      */
     public function sendToAll(string $subject, string $module, string $template_name, User $sending_user, array $recipient_users, array $template_data = [], array $attachments = [])

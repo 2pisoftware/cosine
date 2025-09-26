@@ -30,11 +30,15 @@ class MailService extends DbService
      * @param array $attachments (optional)
      * @return int
      */
-    public function sendMail($to, $replyto, $subject, $body, $cc = null, $bcc = null, $attachments = [], $headers = [])
+    public function sendMail($to, $replyto, $subject, $body, $cc = null, $bcc = null, $attachments = [], $headers = []): void
     {
         LogService::getInstance($this->w)->setLogger(MailService::$logger)->info("Sending email to " . $to);
         if (!empty($this->transport)) {
-            $this->transport->send($to, $replyto, $subject, $body, $cc, $bcc, $attachments, $headers);
+            try {
+                $this->transport->send($to, $replyto, $subject, $body, $cc, $bcc, $attachments, $headers);
+            } catch (Exception $e) {
+                LogService::getInstance($this->w)->setLogger("MAIL")->error("Error sending email: " . $e->getMessage());
+            }
         } else {
             LogService::getInstance($this->w)->setLogger(MailService::$logger)->error("Transport layer not found");
         }

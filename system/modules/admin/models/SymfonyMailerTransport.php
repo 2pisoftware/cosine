@@ -16,9 +16,9 @@ class SymfonyMailerTransport implements GenericTransport
      * @param Web $w
      * @param string $layer
      */
-    public function __construct($w, $layer)
+    public function __construct(&$w, $layer)
     {
-        $this->w = &$w;
+        $this->w = $w;
         $this->transport = $this->getTransport($layer);
     }
 
@@ -65,13 +65,15 @@ class SymfonyMailerTransport implements GenericTransport
     ) {
         $mailer = new Mailer($this->transport);
 
+        // LogService::getInstance()->info($body);
         $email = (new Email())
             ->from($replyto)
             ->to($to)
+            ->subject($subject)
             ->text($body)
             ->html($body);
 
-        $email->replyTo(...(is_array($replyto) ? $replyto : [$replyto]));
+        $email->replyTo(...is_array($replyto) ? $replyto : [$replyto]);
 
         if (!empty($cc)) {
             if (strpos($cc ?? "", ",") !== false) {
