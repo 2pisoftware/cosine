@@ -89,7 +89,7 @@ class MigrationService extends DbService
                                     $migration_class = explode('-', $file)[1];
                                     $migration_class = preg_replace('/.php$/', '', $migration_class);
                                     if (class_exists($migration_class)) {
-                                        $migration = (new $migration_class(1))->setWeb($this->w);
+                                        $migration = (new $migration_class(1, formatDate(time(), 'YmdHis')))->setWeb($this->w);
                                         $availableMigrations[$module][$migration_path . DS . $file] = [
                                             'class_name' => $classname[1],
                                             'timestamp' => $classname[0],
@@ -322,7 +322,7 @@ MIGRATION;
                             $this->w->db->startTransaction();
                             try {
                                 // Set migration class
-                                $migration_class = (new $migration['class_name'](1))->setWeb($this->w);
+                                $migration_class = (new $migration['class_name'](1, formatDate(time(), 'YmdHis')))->setWeb($this->w);
                                 $migration_class->setAdapter($mysql_adapter);
 
                                 if ($continuingrunall == true) {
@@ -503,7 +503,7 @@ MIGRATION;
                             LogService::getInstance($this->w)->setLogger("MIGRATION")->info("Rolling back migration: " . $migration['id']);
 
                             // Run migration UP
-                            $migration_class = new $migration['classname'](1);
+                            $migration_class = new $migration['classname'](1, intval(formatDate(time(), "YmdHis")));
                             $migration_class->setWeb($this->w);
                             $migration_class->setAdapter($mysql_adapter);
                             $migration_class->down();

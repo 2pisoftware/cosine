@@ -20,7 +20,7 @@ if (!empty($tasks)) {
                 $task->toLink() . '&nbsp;&nbsp;' . $w->partial('listTags', ['object' => $task, 'limit' => 1], 'tag'),
                 $task->getTaskGroup() ? $task->getTaskGroup()->toLink() : null,
                 $task->getAssignee() ? $task->getAssignee()->getFullName() : null,
-                $task->getTaskTypeObject()?->getTypeTitle() ?? null,
+                $task->getTaskTypeObject()?->getTaskTypeTitle() ?? null,
                 $task->priority,
                 $task->status,
                 $task->isTaskLate()

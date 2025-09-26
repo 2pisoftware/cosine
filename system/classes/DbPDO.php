@@ -15,7 +15,7 @@ class DbPDO extends PDO
 
     private $table_names = [];
     private static $_QUERY_CLASSNAME = ["\Envms\FluentPDO\Queries\Insert", "\Envms\FluentPDO\Queries\Select", "\Envms\FluentPDO\Queries\Update", "Envms\FluentPDO\Queries\Insert", "Envms\FluentPDO\Queries\Select", "Envms\FluentPDO\Queries\Update"];
-    private $query = null;
+    private mixed $query = null;
     private $fpdo = null;
     private static $trx_token = 0;
     private $config;
@@ -128,8 +128,7 @@ class DbPDO extends PDO
     public function get($table_name)
     {
         if (!in_array($table_name, $this->getAvailableTables())) {
-            trigger_error("Table $table_name does not exist in the database", E_USER_ERROR);
-            return null;
+            throw new Exception("Table $table_name does not exist in the database");
         }
         $this->query = $this->fpdo->from($table_name);
         return $this;
@@ -470,8 +469,6 @@ class DbPDO extends PDO
         switch ($func) {
             case 'and':
                 return $this->where($args[0], $args[1]);
-                break;
-
             default:
                 /**
                  * What this does is palm off unknown function calls to the parent

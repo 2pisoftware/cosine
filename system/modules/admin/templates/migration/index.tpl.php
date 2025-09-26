@@ -59,17 +59,17 @@ use Carbon\Carbon; ?>
                                     include_once ROOT_PATH . '/' . $migration_path;
                                     $classname = $_migration_class['class']['class_name'];
                                     if (class_exists($classname)) {
-                                        $migration = (new $classname(1))->setWeb($w);
+                                        $migration = (new $classname(1, formatDate(time(), 'YmdHis')))->setWeb($w);
                                         $migration_description = $migration->description();
                                         $migration_preText = $migration->preText();
                                         $migration_postText = $migration->postText();
                                     }
-                                    $row = [];
-                                    $row[] = $module . ' - ' . $classname;
-                                    $row[] = $migration_description;
-                                    $row[] = $migration_preText;
-                                    $row[] = $migration_postText;
-                                    $data[] = $row;
+                                    $data[] = [
+                                        $module . ' - ' . $classname,
+                                        $migration_description,
+                                        $migration_preText,
+                                        $migration_postText,
+                                    ];
                                 }
                             }
                         }
@@ -93,12 +93,12 @@ use Carbon\Carbon; ?>
                             $header = ["Name", "Description", "Pre Text", "Post Text"];
                             $data = [];
                             foreach ($batched_migrations as $batched_migration) {
-                                $row = [];
-                                $row[] = $batched_migration['module'] . ' - ' . $batched_migration['classname'];
-                                $row[] = $batched_migration['description'];
-                                $row[] = $batched_migration['pretext'];
-                                $row[] = $batched_migration['posttext'];
-                                $data[] = $row;
+                                $data[] = [
+                                    $batched_migration['module'] . ' - ' . $batched_migration['classname'],
+                                    $batched_migration['description'],
+                                    $batched_migration['pretext'],
+                                    $batched_migration['posttext'],
+                                ];
                             }
                             echo HtmlBootstrap5::table($data, null, "table-striped", $header);
                             echo '</div>';
