@@ -126,11 +126,15 @@ class DbService
      * or by passing an array of key,value
      * to be used in a where condition
      *
-     * @param string $table
-     * @param scalar|array $idOrWhere
-     * @return DbObject|null
+     * @template T
+     * @param class-string<T> $class
+     * @param mixed $idOrWhere
+     * @param boolean $use_cache
+     * @param string|null $order_by
+     * @param boolean $includeDeleted
+     * @return T|null
      */
-    public function getObject($class, $idOrWhere, $use_cache = true, $order_by = null, $includeDeleted = false)
+    public function getObject(string $class, mixed $idOrWhere, bool $use_cache = true, ?string $order_by = null, bool $includeDeleted = false)
     {
         if (!$idOrWhere || !$class) {
             return null;

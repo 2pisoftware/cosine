@@ -293,7 +293,7 @@ MIGRATION;
             $this->w->db->setMigrationMode(1);
 
             // Use MySQL for now
-            $mysql_adapter = new \Phinx\Db\Adapter\MysqlAdapter([
+            $mysql_adapter = new MysqlAdapter([
                 'connection' => $this->w->db,
                 'name' => Config::get('database.database')
             ]);

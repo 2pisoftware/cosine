@@ -16,7 +16,7 @@ class SymfonyMailerTransport implements GenericTransport
      * @param Web $w
      * @param string $layer
      */
-    public function __construct(&$w, $layer)
+    public function __construct($w, $layer)
     {
         $this->w = $w;
         $this->transport = $this->getTransport($layer);

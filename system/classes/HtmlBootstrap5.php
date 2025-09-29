@@ -567,18 +567,17 @@ class HtmlBootstrap5 extends Html
      * This function invokes multiColForm with default parameters
      * to remove unnecessary html when displaying data
      *
-     * @param Array $data
-     * @return String html
+     * @param array $data
+     * @return string html
      */
     public static function multiColTable($data)
     {
         if (empty($data)) {
-            return;
+            return '';
         }
 
         // Set up shell layout
-        $buffer = "<div class='row'>";
-        $buffer .= "<div class='col'>";
+        $buffer = "<div class='row'><div class='col'>";
         foreach ($data as $section => $rows) {
             $buffer .= "<div class='item " . toSlug($section) . "'><div class='panel flat'><h4>{$section}</h4><table class='table'>";
             foreach ($rows as $row) {
@@ -623,12 +622,12 @@ class HtmlBootstrap5 extends Html
      * @param int $page_size
      * @param int $total_results
      * @param string $base_url
-     * @param string|optional $sort
-     * @param string|optional $sort_direction
-     * @param string|optional $page_query_param
-     * @param string|optional $pagesize_query_param
-     * @param string|optional $total_results_query_param
-     * @param string|optional $sort_query_param
+     * @param string|null $sort
+     * @param string $sort_direction
+     * @param string $page_query_param
+     * @param string $pagesize_query_param
+     * @param string $total_results_query_param
+     * @param string $sort_query_param
      */
     public static function paginatedTable(
         $header,
