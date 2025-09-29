@@ -1,6 +1,6 @@
 // src/app.ts
 import { AlertAdaptation, DropdownAdaptation, FavouritesAdaptation, TabAdaptation, TableAdaptation } from './adaptations';
-import { Autocomplete, Toast as CmfiveToast, CodeMirror, InputWithOther, MultiFileUpload, Overlay, QuillEditor, Tags, TabbedPagination } from './components';
+import { Autocomplete, Toast as CmfiveToast, CodeMirror, InputWithOther, MultiFileUpload, Overlay, QuillEditor, Tags, TabbedPagination, Chart } from './components';
 
 import { Modal, Tooltip } from 'bootstrap';
 import { Sortable } from './components/Sortable';
@@ -26,12 +26,15 @@ export class Cmfive {
             }
         }
 
-		document.querySelector("html").setAttribute("data-bs-theme", localStorage.getItem(Cmfive.THEME_KEY) === "dark" ? "dark" : "light");
+        document.querySelector("html").setAttribute("data-bs-theme", localStorage.getItem(Cmfive.THEME_KEY) === "dark" ? "dark" : "light");
 
         document.querySelector('html').classList.remove('theme--default');
         document.querySelector('html').classList.remove('theme--dark');
         document.querySelector('html').classList.add('theme--' + localStorage.getItem(Cmfive.THEME_KEY));
         fetch('/auth/ajax_set_setting?key=bs5-theme&value=' + localStorage.getItem(Cmfive.THEME_KEY)); // .then(r => r.text()).then(r => console.log(r));
+
+        // @ts-ignore
+        window.cmfiveEventBus.dispatchEvent(new CustomEvent('theme-change', { detail: { theme } }));
     }
 
     static toggleNavSettings() {
@@ -39,7 +42,7 @@ export class Cmfive {
 
     }
 
-    static menuOpenClickListener = function() {
+    static menuOpenClickListener = function () {
         if (!document.getElementById('menu-overlay').classList.contains('active')) {
             document.getElementById('menu-overlay').classList.add('active');
         }
@@ -48,7 +51,7 @@ export class Cmfive {
         }
     }
 
-    static menuCloseClickListener = function() {
+    static menuCloseClickListener = function () {
         if (document.getElementById('menu-overlay').classList.contains('active')) {
             document.getElementById('menu-overlay').classList.remove('active');
         }
@@ -57,7 +60,7 @@ export class Cmfive {
         }
     }
 
-    static modalClickListener = function() {
+    static modalClickListener = function () {
         if (this.hasAttribute('data-modal-confirm')) {
             if (!confirm(this.getAttribute('data-modal-confirm'))) {
                 return false;
@@ -67,7 +70,7 @@ export class Cmfive {
         Cmfive.openModal(this.getAttribute('data-modal-target'))
     }
 
-    static linkClickListener = function() {
+    static linkClickListener = function () {
         if (this.hasAttribute('data-link-confirm')) {
             if (!confirm(this.getAttribute('data-link-confirm'))) {
                 return false;
@@ -77,7 +80,7 @@ export class Cmfive {
         if (this.hasAttribute('data-show-overlay')) {
             Overlay.showOverlay();
         }
-        
+
         if (this.hasAttribute('data-link-new-tab')) {
             window.open(this.getAttribute('data-link-target'));
         } else {
@@ -87,12 +90,12 @@ export class Cmfive {
 
     static openModal(url: string, target: string = '#cmfive-modal') {
         Cmfive.currentModal = new Modal(document.getElementById('cmfive-modal')) //, options
-    
+
         let modalContent = document.querySelector(target + ' .modal-content');
         if (modalContent) {
             modalContent.innerHTML = '<button type="button" class="btn-close" data-bs-dismiss="modal" data-bs-target="' + target + '" aria-label="Close"></button>';
         }
-    
+
         Cmfive.currentModal.show();
         fetch(url, {
             headers: {
@@ -103,12 +106,12 @@ export class Cmfive {
         }).then((content) => {
             modalContent.innerHTML = content + modalContent.innerHTML;
 
-			// https://developer.mozilla.org/en-US/docs/Web/API/Element/innerHTML#security_considerations
-			// Appending scripts to the DOM via innerHTML is not meant to execute them for security purposes
-			// Unfortunately, various modals however contian script tags we need to execute
-			modalContent.querySelectorAll("script").forEach(x => {
-				eval(x.innerHTML);
-			});
+            // https://developer.mozilla.org/en-US/docs/Web/API/Element/innerHTML#security_considerations
+            // Appending scripts to the DOM via innerHTML is not meant to execute them for security purposes
+            // Unfortunately, various modals however contian script tags we need to execute
+            modalContent.querySelectorAll("script").forEach(x => {
+                eval(x.innerHTML);
+            });
 
             // Emit modal load event
             // @ts-ignore
@@ -116,14 +119,13 @@ export class Cmfive {
                 // @ts-ignore
                 window.cmfiveEventBus.dispatchEvent(new CustomEvent('modal-load'));
             }
-    
+
             // Rebind elements for modal
             Cmfive.ready(modalContent);
         })
     }
 
-    static formCancel()
-    {
+    static formCancel() {
         if (Cmfive.currentModal) {
             Cmfive.currentModal.hide();
             Cmfive.currentModal = null;
@@ -138,8 +140,7 @@ export class Cmfive {
      * 
      * @param target Document|Element
      */
-    static ready(target: Document|Element) 
-    {
+    static ready(target: Document | Element) {
         (window as window).cmfive = {
             toast: CmfiveToast
         }
@@ -206,11 +207,12 @@ export class Cmfive {
         Sortable.bindSortableElements();
         TabAdaptation.bindTabInteractions();
         TableAdaptation.bindTableInteractions();
-		Tags.bind();
+        Tags.bind();
         TabbedPagination.bindInteractions();
+        Chart.bindInteractions();
 
         // Remove all foundation button classes and replace them with bootstrap if they don't exist
-        target?.querySelectorAll('.button')?.forEach(b =>  {
+        target?.querySelectorAll('.button')?.forEach(b => {
             b.classList.remove('button', 'tiny')
             if (!b.classList.contains('btn')) {
                 b.classList.add('btn', 'btn-sm', 'btn-primary');
