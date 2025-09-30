@@ -21,12 +21,13 @@ export class CmfiveHelper {
         await page.goto(HOST + "/auth/logout");
     }
 
-    static async isBootstrap5(page: Page)
-    {
-        await page.waitForSelector('#cmfive-body, body > .row-fluid');
+    // static async isBootstrap5(page: Page)
+    // {
+    //     return Promise.resolve((_) => true);
+    //     // await page.waitForSelector('#cmfive-body, body > .row-fluid');
     
-        return await page.locator('html.theme').count() > 0
-    }
+    //     // return await page.locator('html.theme').count() > 0
+    // }
 
     static getRowByText(page: Page, text: string)
     {
@@ -35,31 +36,21 @@ export class CmfiveHelper {
 
     static async clickCmfiveNavbar(page: Page, isMobile: boolean, category: string, option: string)
     {
-        const bootstrap5 = await this.isBootstrap5(page);
-
         if (isMobile)
-            if (bootstrap5)
-                await page.locator(".bi-list").first().click();
-            else
-                await page.getByRole("link", {name: "Menu"}).click();
+            await page.locator(".bi-list").first().click();
 
-        const navbarCategory = isMobile && bootstrap5
+        const navbarCategory = isMobile
             ? page.locator("#accordion_menu_" + category.toLowerCase().split(" ").join("_") + "_heading")
             : page.locator("#topnav_" + category.toLowerCase().split(" ").join("_"));
 
-        if (bootstrap5 || isMobile) {
+        await navbarCategory.click();
+        // check that nav menu is open
+        const menuOpen = await page.locator("#topnav_" + category.toLowerCase().split(" ").join("_") + "_dropdown_link").getAttribute("aria-expanded"); // toHaveAttribute("aria-expanded", "true")
+        if (menuOpen != "true") {
             await navbarCategory.click();
-            // check that nav menu is open
-            const menuOpen = await page.locator("#topnav_" + category.toLowerCase().split(" ").join("_") + "_dropdown_link").getAttribute("aria-expanded"); // toHaveAttribute("aria-expanded", "true")
-            if (bootstrap5 && menuOpen != "true") {
-                await navbarCategory.click();
-            }
-
-        } else { // Foundation
-            await navbarCategory.hover();
         }
 
-        if (bootstrap5 && isMobile)
+        if (isMobile)
             await page.locator("#accordion_menu_" + category.toLowerCase().split(" ").join("_"))
                 .getByRole('link', {name: option, exact: true}).click();
         else
@@ -67,34 +58,25 @@ export class CmfiveHelper {
     }
 
     // Call exactly once per test before any dialogs pop up
-    static acceptDialog(page: Page)
-    {
+    static acceptDialog(page: Page) {
         page.on('dialog', dialog => void dialog.accept());
     }
 
     static async fillDatePicker(page: Page, datePickerTitle: string, field: string, date: DateTime) {          
-        await page.getByText(datePickerTitle).click();
+        await page.getByLabel(datePickerTitle).click();
         await page.keyboard.type(date.toFormat("ddLLyyyy"));
 
         const expectedDate = date.toISODate();
-        if(expectedDate == null)
+        if (expectedDate == null)
             throw new Error("date.toISODate() returned null");
         else
             await expect(page.locator("#" + field)).toHaveValue(expectedDate);
     }   
 
     static async fillAutoComplete(page: Page, field: string, search: string, value: string) {
-		if (await this.isBootstrap5(page)) {
-			await page.locator(`#${field}-ts-control`).locator("..").click();
-			await page.keyboard.type(search);
-			await page.locator(`#${field}-ts-dropdown`).getByText(value).click();
-			// await page.keyboard.press("Escape");
-		}
-		else {
-			await page.locator('#acp_' + field).click();
-			await page.keyboard.type(search);
-			await page.locator('.ui-menu-item :text("' + value + '")').click();
-		}
+        await page.locator(`#${field}-ts-control`).locator("..").click();
+        await page.keyboard.type(search);
+        await page.locator(`#${field}-ts-dropdown`).getByText(value).click();
     }
 
     // Finds substring in string with given position
@@ -106,7 +88,7 @@ export class CmfiveHelper {
         } else {
             return target.includes(searchText);
         }
-        }
+    }
     
     // Finds a cell in a table by an item in its row and the column header
     static async getColumnByText(page: Page, rowText: string, columnText: string,  searchPosition?: 'start' | 'end'){
@@ -117,13 +99,11 @@ export class CmfiveHelper {
         for (let i = 0; i < (await headers.count()); i++) {
             const headerText = await headers.nth(i).textContent();
             if (CmfiveHelper.findString(headerText?.trim(),columnText, searchPosition)) {
-            columnIndex = i; // index for nth-child selector
-            break;
+                columnIndex = i; // index for nth-child selector
+                break;
             }
         }
         const row = CmfiveHelper.getRowByText(page, rowText); 
         return row.getByRole("cell").nth(columnIndex);
     }
-    
-
 }

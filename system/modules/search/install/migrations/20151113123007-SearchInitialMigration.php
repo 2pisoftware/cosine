@@ -1,13 +1,14 @@
 <?php
 
-class SearchInitialMigration extends CmfiveMigration {
+class SearchInitialMigration extends CmfiveMigration
+{
+    public function up()
+    {
+        // UP
+    }
 
-	public function up() {
-		// UP
-	}
-
-	public function down() {
-		// DOWN
-	}
-
+    public function down()
+    {
+        // DOWN
+    }
 }

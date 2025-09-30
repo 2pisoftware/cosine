@@ -6,16 +6,8 @@ class InsightsInsightsInitialMigration extends CmfiveMigration
     public function up()
     {
         // UP
-        $column = parent::Column();
-        $column->setName('id')
-            ->setType('biginteger')
-            ->setIdentity(true);
-
         if (!$this->hasTable("insight_members")) { //it can be helpful to check that the table name is not used
-            $this->table("insight_members", [ // table names should be appended with 'ModuleName_'
-                "id" => false,
-                "primary_key" => "id"
-            ])->addColumn($column) // add the id column
+            $this->tableWithId("insight_members") // add the id column
                 ->addColumn('insight_class_name', 'string')
                 ->addColumn('user_id', 'biginteger')
                 ->addColumn('type', 'string')

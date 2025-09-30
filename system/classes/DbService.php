@@ -126,7 +126,7 @@ class DbService
      * or by passing an array of key,value
      * to be used in a where condition
      *
-     * @template T
+     * @template T of DbObject
      * @param class-string<T> $class
      * @param mixed $idOrWhere
      * @param boolean $use_cache

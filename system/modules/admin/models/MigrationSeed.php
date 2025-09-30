@@ -1,7 +1,6 @@
 <?php
 
-class MigrationSeed extends DbObject {
-
-	public $name;
-
+class MigrationSeed extends DbObject
+{
+    public $name;
 }

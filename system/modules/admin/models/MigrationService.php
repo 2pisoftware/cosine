@@ -135,7 +135,6 @@ class MigrationService extends DbService
         if (!empty($migrations)) {
             foreach ($migrations as $migration) {
                 $to_add = true;
-                //var_dump($migration);
                 if (array_key_exists($migration['module'], $migrationsInstalled)) {
                     foreach ($migrationsInstalled[$migration['module']] as $processed_migration) {
                         if ($migration['classname'] == $processed_migration['classname']) {
@@ -271,7 +270,6 @@ MIGRATION;
 
         // If filename is specified then strip out migrations that shouldnt be run
         if (strtolower($module) !== "all" && !empty($filename)) {
-            $offset_index = 1;
             $filename_parts = explode('.', $filename);
             $file_timestamp = (float)  $filename_parts[0];
 
@@ -358,11 +356,8 @@ MIGRATION;
                                         }
                                         if ($runMigrations > 0) {
                                             $msg = "<table style width='100%'><tr><td><center>" . $runMigrations . ' migration' . ($runMigrations == 1 ? ' has' : 's have') . ' run. <br>';
-
                                             $msg .= ($buffer != "" ? "<h5><strong>Post Migration Output:</strong></h5>" . $buffer . "</center></td>" : "<center>There was no post migration output</center>");
-
                                             $msg .= ($installedBuffer != "" ? " <td><strong>Migrations that were run and installed:</strong> <br>" . $installedBuffer . "<br>" : "");
-
                                             $msg .= ($uninstalledBuffer != "" ? "<strong>Migrations yet to run:</strong> <br>" . $uninstalledBuffer . "<br></td></tr></table>" : "");
                                         }
                                         $this->w->msg($msg, $messageurl);
@@ -565,11 +560,11 @@ MIGRATION;
         foreach ($filenames as $migration => $filename) {
             if (file_exists(ROOT_PATH . DS . $directory . DS . $filename)) {
                 include_once ROOT_PATH . DS . $directory . DS . $filename;
-
+                
                 // Class name must match filename after timestamp and hyphen
                 if (class_exists($migration)) {
                     LogService::getInstance($this->w)->setLogger("MIGRATION")->info("Running migration: " . $migration);
-
+                    
                     // Run migration UP
                     $migration_class = new $migration(1, intval(formatDate(time(), "YmdHis")));
                     $migration_class->setAdapter($mysql_adapter);

@@ -5,19 +5,11 @@ class AdminInitialMigration extends CmfiveMigration
 
     public function up()
     {
-        $column = parent::Column();
-        $column->setName('id')
-            ->setType('biginteger')
-            ->setIdentity(true);
-
         /**
          * MIGRATION TABLE
          */
         if (!$this->hasTable('migration')) {
-            $this->table('migration', [
-                'id' => false,
-                'primary_key' => 'id'
-            ])->addColumn($column)
+            $this->tableWithId('migration')
                 ->addColumn('path', 'string', ['limit' => 1024, 'null' => true])
                 ->addColumn('classname', 'string', ['limit' => 1024, 'null' => true])
                 ->addColumn('module', 'string', ['limit' => 1024, 'null' => true])
@@ -33,10 +25,7 @@ class AdminInitialMigration extends CmfiveMigration
          * AUDIT TABLE
          */
         if (!$this->hasTable('audit')) {
-            $this->table('audit', [
-                'id' => false,
-                'primary_key' => 'id'
-            ])->addColumn($column)
+            $this->tableWithId('audit')
                 ->addColumn('submodule', 'text', ["null" => true])
                 ->addColumn('message', 'text', ["null" => true])
                 ->addColumn('module', 'string', ['limit' => 128, 'null' => true])
@@ -54,10 +43,7 @@ class AdminInitialMigration extends CmfiveMigration
          * COMMENT TABLE
          */
         if (!$this->hasTable('comment')) {
-            $this->table('comment', [
-                'id' => false,
-                'primary_key' => 'id'
-            ])->addColumn($column)
+            $this->tableWithId('comment')
                 ->addColumn('obj_table', 'string', ['limit' => 200])
                 ->addColumn('obj_id', 'biginteger', ['null' => true])
                 ->addColumn('comment', 'text', ['null' => true])
@@ -71,10 +57,7 @@ class AdminInitialMigration extends CmfiveMigration
          * LOOKUP TABLE
          */
         if (!$this->hasTable('lookup')) {
-            $this->table('lookup', [
-                'id' => false,
-                'primary_key' => 'id'
-            ])->addColumn($column)
+            $this->tableWithId('lookup')
                 ->addColumn('weight', 'integer', ['limit' => 11, 'null' => true])
                 ->addColumn('type', 'string', ['limit' => 255, 'null' => true])
                 ->addColumn('code', 'string', ['limit' => 255, 'null' => true])
@@ -87,10 +70,7 @@ class AdminInitialMigration extends CmfiveMigration
          * PRINTER TABLE
          */
         if (!$this->hasTable('printer')) {
-            $this->table('printer', [
-                'id' => false,
-                'primary_key' => 'id'
-            ])->addColumn($column)
+            $this->tableWithId('printer')
                 ->addColumn('name', 'string', ['limit' => 512, 'null' => true])
                 ->addColumn('server', 'string', ['limit' => 512, 'null' => true])
                 ->addColumn('port', 'string', ['limit' => 256, 'null' => true])
@@ -101,10 +81,7 @@ class AdminInitialMigration extends CmfiveMigration
          * TEMPLATE TABLE
          */
         if (!$this->hasTable('template')) {
-            $this->table('template', [
-                'id' => false,
-                'primary_key' => 'id'
-            ])->addColumn($column)
+            $this->tableWithId('template')
                 ->addColumn('title', 'string', ['limit' => 255, 'null' => true])
                 ->addColumn('description', 'string', ['limit' => 255, 'null' => true])
                 ->addColumn('category', 'string', ['limit' => 255, 'null' => true])

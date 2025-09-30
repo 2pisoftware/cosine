@@ -25,7 +25,7 @@
                 <h4>Cache and Index</h4>
                 <button type="button" id='clear_config' class='btn btn-sm btn-primary' onclick="clearConfig()">Clear Config</button>
                 <?php if (Config::get('file.adapters.local.active') !== true) : ?>
-                    <button type="button" id='clear_config' class='btn btn-sm btn-primary mt-3' onclick="clearConfig()">Clear cached images</button>
+                    <button type="button" id='clear_cached_images' class='btn btn-sm btn-primary mt-3' onclick="clearConfig()">Clear cached images</button>
                     <p><?php echo !empty($cache_image_count) ? $cache_image_count : 0; ?> images cached</p>
                 <?php endif; ?>
                 <button type="button" id='reindex_objects' class='btn btn-sm btn-primary' onclick="reindexObjects()">Reindex searchable objects</button>

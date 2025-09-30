@@ -58,7 +58,8 @@ class CmfiveMigration extends Phinx\Migration\AbstractMigration
         $id = $this->Column();
         $id->setName('id')
             ->setType('biginteger')
-            ->setIdentity(true);
+            ->setIdentity(true)
+            ->setNull(false);
 
         return $this->table($table_name, [
             'id' => false,

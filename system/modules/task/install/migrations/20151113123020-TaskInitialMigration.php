@@ -5,17 +5,9 @@ class TaskInitialMigration extends CmfiveMigration
 
     public function up()
     {
-        $column = parent::Column();
-        $column->setName('id')
-            ->setType('biginteger')
-            ->setIdentity(true);
-
         // Create task table
         if (!$this->hasTable("task")) {
-            $this->table('task', [
-                'id' => false,
-                'primary_key' => 'id'
-            ])->addColumn($column)
+            $this->tableWithId('task')
                 ->addColumn('is_closed', 'boolean', ['default' => 0])
                 ->addColumn('parent_id', 'biginteger', ['null' => true])
                 ->addColumn('title', 'string', ['limit' => 255, 'null' => true])
@@ -40,10 +32,7 @@ class TaskInitialMigration extends CmfiveMigration
 
         // Create task data table
         if (!$this->hasTable("task_data")) {
-            $this->table('task_data', [
-                'id' => false,
-                'primary_key' => 'id'
-            ])->addColumn($column)
+            $this->tableWithId('task_data')
                 ->addColumn('task_id', 'biginteger')
                 ->addColumn('data_key', 'string', ['limit' => 100])
                 ->addColumn('value', 'string', ['limit' => 255])
@@ -52,10 +41,7 @@ class TaskInitialMigration extends CmfiveMigration
 
         // Create taskgroup table
         if (!$this->hasTable("task_group")) {
-            $this->table('task_group', [
-                'id' => false,
-                'primary_key' => 'id'
-            ])->addColumn($column)
+            $this->tableWithId('task_group')
                 ->addColumn('title', 'string', ['limit' => 50])
                 ->addColumn('can_assign', 'string', ['limit' => 50])
                 ->addColumn('can_view', 'string', ['limit' => 50])
@@ -72,10 +58,7 @@ class TaskInitialMigration extends CmfiveMigration
 
         // Create taskgroup member table
         if (!$this->hasTable("task_group_member")) {
-            $this->table('task_group_member', [
-                'id' => false,
-                'primary_key' => 'id'
-            ])->addColumn($column)
+            $this->tableWithId('task_group_member')
                 ->addColumn('task_group_id', 'biginteger')
                 ->addColumn('user_id', 'biginteger')
                 ->addColumn('role', 'string', ['limit' => 50])
@@ -86,10 +69,7 @@ class TaskInitialMigration extends CmfiveMigration
 
         // Create taskgroup notify table
         if (!$this->hasTable("task_group_notify")) {
-            $this->table('task_group_notify', [
-                'id' => false,
-                'primary_key' => 'id'
-            ])->addColumn($column)
+            $this->tableWithId('task_group_notify')
                 ->addColumn('task_group_id', 'biginteger')
                 ->addColumn('role', 'string', ['limit' => 255, 'null' => true])
                 ->addColumn('type', 'string', ['limit' => 255, 'null' => true])
@@ -99,10 +79,7 @@ class TaskInitialMigration extends CmfiveMigration
 
         // Create taskgroup user notify table
         if (!$this->hasTable("task_group_user_notify")) {
-            $this->table('task_group_user_notify', [
-                'id' => false,
-                'primary_key' => 'id'
-            ])->addColumn($column)
+            $this->tableWithId('task_group_user_notify')
                 ->addColumn('user_id', 'biginteger')
                 ->addColumn('task_group_id', 'biginteger')
                 ->addColumn('role', 'string', ['limit' => 255, 'null' => true])
@@ -119,10 +96,7 @@ class TaskInitialMigration extends CmfiveMigration
 
         // Create taskgroup notify table
         if (!$this->hasTable("task_object")) {
-            $this->table('task_object', [
-                'id' => false,
-                'primary_key' => 'id'
-            ])->addColumn($column)
+            $this->tableWithId('task_object')
                 ->addColumn('task_id', 'biginteger')
                 ->addColumn('key', 'string', ['limit' => 255])
                 ->addColumn('table_name', 'string', ['limit' => 255])
@@ -131,10 +105,7 @@ class TaskInitialMigration extends CmfiveMigration
         }
 
         if (!$this->hasTable("task_time")) {
-            $this->table('task_time', [
-                'id' => false,
-                'primary_key' => 'id'
-            ])->addColumn($column)
+            $this->tableWithId('task_time')
                 ->addColumn('task_id', 'biginteger')
                 ->addColumn('user_id', 'biginteger')
                 ->addColumn('dt_start', 'datetime')
@@ -148,10 +119,7 @@ class TaskInitialMigration extends CmfiveMigration
 
         // Create taskgroup user notify table
         if (!$this->hasTable("task_user_notify")) {
-            $this->table('task_user_notify', [
-                'id' => false,
-                'primary_key' => 'id'
-            ])->addColumn($column)
+            $this->tableWithId('task_user_notify')
                 ->addColumn('user_id', 'biginteger')
                 ->addColumn('task_id', 'biginteger')
                 ->addColumn('task_creation', 'boolean', ['default' => 0])
@@ -176,5 +144,4 @@ class TaskInitialMigration extends CmfiveMigration
         $this->hasTable("task_time") ? $this->dropTable("task_time") : null;
         $this->hasTable("task_user_notify") ? $this->dropTable("task_user_notify") : null;
     }
-
 }
