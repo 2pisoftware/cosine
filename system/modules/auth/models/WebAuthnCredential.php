@@ -42,7 +42,13 @@ class WebAuthnCredential extends DbObject
      */
     public $publicKey;
 
+    /**
+     * @var int
+     */
+    public $counter;
+
     public $dt_created;
+
 
     public function getPublicKeyCredentialDescriptor()
     {

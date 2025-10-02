@@ -126,6 +126,7 @@ class WebAuthnService extends DbService
         $credObj->aaguid = $source->aaguid;
         $credObj->publicKey = base64_encode($source->credentialPublicKey);
         $credObj->attestationType = $source->attestationType;
+        $credObj->counter = 0;
         $credObj->insert();
 
         $this->w->sessionUnset("webauthn__options");
@@ -193,7 +194,7 @@ class WebAuthnService extends DbService
             Uuid::fromString($source->aaguid),
             base64_decode($source->publicKey),
             $source->user_id,
-            0,
+            $source->counter,
         );
 
         $checked = $validator->check(
@@ -203,6 +204,9 @@ class WebAuthnService extends DbService
             parse_url(Config::get("auth.passkeys.relyingParty"))["host"],
             $source->user_id
         );
+
+        $source->counter = $checked->counter;
+        $source->update();
 
         $this->w->sessionUnset("webauthn__options");
 
