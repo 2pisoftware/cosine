@@ -11,7 +11,8 @@ Config::set('auth', [
     ],
     'show_application_name' => true,
     "dependencies" => [
-        "robthree/twofactorauth" => "2.1.0"
+        "robthree/twofactorauth" => "2.1.0",
+        "web-auth/webauthn-framework" => "^5.2.2"
     ],
     'login' => [
         'password' => [

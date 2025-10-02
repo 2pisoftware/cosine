@@ -53,6 +53,14 @@
                 <a onclick="window.location.href='/auth/forgotpassword';" class="btn w-auto "><?php echo $passwordHelp; ?></a>
             </div>
         </div>
+
+        <div class="row mt-3 pt-3 border-top">
+            <div class="col">
+                <button type="button" class="btn btn-primary w-100 h-auto" id="passkey_login">
+                    Login with Passkey
+                </button>
+            </div>
+        </div>
     </div>
 
     <div id="mfa_form" class="d-none">
