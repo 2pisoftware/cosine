@@ -1,5 +1,3 @@
-import { createApp } from 'vue';
-import WebAuthnLoginComponent from "./WebAuthnLogin.vue";
 import { browserSupportsWebAuthn, startAuthentication } from '~/@simplewebauthn/browser';
 
 const btn = document.getElementById("passkey_login") as HTMLButtonElement;

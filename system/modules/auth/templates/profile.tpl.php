@@ -130,7 +130,8 @@ $w->setLayout("layout")
                 :locked="false"
                 :allow_adding_passkeys="true"
                 :mfa_enabled="<?php echo $user["security"]["is_mfa_enabled"]; ?>"
-                :pw_min_length="<?php echo Config::get('auth.login.password.min_length', 8); ?>">
+                :pw_min_length="<?php echo Config::get('auth.login.password.min_length', 8); ?>"
+                :allow_passkeys="<?php echo Config::get("auth.login.allow_passkey"); ?>">
             </user-security-component>
         </div>
     </div>

@@ -8,6 +8,7 @@ const props = defineProps<{
 	mfa_enabled: boolean
 	pw_min_length: number;
 	allow_adding_passkeys: boolean;
+	allow_passkeys: boolean;
 }>();
 
 const locked = ref(props.locked);
@@ -250,7 +251,7 @@ const removePasskey = async (id: string) => {
 				</div>
 			</div>
 
-			<div class="panel">
+			<div class="panel" v-if="props.allow_passkeys">
 				<h4 class="section-header">Passkey</h4>
 
 				<button v-if="allow_adding_passkeys" @click.prevent="registerPasskey" class="btn btn-primary ms-0">
