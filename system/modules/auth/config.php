@@ -24,7 +24,7 @@ Config::set('auth', [
             'track_attempts' => false,
             'max_attempts' => 5
         ],
-        "allow_passkey" => true,
+        "allow_passkey" => false,
     ],
     'logout' => [
         'logout_after_inactivity' => false,
