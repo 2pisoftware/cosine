@@ -11,7 +11,7 @@ class FileInitialMigration extends CmfiveMigration
         if (!$this->hasTable('attachment')) {
             $this->tableWithId('attachment')
                 ->addColumn('parent_table', 'string', ['limit' => 255])
-                ->addColumn('obj_id', 'biginteger')
+                ->addColumn('parent_id', 'biginteger')
                 ->addColumn('modifier_user_id', 'biginteger', ['null' => true])
                 ->addColumn('filename', 'string', ['limit' => 255])
                 ->addColumn('mimetype', 'string', ['limit' => 255, 'null' => true])

@@ -1,7 +1,7 @@
 <?php
 
 use Aws\CloudWatchLogs\CloudWatchLogsClient;
-use Maxbanton\Cwh\Handler\CloudWatch;
+use PhpNexus\Cwh\Handler\CloudWatch;
 use Monolog\Logger as Logger;
 use Monolog\Formatter\LineFormatter as LineFormatter;
 use Monolog\Handler\RotatingFileHandler as RotatingFileHandler;
