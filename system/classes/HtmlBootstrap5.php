@@ -1078,4 +1078,28 @@ class HtmlBootstrap5 extends Html
             "options" => $options,
         ]))->__toString();
     }
+
+    /**
+     * Create a Chart.js chart. See /components/Chart.js on frontend for default options
+     * If width and height not specified, creates a responsive chart.
+     * You don't need to use this function if you want more control over the chart.
+     * Create a div with a data-chart attribute containing your chartjs config, as well as an inner canvas.
+     */
+    public static function chart($id = "chartjs", $type = "line", $data = [], $options = [], $height = "100%", $width = "100%", $class = null)
+    {
+        $config = htmlentities(json_encode([
+            "type" => $type,
+            ...$options,
+
+            "data" => $data,
+        ]));
+
+        $buffer = <<<HERE
+            <div style="position: relative; width: $width; height: $width;" class="$class" data-chart="$config">
+                <canvas style="max-width: 100%" id="$id"></canvas>
+            </div>
+        HERE;
+
+        return $buffer;
+    }
 }

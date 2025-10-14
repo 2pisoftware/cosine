@@ -7,3 +7,4 @@ export { QuillEditor } from './QuillEditor';
 export { Tags } from './Tags';
 export { Toast } from './Toast';
 export { TabbedPagination } from './TabbedPagination';
+export { Chart } from "./Chart"
