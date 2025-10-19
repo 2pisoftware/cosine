@@ -25,6 +25,7 @@ function ajax_get_keys_GET(Web $w)
             ->setSuccessfulResponse("OK", [
                 "keys" => array_map(fn($val) => ([
                     "id" => $val->id,
+                    "name" => $val->name,
                     "dt_created" => $val->dt_created,
                 ]), $keys)
             ])

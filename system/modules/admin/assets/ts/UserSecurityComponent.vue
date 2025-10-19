@@ -26,6 +26,7 @@ const new_password = defineModel<string>("new_password");
 const new_password_repeat = defineModel<string>("new_password_repeat");
 
 const passkeys = ref();
+const passkey_edit = ref();	// id of passkey being edited
 
 onMounted(async () => {
 	passkeys.value = await getPasskeys();
@@ -177,6 +178,19 @@ const removePasskey = async (id: string) => {
 
 	window.location.reload();
 }
+
+const savePasskeyName = async (ev: SubmitEvent) => {
+	const data = new FormData(ev.target as HTMLFormElement);
+
+	await fetch(`/auth-webauthn/ajax_nick/${passkey_edit.value}`, {
+		method: "POST",
+		body: JSON.stringify({
+			name: data.get("name"),
+		})
+	});
+
+	window.location.reload();
+}
 </script>
 
 <template>
@@ -270,8 +284,19 @@ const removePasskey = async (id: string) => {
 							</tr>
 						</thead>
 						<tbody>
-							<tr v-for="(passkey, i) in passkeys">
-								<th scope="row">Passkey {{ i + 1 }}</th>
+							<tr v-for="(passkey, i) in passkeys" class="align-middle">
+								<th scope="row">
+									<form v-if="passkey_edit == passkey.id" @submit.prevent="savePasskeyName">
+										<input class="form-control-sm" :value="passkey.name" aria-label="Passkey name"
+											name="name" />
+										<button type="submit" class="btn btn-sm btn-primary">Save</button>
+									</form>
+									<span v-else>
+										{{ passkey.name ?? `Passkey ${i}` }}
+										<button class="btn m-0 p-0" @click.prevent="passkey_edit = passkey.id"><i
+												class="bi-pencil"></i></button>
+									</span>
+								</th>
 								<th scope="row">{{ (new Date(passkey.dt_created * 1000)).toLocaleString() }}</th>
 								<th scope="row">
 									<button class="btn btn-danger ms-0"

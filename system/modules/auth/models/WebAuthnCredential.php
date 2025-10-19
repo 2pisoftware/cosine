@@ -7,6 +7,11 @@ use Webauthn\PublicKeyCredentialDescriptor;
 class WebAuthnCredential extends DbObject
 {
     /**
+     * @var string|null user assigned nickname for this passkey
+     */
+    public $name;
+
+    /**
      * @var string
      */
     public $type;
