@@ -10,7 +10,7 @@ function ajax_get_keys_GET(Web $w)
     $me = AuthService::getInstance($w)->user();
 
     // if we're trying to access someone elses keys, enforce admin
-    if (!empty($params) && $params[0] !== $me->id && !$me->hasRole("admin")) {
+    if (!empty($params) && $params[0] != $me->id && !$me->hasRole("admin")) {
         return $w->out((new JsonResponse())->setErrorResponse("Missing permission", []));
     }
 

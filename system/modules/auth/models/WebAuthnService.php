@@ -37,7 +37,7 @@ class WebAuthnService extends DbService
         return PublicKeyCredentialUserEntity::create(
             $user->login,
             "$user->id",
-            $user->getFullName(),
+            $user->getFullName() ?? $user->getContact()->email,
         );
     }
 

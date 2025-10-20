@@ -11,9 +11,21 @@ function ajax_init_register_POST(Web $w)
         $w->out((new JsonResponse())->setErrorResponse("Unavailable on this service", []));
     }
 
+    $user = AuthService::getInstance($w)->user();
+
+    $rawBody = file_get_contents("php://input");
+
+    // if we're an admin, we can add passkeys to other users
+    if (!empty($rawBody)) {
+        $body = json_decode($rawBody, true);
+        if (!empty($body["user_id"]) && $user->is_admin) {
+            $user = AuthService::getInstance($w)->getUser($body["user_id"]);
+        }
+    }
+
     try {
         $ret = WebAuthnService::getInstance($w)
-            ->beginRegistration(AuthService::getInstance($w)->user());
+            ->beginRegistration($user);
         $w->out($ret);
     } catch (Exception $e) {
         $w->out((new JsonResponse())->setErrorResponse("Failed", []));

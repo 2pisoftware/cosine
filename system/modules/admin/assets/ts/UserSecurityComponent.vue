@@ -158,7 +158,13 @@ const getPasskeys = async () => {
 }
 
 const registerPasskey = async () => {
-	const options = await fetch("/auth-webauthn/ajax_init_register", { method: "POST" }).then(x => x.json());
+	const options = await fetch(
+		"/auth-webauthn/ajax_init_register",
+		{
+			method: "POST",
+			body: JSON.stringify({ user_id })
+		}
+	).then(x => x.json());
 
 	const attResp = await startRegistration({ optionsJSON: options });
 
