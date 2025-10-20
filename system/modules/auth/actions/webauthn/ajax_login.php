@@ -7,12 +7,14 @@ function ajax_login_POST(Web $w)
     $w->setLayout(null);
 
     try {
-        WebAuthnService::getInstance($w)->completeAuthenticate(file_get_contents("php://input"));
+        $user_id = WebAuthnService::getInstance($w)->completeAuthenticate(file_get_contents("php://input"));
     } catch (Exception $e) {
         return $w->out((new JsonResponse())->setErrorResponse("Failed", []));
     }
 
     // if the above doesn't throw, we're in
+
+    AuthService::getInstance($w)->forceLogin($user_id);
 
     $w->out((new JsonResponse())->setSuccessfulResponse(
         null,

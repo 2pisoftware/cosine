@@ -12,9 +12,7 @@ use Webauthn\AuthenticatorAssertionResponseValidator;
 use Webauthn\AuthenticatorAttestationResponse;
 use Webauthn\AuthenticatorAttestationResponseValidator;
 use Webauthn\AuthenticatorSelectionCriteria;
-use Webauthn\Bundle\Security\Http\Authenticator\Passport\Credentials\WebauthnCredentials;
 use Webauthn\CeremonyStep\CeremonyStepManagerFactory;
-use Webauthn\Credential;
 use Webauthn\Denormalizer\WebauthnSerializerFactory;
 use Webauthn\PublicKeyCredential;
 use Webauthn\PublicKeyCredentialCreationOptions;
@@ -54,11 +52,10 @@ class WebAuthnService extends DbService
         return $serialiser;
     }
 
-    public function beginRegistration()
+    public function beginRegistration(User $user)
     {
         $rp = $this->getRelyingParty();
 
-        $user = AuthService::getInstance($this->w)->user();
         $entity = $this->createUserEntity($user);
 
         $challenge = random_bytes(16);
@@ -92,6 +89,9 @@ class WebAuthnService extends DbService
 
     public function completeRegistration(string $data)
     {
+        /**
+         * @var PublicKeyCredentialCreationOptions
+         */
         $pkOptions = $this->w->session("webauthn__options");
         if (!$pkOptions) {
             throw new Exception("Must beginRegistration first");
@@ -122,7 +122,7 @@ class WebAuthnService extends DbService
         $credObj->type = $source->type;
         $credObj->credentialId = base64_encode($source->publicKeyCredentialId);
         $credObj->transports = implode(",", $source->transports);
-        $credObj->user_id = AuthService::getInstance($this->w)->user()->id;
+        $credObj->user_id = $pkOptions->user->id;
         $credObj->aaguid = $source->aaguid;
         $credObj->publicKey = base64_encode($source->credentialPublicKey);
         $credObj->attestationType = $source->attestationType;
@@ -156,6 +156,9 @@ class WebAuthnService extends DbService
 
     public function completeAuthenticate(string $data)
     {
+        /**
+         * @var PublicKeyCredentialRequestOptions
+         */
         $requestOptions = $this->w->session("webauthn__options");
         if (!$requestOptions) {
             throw new Exception("Must beginAuthenticate first");
@@ -210,8 +213,7 @@ class WebAuthnService extends DbService
 
         $this->w->sessionUnset("webauthn__options");
 
-        AuthService::getInstance($this->w)
-            ->forceLogin($source->user_id);
+        return $source->user_id;
     }
 
     private function getCeremonyFactory()
