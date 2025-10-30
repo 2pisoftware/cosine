@@ -8,6 +8,7 @@ class FileFixMissingParentId extends CmfiveMigration
         $table = $this->table('attachment');
         if ($table->hasColumn('obj_id')) {
             $table->renameColumn("obj_id", "parent_id");
+            $table->save();
         }
     }
 
@@ -17,6 +18,7 @@ class FileFixMissingParentId extends CmfiveMigration
         $table = $this->table('attachment');
         if ($table->hasColumn('parent_id')) {
             $table->renameColumn("parent_id", "obj_id");
+            $table->save();
         }
     }
 }
