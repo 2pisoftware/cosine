@@ -350,8 +350,8 @@ class FileService extends DbService
 
         return $this->getObjectsFromRows("Attachment", $this->_db->get("attachment")
             ->where("parent_table", $table)
-            ->and("parent_id", $id)
-            ->and("is_deleted", 0)
+            ->where("parent_id", $id)
+            ->where("is_deleted", 0)
             ->paginate($page, $page_size)
             ->fetchAll());
     }

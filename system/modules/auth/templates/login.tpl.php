@@ -53,6 +53,16 @@
                 <a onclick="window.location.href='/auth/forgotpassword';" class="btn w-auto "><?php echo $passwordHelp; ?></a>
             </div>
         </div>
+
+        <?php if (Config::get("auth.login.allow_passkey")) : ?>
+            <div class="row mt-3 pt-3 border-top">
+                <div class="col">
+                    <button type="button" class="btn btn-primary w-100 h-auto" id="passkey_login">
+                        Login with Passkey
+                    </button>
+                </div>
+            </div>
+        <?php endif; ?>
     </div>
 
     <div id="mfa_form" class="d-none">
