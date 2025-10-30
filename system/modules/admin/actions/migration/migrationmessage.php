@@ -1,9 +1,6 @@
 <?php
 function migrationmessage_GET(Web $w)
 {
-
-    $w->setLayout("layout-pretext");
-
     $w->ctx("prevpage", Request::string('prevpage'));
 
     // 'Migrate to here' File
@@ -15,7 +12,7 @@ function migrationmessage_GET(Web $w)
     $w->ctx("migration_module", Request::string('module'));
 
     $migration_filename = Request::string('filename');
-    $w->ctx("migration_filename", $migration_filename );
+    $w->ctx("migration_filename", $migration_filename);
 
     $migration_path = Request::string('path');
 
@@ -25,7 +22,7 @@ function migrationmessage_GET(Web $w)
         $migration_class = explode('-', $migration_filename)[1];
         $w->ctx("migration_class", $migration_class);
         if (class_exists($migration_class)) {
-            $migration = (new $migration_class(1))->setWeb($w);
+            $migration = (new $migration_class(1, formatDate(time(), "YmdHis")))->setWeb($w);
             $migration_preText = $migration->preText();
             $w->ctx("migration_preText", $migration_preText);
         } else {

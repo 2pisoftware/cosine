@@ -1324,8 +1324,12 @@ class DbObject extends DbService
                 return null;
             }
         } elseif (strpos($k, "t_") === 0) {
-            if (!empty($v) && is_int($v)) {
-                return $this->time2T($v);
+            if (!empty($v)) {
+                if (is_int($v)) {
+                    return $this->time2T($v);
+                } else {
+                    return $v;
+                }
             } else {
                 return null;
             }
