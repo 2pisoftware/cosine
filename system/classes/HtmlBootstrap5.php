@@ -28,24 +28,27 @@ class HtmlBootstrap5 extends Html
 
     public static function buttonGroup(string $content): string
     {
-        return '<div class="btn-group btn-group-sm" role="group">' . $content . '</div>';
+    return <<<HTML
+<div class="btn-group btn-group-sm" role="group">$content</div>
+HTML;
     }
 
     public static function dropdownButton($title, $contents, $class)
     {
         $content = '';
         foreach ($contents as $item) {
-            $content .= '<li>' . $item . '</li>';
+            $content .= "<li>$item</li>";
         }
-
-        return '<div class="dropdown">
-            <button class="' . $class . ' dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">'
-            . $title .
-            '</button>
-            <ul class="dropdown-menu">'
-            . $content .
-            '</ul>
-        </div>';
+        return <<<HTML
+<div class="dropdown">
+    <button class="{$class} dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+        {$title}
+    </button>
+    <ul class="dropdown-menu">
+        {$content}
+    </ul>
+</div>
+HTML;
     }
 
     /**
@@ -1002,17 +1005,23 @@ class HtmlBootstrap5 extends Html
 
     public static function datePicker($name, $value = null, $size = null, $required = null)
     {
-        return '<input class="form-control" type="date" name="' . $name . '" value="' . $value . '" size="' . $size . '" id="' . $name . '" ' . $required . ' />';
+        return <<<HTML
+            <input class="form-control" type="date" name="$name" value="$value" size="$size" id="$name" $required />
+        HTML;
     }
 
     public static function datetimePicker($name, $value = null, $size = null, $required = null)
     {
-        return '<input class="form-control" type="datetime-local" name="' . $name . '" value="' . $value . '" size="' . $size . '" id="' . $name . '" ' . $required . ' />';
+        return <<<HTML
+            <input class="form-control" type="datetime-local" name="$name" value="$value" size="$size" id="$name" $required />
+        HTML;
     }
 
     public static function timePicker($name, $value = null, $size = null, $required = null)
     {
-        return '<input class="form-control" type="time" name="' . $name . '" value="' . $value . '" size="' . $size . '" id="' . $name . '" ' . $required . ' />';
+        return <<<HTML
+            <input class="form-control" type="time" name="$name" value="$value" size="$size" id="$name" $required />
+        HTML;
     }
 
     /**
@@ -1042,8 +1051,10 @@ class HtmlBootstrap5 extends Html
      * If width and height not specified, creates a responsive chart.
      * You don't need to use this function if you want more control over the chart.
      * Create a div with a data-chart attribute containing your chartjs config, as well as an inner canvas.
+     *
+     * @return string
      */
-    public static function chart($id = "chartjs", $type = "line", $data = [], $options = [], $height = "100%", $width = "100%", $class = null)
+    public static function chart($id = "chartjs", $type = "line", $data = [], $options = [], $height = "100%", $width = "100%", $class = null): string
     {
         $config = htmlentities(json_encode([
             "type" => $type,
@@ -1052,12 +1063,10 @@ class HtmlBootstrap5 extends Html
             "data" => $data,
         ]));
 
-        $buffer = <<<HERE
+        return <<<HERE
             <div style="position: relative; width: $width; height: $width;" class="$class" data-chart="$config">
                 <canvas style="max-width: 100%" id="$id"></canvas>
             </div>
-        HERE;
-
-        return $buffer;
+HERE;
     }
 }
