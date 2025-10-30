@@ -44,6 +44,10 @@ export class TabAdaptation {
             }
         });
 
+        window.addEventListener("hashchange", (ev) => {
+            TabAdaptation.changeTab(window.location.hash.replace("#", ""));
+        })
+
         var hash = window.location.hash.split("#")[1];
         if (hash && hash.length > 0) {
             TabAdaptation.changeTab(hash);
