@@ -1,4 +1,5 @@
 <?php
+
 /**
  * defines tasks. tasks are associated with a task group and have various attributes
  * such as status, priority and current assignee, etc
@@ -29,8 +30,6 @@ class Task extends DbObject
     public $_searchable;
     public $rate; //rate used for calculating invoice values
     public $is_active;
-
-    public $creator_id;
 
     public Taskgroup|null $_taskgroup = null;
 
@@ -338,28 +337,29 @@ class Task extends DbObject
         return false;
     }
 
+    public function getCreator()
+    {
+        $modification = TaskService::getInstance($this->w)
+            ->getObject("ObjectModification", ["object_id" => $this->id, "table_name" => $this->getDbTableName()]);
+
+        if (empty($modification)) {
+            return null;
+        }
+
+        return AuthService::getInstance($this->w)
+            ->getUser($modification->creator_id);
+    }
+
     // return the ID of the task creator given a task ID
     public function getTaskCreatorId()
     {
-        $c = TaskService::getInstance($this->w)->getObject("ObjectModification", ["object_id" => $this->id, "table_name" => $this->getDbTableName()]);
-        return $c ? $c->creator_id : "";
+        return $this->getCreator()?->id;
     }
 
     // return the name for display of the task creator given a task ID
     public function getTaskCreatorName()
     {
-        // I've moved the creator_id to tasks but this is for backwards compatability
-        $creator = null;
-        if (empty($this->creator_id)) {
-            $c = TaskService::getInstance($this->w)->getObject("ObjectModification", ["object_id" => $this->id, "table_name" => $this->getDbTableName()]);
-            if (!empty($c->creator_id)) {
-                $creator = AuthService::getInstance($this->w)->getUser($c->creator_id);
-            }
-        } else {
-            $creator = AuthService::getInstance($this->w)->getUser($this->creator_id);
-        }
-
-        return $creator ? $creator->getFullName() : "";
+        return $this->getCreator()->getFullName();
     }
 
     // return the task group title given a task group type
@@ -446,7 +446,7 @@ class Task extends DbObject
     {
         if (($this->dt_due == "0000-00-00 00:00:00") || ($this->dt_due == "")) {
             return "<em>" . formatDate($this->_modifiable->getCreatedDate()) . " (Created)</em>";
-//            return "Not given";
+            //            return "Not given";
         }
 
         if ((!$this->getisTaskClosed()) && (time() > $this->dt_due)) {
