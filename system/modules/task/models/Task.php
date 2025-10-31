@@ -125,7 +125,9 @@ class Task extends DbObject
 
     public function isUrgent()
     {
-        $taskgroup_type_object = TaskService::getInstance($this->w)->getTaskGroupTypeObject($this->_taskgroup->task_group_type);
+        $taskgroup_type_object = TaskService::getInstance($this->w)
+            ->getTaskGroupTypeObject($this->getTaskGroup()->task_group_type);
+
         if (!empty($taskgroup_type_object->id)) {
             return $taskgroup_type_object->isUrgentPriority($this->priority);
         } else {
