@@ -234,14 +234,20 @@ class DbService
     }
     /**
      *
-     * @param string $class
-     * @param mixed $where
-     * @param boolean $useCache
-     *
-     * @return array
+     * @template T of DbObject
+     * @param class-string<T> $class
+     * @return T[]
      */
-    public function getObjects($class, $where = null, $cache_list = false, $use_cache = true, $order_by = null, $offset = null, $limit = null, $includeDeleted = false)
-    {
+    public function getObjects(
+        string $class,
+        array|null $where = null,
+        array|bool|null $cache_list = false,
+        bool|null $use_cache = true,
+        string|null $order_by = null,
+        int|null $offset = null,
+        int|null $limit = null,
+        bool $includeDeleted = false
+    ) {
         if (!$class) {
             return null;
         }
