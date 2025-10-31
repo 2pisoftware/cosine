@@ -80,31 +80,37 @@ function add_POST(Web $w)
     }
 
     if (!empty($_POST['contact'])) {
-        $contact = AuthService::getInstance($w)->getContact(intval($_POST['contact']));
-        if (empty($contact->id)) {
-            $w->error('Contact not found', '/task/edit/' . $task->id);
+        $contact_ids = explode(",", $_POST["contact"]);
+
+        $contacts = array_map(fn($val) => AuthService::getInstance($w)->getContact($val), $contact_ids);
+
+        foreach ($contacts as $contact) {
+            if (empty($contact->id)) {
+                $w->error('Contact not found', '/task/edit/' . $task->id);
+            }
+
+            $user = $contact->getUser();
+            if (!empty($user) && !$user->is_external && !$task->canView($user)) {
+                $w->error('Insufficient view permissions for user. Consider adding them to the relevant task group.', '/task/edit/' . $task->id);
+            }
+
+            $user_id = AuthService::getInstance($w)->createExernalUserForContact($contact->id);
+
+            if ($task->addSubscriber(AuthService::getInstance($w)->getUser($user_id))) {
+                $w->callHook(
+                    'task',
+                    'subscriber_notification',
+                    [
+                        'task_id' => $task->id,
+                        'user_id' => $user_id
+                    ]
+                );
+            } else {
+                $w->msg('This contact is already a subscriber for this task', '/task/edit/' . $task->id);
+            }
         }
 
-        $user = $contact->getUser();
-        if (!empty($user) && !$user->is_external && !$task->canView($user)) {
-            $w->error('Insufficient view permissions for user. Consider adding them to the relevant task group.', '/task/edit/' . $task->id);
-        }
-
-        $user_id = AuthService::getInstance($w)->createExernalUserForContact($contact->id);
-
-        if ($task->addSubscriber(AuthService::getInstance($w)->getUser($user_id))) {
-            $w->callHook(
-                'task',
-                'subscriber_notification',
-                [
-                    'task_id' => $task->id,
-                    'user_id' => $user_id
-                ]
-            );
-            $w->msg('Contact subscribed', '/task/edit/' . $task->id);
-        } else {
-            $w->msg('This contact is already a subscriber for this task', '/task/edit/' . $task->id);
-        }
+        $w->msg('Contact subscribed', '/task/edit/' . $task->id);
     } else {
         $firstname = Request::string("firstname");
         $lastname = Request::string('lastname');
