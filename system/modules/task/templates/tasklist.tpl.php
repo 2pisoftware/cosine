@@ -7,28 +7,21 @@
 <?php
 echo HtmlBootstrap5::filter("Filter Tasks", $filter_data, "/task/tasklist", "GET");
 
-if (!empty($tasks)) {
-    $table_header = ["ID", "Title", "Group", "Assigned To", "Type", "Priority", "Status", "Due"];
-    $table_data = [];
-
-    // Build table data
-    // usort($tasks, array("TaskService", "sortTasksbyDue"));
-    foreach ($tasks as $task) {
-        if ($task->getCanIView()) {
-            $table_data[] = [
-                $task->id,
-                $task->toLink() . '&nbsp;&nbsp;' . $w->partial('listTags', ['object' => $task, 'limit' => 1], 'tag'),
-                $task->getTaskGroup() ? $task->getTaskGroup()->toLink() : null,
-                $task->getAssignee() ? $task->getAssignee()->getFullName() : null,
-                $task->getTaskTypeObject()?->getTaskTypeTitle() ?? null,
-                $task->priority,
-                $task->status,
-                $task->isTaskLate()
-            ];
-        }
-    }
-
-    echo HtmlBootstrap5::table($table_data, null, "tablesorter", $table_header);
+if (!empty($table_data)) {
+    echo HtmlBootstrap5::paginatedTable(
+        header: $table_header,
+        data: $table_data,
+        page: $page,
+        page_size: $page_size,
+        total_results: $total_results,
+        base_url: "/task/tasklist",
+        sort: $sort,
+        sort_direction: $sort_direction,
+        page_query_param: 'task__page',
+        pagesize_query_param: 'task__page-size',
+        sort_query_param: 'task__sort',
+        sort_direction_param: 'task__sort-direction',
+    );
 } else {
     echo '<h3><small>No tasks found.</small></h3>';
 }
