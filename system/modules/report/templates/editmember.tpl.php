@@ -1,5 +1,1 @@
-<?php
-
-echo $editmember;
-
-?>
+<?php echo $editmember;

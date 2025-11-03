@@ -262,10 +262,10 @@ function batchTestSetup()
     echo "Starting with backup.\n";
     echo (shell_exec("php cmfive.php DB backup") . "\n");
 
-    if (checkABackup(ROOT_PATH . DS . BACKUP_DIRECTORY) == 0) {
-        echo "Stopping, useful backup not confirmed.\n\n";
-        return;
-    }
+    // if (checkABackup(ROOT_PATH . DS . BACKUP_DIRECTORY) == 0) {
+    //     echo "Stopping, useful backup not confirmed.\n\n";
+    //     return;
+    // }
 
     $Mcommand = [
         //"cmfive.php DB backup",

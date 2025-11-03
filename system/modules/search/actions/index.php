@@ -1,6 +1,7 @@
 <?php
 
-function index_ALL(Web &$w) {
+function index_ALL(Web &$w)
+{
     // $w->out(print_r(SearchService::getInstance($w)->getIndexes(),true));
     $indexes = SearchService::getInstance($w)->getIndexes();
     $selIndexes = [];
@@ -15,7 +16,7 @@ function index_ALL(Web &$w) {
     }
     $w->ctx("tags", $tags);
 
-    if (Request::string("isbox") !== NULL) {
+    if (Request::string("isbox") !== null) {
         $w->setLayout(null);
     }
 }

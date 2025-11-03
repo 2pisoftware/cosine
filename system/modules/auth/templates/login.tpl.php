@@ -53,6 +53,16 @@
                 <a onclick="window.location.href='/auth/forgotpassword';" class="btn w-auto "><?php echo $passwordHelp; ?></a>
             </div>
         </div>
+
+        <?php if (Config::get("auth.login.allow_passkey")) : ?>
+            <div class="row mt-3 pt-3 border-top">
+                <div class="col">
+                    <button type="button" class="btn btn-primary w-100 h-auto" id="passkey_login">
+                        Login with Passkey
+                    </button>
+                </div>
+            </div>
+        <?php endif; ?>
     </div>
 
     <div id="mfa_form" class="d-none">
@@ -71,7 +81,7 @@
                 <button type="submit" class="btn btn-primary w-100">Confirm</button>
             </div>
             <div class='col mt-3 mt-sm-0'>
-                <button class="btn btn-secondary w-100" onclick="back">Back</button>
+                <button type="button" class="btn btn-secondary w-100" onclick="back()">Back</button>
             </div>
         </div>
     </div>
@@ -103,16 +113,32 @@
                     "login": formdata.get("login"),
                     "password": formdata.get("password"),
                     "mfa_code": formdata.get("mfa_code"),
-                })
+                }),
+                redirect: "manual"
             });
         } catch (e) {
             auth_form.reset();
             errors.innerText = e.message;
             errors.classList.remove("d-none");
             errors.classList.add("d-flex");
+
+            return;
         }
 
-        const json = await res.json();
+        if (res.type === "opaqueredirect") {
+            return window.location.reload();
+        }
+
+        let json;
+        try {
+            json = await res.json();
+        } catch (e) {
+            auth_form.reset();
+            errors.innerText = "An unknown error occurred. Please refresh the page and try again.";
+            errors.classList.remove("d-none");
+            errors.classList.add("d-flex");
+            return;
+        }
 
         if (json.data.redirect_url != null)
             return window.location.href = json.data.redirect_url;

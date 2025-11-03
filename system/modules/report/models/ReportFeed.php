@@ -1,17 +1,20 @@
 <?php
-class ReportFeed extends DBObject {
-    public $report_id;		// source report id
-    public $title;			// feed title
-    public $description;	// feed description
-    public $report_key;			// special feed key
-    public $url;			// url to access feed
-    public $dt_created;	// date created
-    public $is_deleted;	// is deleted flag
+class ReportFeed extends DBObject
+{
+    public $report_id;
+    public $title;
+    public $description;
+    public $report_key;
+    public $url;
+    public $dt_created;
+    public $is_deleted;
 
     // get feed key upon insert of new feed
-    function insert($force_validation = false) {
-        if (!$this->report_key)
-        $this->report_key = uniqid();
+    public function insert($force_validation = false): void
+    {
+        if (!$this->report_key) {
+            $this->report_key = uniqid();
+        }
 
         // insert feed into database
         parent::insert();

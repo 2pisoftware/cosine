@@ -36,7 +36,7 @@ function taskAjaxSelectbyTaskGroup_ALL(Web $w)
 
         "group" => [
             "is_owner" => $task_group->isOwner(AuthService::getInstance($w)->user()),
-			"name" => $task_group->title,
+            "name" => $task_group->title,
             "link" => $w->localUrl("task-group/viewmembergroup/" . $task_group->id),
             "type" => $type_title,
             "desc" => $type_desc,

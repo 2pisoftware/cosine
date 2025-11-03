@@ -1,5 +1,1 @@
-<?php
-
-echo $deletemember;
-
-?>
+<?php echo $deletemember;

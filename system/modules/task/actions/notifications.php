@@ -1,10 +1,11 @@
 <?php
 
-function notifications_GET(Web $w) {
-	$line = [["Task Group", "Your Role", "Creator", "Assignee", "All Others", ""]];
+function notifications_GET(Web $w)
+{
+    $line = [["Task Group", "Your Role", "Creator", "Assignee", "All Others", ""]];
     $user_taskgroup_members = TaskService::getInstance($w)->getMemberGroups(AuthService::getInstance($w)->user()->id);
     if ($user_taskgroup_members) {
-        usort($user_taskgroup_members, array("TaskService", "sortbyRole"));
+        usort($user_taskgroup_members, ["TaskService", "sortbyRole"]);
 
         foreach ($user_taskgroup_members as $member) {
             $taskgroup = $member->getTaskGroup();
@@ -29,14 +30,14 @@ function notifications_GET(Web $w) {
                 $title = TaskService::getInstance($w)->getTaskGroupTitleById($member->task_group_id);
                 $role = strtolower($member->role);
 
-                $line[] = array(
+                $line[] = [
                     $title,
                     ucfirst($role),
                     @$value_array[$role]["creator"],
                     @$value_array[$role]["assignee"],
                     @$value_array[$role]["other"],
                     HtmlBootstrap5::box(href: $w->localUrl("/task/updateusergroupnotify/" . $member->task_group_id), title: " Edit ", button: true, class: 'btn btn-primary')
-                );
+                ];
             }
             unset($value_array);
         }
@@ -46,6 +47,6 @@ function notifications_GET(Web $w) {
     }
 }
 
-function notifications_POST(Web $w) {
-	
+function notifications_POST(Web $w)
+{
 }

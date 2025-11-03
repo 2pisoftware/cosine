@@ -92,5 +92,4 @@ class Option extends \Html\Form\FormElement
 
         return $this;
     }
-
 }

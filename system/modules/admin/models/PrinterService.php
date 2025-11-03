@@ -1,39 +1,47 @@
 <?php
 
-class PrinterService extends DbService {
-    
+class PrinterService extends DbService
+{
+
     /**
-     * Returns Printer object based on it's ID
-     * 
+     * Gets printer object by ID
+     *
      * @param mixed $printer_id
-     * @return <Printer>
+     * @return Printer|null
      */
-    public function getPrinter($printer_id) {
+    public function getPrinter($printer_id): Printer|null
+    {
         return $this->getObject("Printer", $printer_id);
     }
-    
-    public function getPrinters() {
+
+    /**
+    * @return Printer[]
+    */
+    public function getPrinters(): array
+    {
         return $this->getObjects("Printer");
     }
-	
-	public function getPrinterByName($printer_name) {
-		return $this->getObject('Printer', ['name' => $printer_name]);
-	}
-    
+
+    public function getPrinterByName(string $printer_name): Printer|null
+    {
+        return $this->getObject('Printer', ['name' => $printer_name]);
+    }
+
     /**
      * Printjob sends a file to printer based on config rules
-     * 
-     * @param Printer $printer
-     * @param string $file (Path to file to print)
+     *
+     * @param string filename (Path to file to print)
+     * @param Printer|null printer object to print to
      */
-    public function printjob($filename, Printer $printer = null) {
+    public function printjob($filename, Printer|null $printer = null)
+    {
         if (empty($filename)) {
             return;
         }
-        
+
         // Log everywhere
-        LogService::getInstance($this->w)->info("Starting print job: {$filename}");
-        
+        LogService::getInstance()->info("Starting print job: {$filename}");
+
         // Load print config
         $config = $this->w->moduleConf('admin', 'printing');
         if (!empty($config["command"])) {
@@ -51,27 +59,26 @@ class PrinterService extends DbService {
                     }
                     break;
             }
-            
-            // Fill the string with our printer values            
+
+            // Fill the string with our printer values
             if (!empty($printer->id)) {
                 LogService::getInstance($this->w)->info("Printing to: {$printer->name} with command: {$command}");
-                $command = str_replace(array('$filename', '$servername', '$port', '$printername'), 
-                    array($filename, escapeshellarg($printer->server), escapeshellarg($printer->port), escapeshellarg($printer->name)),
-                    $command);
+                $command = str_replace(
+                    search: ['$filename', '$servername', '$port', '$printername'],
+                    replace: [$filename, escapeshellarg($printer->server), escapeshellarg($printer->port), escapeshellarg($printer->name)],
+                    subject: $command
+                );
             } else {
                 $command = str_replace('$filename', escapeshellarg($filename), $command);
             }
 
             // Run the command
-            // echo $command . "<br/>";
-            $response = shell_exec($command . " 2>&1");
-            if (!empty($response)){
-                LogService::getInstance($this->w)->info("Shell exec repsonse: {$response}");
-//                echo $response;
+            $response = shell_exec($command." 2>&1");
+            if (!empty($response)) {
+                LogService::getInstance($this->w)->info("Shell exec response: {$response}");
             }
-            
+
             return $response;
         }
     }
-    
 }

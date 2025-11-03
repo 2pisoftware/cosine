@@ -1,6 +1,7 @@
 <?php
 
-function test_ALL(Web $w) {
+function test_ALL(Web $w)
+{
     $p = $w->pathMatch("id");
     if (empty($p["id"])) {
         $w->error("No connection ID specified", "/report-connections");
@@ -29,7 +30,7 @@ function test_ALL(Web $w) {
         }
         
         if (!empty($results)) {
-            foreach(array_values($results) as $r) {
+            foreach (array_values($results) as $r) {
                 echo "\t{$r[0]}<br/>";
             }
         } else {
@@ -38,5 +39,4 @@ function test_ALL(Web $w) {
     } catch (Exception $e) {
         echo $e->getMessage();
     }
-    
 }

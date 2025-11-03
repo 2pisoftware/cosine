@@ -1,5 +1,1 @@
-<?php
-
-echo $report;
-
-?>
+<?php echo $report;

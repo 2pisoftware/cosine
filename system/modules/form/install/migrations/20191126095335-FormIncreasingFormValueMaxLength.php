@@ -2,7 +2,6 @@
 
 class FormIncreasingFormValueMaxLength extends CmfiveMigration
 {
-
     public function up()
     {
         $this->changeColumnInTable("form_value", "value", "text", ["null" => true, "default" => null]);

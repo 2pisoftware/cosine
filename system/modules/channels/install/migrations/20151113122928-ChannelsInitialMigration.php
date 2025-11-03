@@ -4,19 +4,11 @@ class ChannelsInitialMigration extends CmfiveMigration
 {
     public function up()
     {
-        $column = parent::Column();
-        $column->setName('id')
-            ->setType('biginteger')
-            ->setIdentity(true);
-
         /**
          * CHANNEL TABLE
          */
         if (!$this->hasTable('channel')) {
-            $this->table('channel', [
-                'id' => false,
-                'primary_key' => 'id'
-            ])->addColumn($column)
+            $this->tableWithId('channel')
                 ->addColumn('is_active', 'boolean', ['default' => 1])
                 ->addColumn('name', 'string', ['limit' => 255, 'null' => true])
                 ->addColumn('notify_user_email', 'string', ['limit' => 255, 'null' => true])
@@ -30,10 +22,7 @@ class ChannelsInitialMigration extends CmfiveMigration
          * CHANNEL EMAIL OPTION TABLE
          */
         if (!$this->hasTable('channel_email_option')) {
-            $this->table('channel_email_option', [
-                'id' => false,
-                'primary_key' => 'id'
-            ])->addColumn($column)
+            $this->tableWithId('channel_email_option')
                 ->addColumn('channel_id', 'biginteger')
                 ->addColumn('server', 'string', ['limit' => 1024])
                 ->addColumn('s_username', 'string', ['limit' => 512, 'null' => true])
@@ -57,10 +46,7 @@ class ChannelsInitialMigration extends CmfiveMigration
          * CHANNEL MESSAGE TABLE
          */
         if (!$this->hasTable('channel_message')) {
-            $this->table('channel_message', [
-                'id' => false,
-                'primary_key' => 'id'
-            ])->addColumn($column)
+            $this->tableWithId('channel_message')
                 ->addColumn('channel_id', 'biginteger')
                 ->addColumn('message_type', 'string', ['limit' => 255])
                 ->addColumn('is_processed', 'boolean', ['default' => 1])
@@ -72,10 +58,7 @@ class ChannelsInitialMigration extends CmfiveMigration
          * CHANNEL MESSAGE STATUS TABLE
          */
         if (!$this->hasTable('channel_message_status')) {
-            $this->table('channel_message_status', [
-                'id' => false,
-                'primary_key' => 'id'
-            ])->addColumn($column)
+            $this->tableWithId('channel_message_status')
                 ->addColumn('message_id', 'biginteger')
                 ->addColumn('processor_id', 'biginteger')
                 ->addColumn('message', 'text')
@@ -88,10 +71,7 @@ class ChannelsInitialMigration extends CmfiveMigration
          * CHANNEL PROCESSOR TABLE
          */
         if (!$this->hasTable('channel_processor')) {
-            $this->table('channel_processor', [
-                'id' => false,
-                'primary_key' => 'id'
-            ])->addColumn($column)
+            $this->tableWithId('channel_processor')
                 ->addColumn('channel_id', 'biginteger')
                 ->addColumn('class', 'string', ['limit' => 255])
                 ->addColumn('module', 'string', ['limit' => 255])

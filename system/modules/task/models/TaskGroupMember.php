@@ -2,7 +2,6 @@
 // defines task group members and their role in the group
 class TaskGroupMember extends DbObject
 {
-
     public $task_group_id;
     public $user_id;
     public $role; // OWNER, MEMBER, GUEST

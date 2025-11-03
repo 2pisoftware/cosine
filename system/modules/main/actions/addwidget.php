@@ -1,9 +1,8 @@
 <?php
 
-function addwidget_GET(Web $w) {
-
-    $p = $w->pathMatch("module");
-    $module = $p["module"];
+function addwidget_GET(Web $w)
+{
+    list($module) = $w->pathMatch("module");
 
     $modulelist = $w->modules();
     $modules = array_filter($modulelist, function ($module) use (&$w) {
@@ -11,26 +10,25 @@ function addwidget_GET(Web $w) {
         return !empty($names);
     });
 
-    $form = [__("Add a widget") => [
-        // array(array("Add widget for", "select", "destination_module", $module, $w->modules())),
-        [[__("Source module"), "select", "source_module", null, $modules]],
-        [[__("Widget Name"), "select", "widget_name", null, []]],
+    $form = ["Add a widget" => [
+        [(new Html\Form\Select([
+            "label" => "Source module",
+            "id|name" => "source_module",
+            "options" => $modules
+        ]))],
+        [(new Html\Form\Select([
+            "label" => "Widget Name",
+            "id|name" => "widget_name",
+            "options" => []
+        ]))],
     ]];
 
     $w->ctx("widgetform", HtmlBootstrap5::multiColForm($form, "/main/addwidget/{$module}", "POST", __("Add")));
 }
 
-function addwidget_POST(Web $w) {
-
-    $p = $w->pathMatch("module");
-    $module = $p["module"];
-    // $id = $p["id"];
-
-    // $widget = WidgetService::getInstance($w)->getWidget($_POST["destination_module"], $_POST["source_module"], $_POST["widget_name"]);
-    // $widget = WidgetService::getInstance($w)->getWidgetByID($)
-    // if (null !== $widget) {
-    // 	$w->error("This entry already exists!", "/{$module}/index");
-    // }
+function addwidget_POST(Web $w)
+{
+    list($module) = $w->pathMatch("module");
 
     $widget = new WidgetConfig($w);
     $widget->destination_module = $module;

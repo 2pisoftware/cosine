@@ -212,7 +212,8 @@ abstract class Common extends Base
     /**
      * @return string
      */
-    protected function getClauseWhere() {
+    protected function getClauseWhere()
+    {
         $firstStatement = array_shift($this->statements['WHERE']);
         $query = " WHERE {$firstStatement[1]}"; // append first statement to WHERE without condition
 

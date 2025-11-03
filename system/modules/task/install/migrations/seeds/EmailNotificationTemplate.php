@@ -1,22 +1,24 @@
 <?php
 
-class EmailNotificationTemplate extends CmfiveSeedMigration {
+class EmailNotificationTemplate extends CmfiveSeedMigration
+{
 
-	public $name = "EmailNotificationTemplate";
-	public $description = "Installs standard task notification email template";
+    public $name = "EmailNotificationTemplate";
+    public $description = "Installs standard task notification email template";
 
-	public function seed() {
+    public function seed()
+    {
 
-		///////////////////
-		//// Templates ////
-		///////////////////
+        ///////////////////
+        //// Templates ////
+        ///////////////////
 
-		$email_template = new Template($this->w);
-		$email_template->title = "Task Email Template";
-		$email_template->module = "task";
-		$email_template->category = "notification_email";
-		$email_template->is_active = 1;
-		$email_template->template_body = '<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN" "http://www.w3.org/TR/REC-html40/loose.dtd">
+        $email_template = new Template($this->w);
+        $email_template->title = "Task Email Template";
+        $email_template->module = "task";
+        $email_template->category = "notification_email";
+        $email_template->is_active = 1;
+        $email_template->template_body = '<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN" "http://www.w3.org/TR/REC-html40/loose.dtd">
 <html style="min-height: 100%; background: #f3f3f3;">
 <head><span class="preheader"></span></head>
 <body style="width: 100% !important; min-width: 100%; -webkit-text-size-adjust: 100%; -ms-text-size-adjust: 100%; -moz-box-sizing: border-box; -webkit-box-sizing: border-box; box-sizing: border-box; color: #0a0a0a; font-family: Helvetica, Arial, sans-serif; font-weight: 400; text-align: left; line-height: 19px; font-size: 16px; margin: 0; padding: 0;">
@@ -436,9 +438,8 @@ class EmailNotificationTemplate extends CmfiveSeedMigration {
 </html>
 ';
 
-    $email_template->test_body_json = '{"status":"[42] New task created","footer":"<p>The president has voiced the urgency to finish the detector ASAP, little does she know I have no idea what I\'m doing, people in the fleet are starting to attack one another!<\/p>","action_url":"http:\/\/cmfive.com","logo_url":"http:\/\/cmfive.com\/wp-content\/uploads\/2014\/05\/cmfive-logo-for-header.png","fields":{"Assigned to":"Gaius Baltar","Type":"Support Ticket","Title":"Finish Cylon Detector","Due":"04-05-2092","Status":"New","Priority":"Critical"},"can_view_task":true}';
+        $email_template->test_body_json = '{"status":"[42] New task created","footer":"<p>The president has voiced the urgency to finish the detector ASAP, little does she know I have no idea what I\'m doing, people in the fleet are starting to attack one another!<\/p>","action_url":"http:\/\/cmfive.com","logo_url":"http:\/\/cmfive.com\/wp-content\/uploads\/2014\/05\/cmfive-logo-for-header.png","fields":{"Assigned to":"Gaius Baltar","Type":"Support Ticket","Title":"Finish Cylon Detector","Due":"04-05-2092","Status":"New","Priority":"Critical"},"can_view_task":true}';
 
-		$email_template->insert();
-	}
-
+        $email_template->insert();
+    }
 }

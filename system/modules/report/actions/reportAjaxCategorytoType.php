@@ -1,14 +1,15 @@
 <?php
 
 // Search Filter: selecting an Category will dynamically load the Type dropdown with available values
-function reportAjaxCategorytoType_ALL(Web $w) {
-    $type = array();
+function reportAjaxCategorytoType_ALL(Web $w)
+{
+    $type = [];
 
     list($category, $module) = preg_split('/_/', Request::string('id'));
 
     // organise criteria
     $who = $w->session('user_id');
-    $where = array();
+    $where = [];
     if (!empty($module)) {
         $where['report.module'] = $module;
     }
@@ -23,13 +24,14 @@ function reportAjaxCategorytoType_ALL(Web $w) {
             $arrtype = preg_split("/,/", $report->sqltype);
             foreach ($arrtype as $rtype) {
                 $rtype = trim($rtype);
-                if (!array_key_exists(strtolower($rtype), $type))
-                    $type[strtolower($rtype)] = array(strtolower($rtype), strtolower($rtype));
+                if (!array_key_exists(strtolower($rtype), $type)) {
+                    $type[strtolower($rtype)] = [strtolower($rtype), strtolower($rtype)];
+                }
             }
         }
     }
     if (empty($type)) {
-        $type = array(array("No Reports", ""));
+        $type = [["No Reports", ""]];
     }
 
     $w->setLayout(null);

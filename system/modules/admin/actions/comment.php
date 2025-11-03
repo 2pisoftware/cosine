@@ -114,13 +114,13 @@ function comment_GET(Web $w)
     ];
 
     // make sure line breaks are escaped for correct processing in js
-    $w->ctx("comment", addcslashes($comment->comment, "\n\""));
+    $w->ctx("comment", addcslashes($comment->comment ?? "", "\n\""));
 
     $w->ctx("comment_id", $comment_id == "{0}" ? "0" : $comment_id);
-    $w->ctx("viewers", json_encode($viewers));
+    $w->ctx("viewers", json_encode($viewers, JSON_HEX_APOS));
     $w->ctx("top_object_class_name", strtolower(preg_replace('/(?<=\\w)(?=[A-Z])/', "_$1", $parent_object_class_name)));
     $w->ctx("top_object_id", $parent_object_id);
-    $w->ctx("new_owner", json_encode($new_owner));
+    $w->ctx("new_owner", json_encode($new_owner, JSON_HEX_APOS));
     $w->ctx("is_new_comment", empty($comment_id) || $comment_id == 0 ? "true" : "false");
     $w->ctx("is_internal_only", $is_internal_only);
     $w->ctx("has_notification_selection", $has_notification_selection);

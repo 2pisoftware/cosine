@@ -37,5 +37,4 @@ function runInsight_GET(Web $w)
     $template_select = (new \Html\Form\Select())->setLabel('Template')->setName('template_id')->setOptions($templates, true);//->setRequired(false)
 
     $w->ctx('template_select', $template_select);
-
 }

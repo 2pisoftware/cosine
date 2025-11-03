@@ -1,6 +1,7 @@
 <?php
 
-class FilePolyfill {
+class FilePolyfill
+{
     protected $key;
     protected $filesystem;
 

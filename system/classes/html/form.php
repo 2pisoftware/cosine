@@ -1,6 +1,7 @@
 <?php namespace Html;
 
-class form {
+class form
+{
     
     public $accept_charset;
     public $action;
@@ -15,58 +16,68 @@ class form {
     public $id;
     public $_class;
     
-    public function accept_charset($accept) {
+    public function accept_charset($accept)
+    {
         $this->accept_charset = $accept;
         return $this;
     }
     
-    public function action($action) {
+    public function action($action)
+    {
         $this->action = $action;
         return $this;
     }
     
-    public function autocomplete($autocomplete) {
+    public function autocomplete($autocomplete)
+    {
         $this->autocomplete = (!!($autocomplete) == true ? "on" : "off");
         return $this;
     }
     
-    public function enctype($enctype) {
+    public function enctype($enctype)
+    {
         $this->enctype = $enctype;
         return $this;
     }
     
-    public function method($method) {
-        if (in_array($method, array("GET", "POST", "PUT", "DELETE"))) {
+    public function method($method)
+    {
+        if (in_array($method, ["GET", "POST", "PUT", "DELETE"])) {
             $this->method = $method;
         }
         return $this;
     }
     
-    public function name($name) {
+    public function name($name)
+    {
         $this->name = $name;
         return $this;
     }
     
-    public function novalidate($novalidate) {
+    public function novalidate($novalidate)
+    {
         if (!empty($novalidate)) {
             $this->novalidate = "novalidate";
         }
         return $this;
     }
     
-    public function target($target) {
-        if (in_array(strtolower($target), array("_blank", "_self", "_parent", "_top"))) {
+    public function target($target)
+    {
+        if (in_array(strtolower($target), ["_blank", "_self", "_parent", "_top"])) {
             $this->target = strtolower($target);
         }
         return $this;
     }
     
-    public function id($id) {
+    public function id($id)
+    {
         $this->id = $id;
         return $this;
     }
     
-    public function setClass($class) {
+    public function setClass($class)
+    {
         $this->_class = $class;
         return $this;
     }
@@ -78,7 +89,8 @@ class form {
     }
     
 
-    public function open() {
+    public function open()
+    {
         $buffer = "";
         $buffer .= "<form ";
         if (!empty($this->accept_charset)) {
@@ -135,7 +147,8 @@ class form {
         return $buffer;
     }
     
-    public function close($button_title = 'Save', $extrabuttons = null) {
+    public function close($button_title = 'Save', $extrabuttons = null)
+    {
         if (!empty($button_title)) {
             $button = new \Html\button();
             $button->type("submit")->text($button_title)->setClass('button savebutton');

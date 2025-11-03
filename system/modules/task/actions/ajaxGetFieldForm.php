@@ -63,9 +63,4 @@ function ajaxGetFieldForm_ALL(Web $w)
         "historial" => HtmlBootstrap5::table($table_data, null, "small-12", ["Data key", "Value"]),
         "current" => HtmlBootstrap5::form($task_type_form, "/task/edit", null, null, "form_fields_form"),
     ]));
-
-    // $w->out(json_encode(
-    //     (count($table_data) > 0 ? "<table style='width: 100%; margin-bottom: 0px;'><tr><td class='section'>Historical task data</td></tr></table>" . HtmlBootstrap5::table($table_data, null, "small-12", ["Data key", "Value"]) : '') .
-    //         (!empty($task_type_form) ? HtmlBootstrap5::form($task_type_form, "/task/edit", null, null, "form_fields_form") : '')
-    // ));
 }

@@ -1,7 +1,5 @@
 <?php
 
-use \Sonata\GoogleAuthenticator\GoogleAuthenticator;
-
 function ajax_confirm_mfa_code_POST(Web $w)
 {
     $w->setLayout(null);
@@ -18,7 +16,7 @@ function ajax_confirm_mfa_code_POST(Web $w)
         return;
     }
 
-    if (!(new GoogleAuthenticator())->checkCode($user->mfa_secret, $request_data["mfa_code"])) {
+    if (!$user->checkMfaCode($request_data["mfa_code"])) {
         $w->out((new JsonResponse())->setErrorResponse("Incorrect MFA Code", null));
         return;
     }

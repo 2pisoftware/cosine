@@ -44,7 +44,7 @@ function ajaxGetMetadata_GET(Web $w)
 
                         $w->out(HtmlBootstrap5::form($metadata_form));
                         return;
-                    } else if (is_a($metadata_form, 'VueComponent')) {
+                    } elseif (is_a($metadata_form, 'VueComponent')) {
                         // Else assume new Vue.js component layout - will already be in the template
                         // header("HTTP/1.1 404 Not Found");
                         // $w->out(htmlentities($metadata_form->display()));

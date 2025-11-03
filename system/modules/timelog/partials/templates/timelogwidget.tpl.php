@@ -9,10 +9,7 @@
         id="timelog_widget_stop"
         data-bs-toggle="tooltip"
         data-bs-placement="bottom"
-        title="<?php echo !empty($active_log)
-                    ? $active_log->object_class . ": " . $active_log->getLinkedObject()->getSelectOptionTitle()
-                    : '';
-                ?>">
+        title="<?php echo !empty($active_log) ? $active_log->object_class . ": " . $active_log->getLinkedObject()->getSelectOptionTitle() : ''; ?>">
     </span>
 </div>
 
@@ -30,9 +27,7 @@
     const start = document.getElementById("timelog_widget_start");
     const stop = document.getElementById("timelog_widget_stop");
 
-    let start_time = <?php echo (!empty($active_log) && $active_log->dt_start)
-                            ? $active_log->dt_start
-                            : "false"; ?>;
+    let start_time = <?php echo (!empty($active_log) && $active_log->dt_start) ? $active_log->dt_start : "false"; ?>;
 
     const updateClock = () => {
         var t = (new Date().getTime() / 1000) - start_time;

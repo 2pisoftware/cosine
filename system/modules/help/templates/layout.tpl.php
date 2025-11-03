@@ -13,7 +13,7 @@
         <table height="600" width="100%">
             <tr>
                 <td valign="top">
-                    <?php if (!empty($module_toc)): ?>
+                    <?php if (!empty($module_toc)) : ?>
                         <a href="<?php echo WEBROOT . '/help/view/' . $module_toc ?>"><?php echo $module_title; ?></a>&nbsp;:&nbsp;
                     <?php endif; ?>
                     <a href="<?php echo WEBROOT . '/help/toc'; ?>">Contents</a>&nbsp;:&nbsp;
@@ -32,11 +32,11 @@
         </table>
 
     </body>
-    		<script type="text/javascript">
+            <script type="text/javascript">
 
-		    $(document).ready(function(){
-		    	var options = { innerHeight : $( 'body' ).outerHeight( true ) };
-		    	parent.$.fn.colorbox.resize( options );
-		    });
-		</script>
-</html>	
+            $(document).ready(function(){
+                var options = { innerHeight : $( 'body' ).outerHeight( true ) };
+                parent.$.fn.colorbox.resize( options );
+            });
+        </script>
+</html> 

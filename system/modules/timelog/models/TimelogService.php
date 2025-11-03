@@ -7,16 +7,16 @@
  */
 class TimelogService extends DbService
 {
-    private $_trackObject = null;
+    private mixed $_trackObject = null;
 
     /**
      * Returns all time logs for a given user
      *
      * @param User $user
      * @param boolean $includeDeleted
-     * @return Timelog
+     * @return Timelog[]
      */
-    public function getTimelogsForUser(User $user = null, $includeDeleted = false, $page = 1, $page_size = 20)
+    public function getTimelogsForUser(User|null $user = null, $includeDeleted = false, $page = 1, $page_size = 20)
     {
         if ($user === null) {
             $user = AuthService::getInstance($this->w)->user();
@@ -35,7 +35,7 @@ class TimelogService extends DbService
      *
      * @param User $user
      * @param boolean $includeDeleted
-     * @return Timelog
+     * @return Timelog[]
      */
     public function getTimelogsForUserAndClass(User $user, $className, $includeDeleted = false, $dt_start = null, $dt_end = null, $page = null, $page_size = null)
     {
@@ -58,7 +58,7 @@ class TimelogService extends DbService
     }
 
 
-    public function countTotalTimelogsForUser(User $user = null, $includeDeleted = false)
+    public function countTotalTimelogsForUser(User|null $user = null, $includeDeleted = false)
     {
         if ($user === null) {
             $user = AuthService::getInstance($this->w)->user();
@@ -113,9 +113,9 @@ class TimelogService extends DbService
     }
 
     /**
-     * Returns all non deleted timelogs
+     * Returns all non-deleted timelogs
      *
-     * @return Array<Timelog>
+     * @return Timelog[]
      */
     public function getTimelogs()
     {
@@ -148,16 +148,21 @@ class TimelogService extends DbService
         $this->_trackObject = $object;
     }
 
-    public function getTrackingObject()
+    public function getTrackingObject(): mixed
     {
         return $this->_trackObject;
     }
 
-    public function getTrackingObjectClass()
+    #[Deprecated(
+        reason: "Unused function. Use getTrackingObject and get_class() if needed",
+        since: "7.0"
+    )]
+    public function getTrackingObjectClass(): string
     {
         if ($this->hasTrackingObject()) {
             return get_class($this->_trackObject);
         }
+        return "";
     }
 
     public function getJSTrackingObject()
@@ -173,12 +178,14 @@ class TimelogService extends DbService
     public function shouldShowTimer()
     {
         // Check if tracking object set or existing timelog is running
-        return ((!empty(AuthService::getInstance($this->w)->user())) && AuthService::getInstance($this->w)->user()->hasRole("timelog_user") && ($this->hasTrackingObject() || $this->hasActiveLog()));
+        return !empty(AuthService::getInstance($this->w)->user()) &&
+            AuthService::getInstance($this->w)->user()->hasRole("timelog_user") &&
+            ($this->hasTrackingObject() || $this->hasActiveLog());
     }
 
     /**
      * returns a list of objects to which you can attach timelogs
-     * @return type array
+     * @return [] list of loggable objects
      */
     public function getLoggableObjects()
     {

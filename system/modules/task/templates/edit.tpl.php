@@ -121,7 +121,7 @@
                 <div class="small-12 large-3 right">
                     <?php if (!empty($task->id)) : ?>
                         <div class="row panel" id="task_subscribers">
-                            <div class="col">
+                            <div class="col p-0">
                                 <div class="d-flex align-items-center justify-content-between border-bottom pb-2 mb-2">
                                     <p class="fs-4 m-0">Subscribers</p>
                                     <?php
@@ -136,38 +136,34 @@
                             </div>
 
                             <?php if (!empty($subscribers)) : ?>
-                                <style>
-                                    .subscribers > div {
-                                        border-bottom: 1px solid white;
-                                    }
+                                <table class="table table-striped shadow-none m-0">
+                                    <tbody style="border-color:transparent;">
+                                        <?php foreach ($subscribers as $subscriber) : ?>
+                                            <?php $subscriber_user = $subscriber->getUser(); ?>
+                                            <?php if (!empty($subscriber_user)) : ?>
+                                                <tr>
+                                                    <td class="align-middle">
+                                                        <div>
+                                                            <?php echo $subscriber_user->getFullName() ?>
+                                                        </div>
+                                                        <div>
+                                                            <?php echo $subscriber_user->getContact()->email; ?>
+                                                        </div>
+                                                    </td>
 
-                                    .subscribers > div:last-child {
-                                        border-bottom: none;
-                                    }
-                                </style>
-                                <div class="subscribers">
-                                    <?php foreach ($subscribers as $subscriber) : ?>
-                                        <?php $subscriber_user = $subscriber->getUser(); ?>
-                                        <?php if (!empty($subscriber_user)) : ?>
-                                            <div class="p-0 d-flex justify-content-between align-items-center">
-                                                <div class="d-inline-flex flex-column w-50">
-                                                    <div class="pt-0"><?php echo $subscriber_user->getFullName() ?></div>
-                                                    <div><?php echo $subscriber_user->getContact()->email; ?></div>
-                                                </div>
-                                                <?php
-                                                echo HtmlBootstrap5::b(
-                                                    '/task-subscriber/delete/' . $subscriber->id,
-                                                    '×',
-                                                    'Are you sure you want to remove this subscriber?',
-                                                    null,
-                                                    false,
-                                                    'bg-warning d-inline text-dark'
-                                                );
-                                                ?></td>
-                                            </div>
-                                        <?php endif;
-                                    endforeach; ?>
-                                </div>
+                                                    <td class="align-middle text-end">
+                                                        <?php echo HtmlBootstrap5::b(
+                                                            href: '/task-subscriber/delete/' . $subscriber->id,
+                                                            title: '×',
+                                                            confirm: 'Are you sure you want to remove this subscriber?',
+                                                            class: 'bg-warning btn-sm d-inline text-dark'
+                                                        ); ?>
+                                                    </td>
+                                                </tr>
+                                            <?php endif; ?>
+                                        <?php endforeach; ?>
+                                    </tbody>
+                                </table>
                             <?php endif; ?>
                         </div>
 

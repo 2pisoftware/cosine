@@ -2,11 +2,11 @@
 
 /**
  * A helper InputField class for reset buttons
- * 
+ *
  * @author Adam Buckley <adam@2pisoftware.com>
  */
-class Reset extends \Html\Form\InputField {
-	
-	public $type = "reset";
-	
+class Reset extends \Html\Form\InputField
+{
+    
+    public $type = "reset";
 }

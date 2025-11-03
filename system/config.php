@@ -55,10 +55,11 @@ Config::set('system.csrf', [
 ]);
 
 Config::set('email.transports', [
-    'ses' => 'SesTransport',
-    'smtp' => 'SwiftMailerTransport',
-    'swiftmailer' => 'SwiftMailerTransport',
-    'sendmail' => 'SwiftMailerTransport',
+    'ses' => 'SymfonyMailerTransport',
+    'smtp' => 'SymfonyMailerTransport',
+    'swiftmailer' => 'SymfonyMailerTransport',
+    'sendmail' => 'SymfonyMailerTransport',
+    "symfonymailer" => 'SymfonyMailerTransport',
     'aws' => 'AwsTransport',
     'mock' => 'MockTransport',
 ]);

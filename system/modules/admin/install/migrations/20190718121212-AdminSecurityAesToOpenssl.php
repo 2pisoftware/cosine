@@ -4,7 +4,7 @@
  * This migration nolonger viable, because:
  *  - it errors out depending on case sensitivity settings of MySQL DB
  *  - the error state is intermittent depending on sequence of module installation vs migration execution
- *  - it can't run anyway, from any recent merged branches, because "system->functions->AES_encryption" code has been purged * 
+ *  - it can't run anyway, from any recent merged branches, because "system->functions->AES_encryption" code has been purged *
  */
 
  
@@ -41,11 +41,11 @@ class AdminSecurityAesToOpenssl extends CmfiveMigration
     //         throw new Exception($err);
     //     }
 
-    //     /* DB table_name and ObjectName don't always match 
-    //     * (e. g. table name: channel_email_option, object name: EmailChannelOption), 
+    //     /* DB table_name and ObjectName don't always match
+    //     * (e. g. table name: channel_email_option, object name: EmailChannelOption),
     //     * therefore it is not always possible to get a DB object from table name.
     //     * to do: make them match each other? (e. g. channel_email_option -> ChannelEmailOption)*/
-    //     $table = $this->w->db->query("select table_name, column_name from information_schema.columns 
+    //     $table = $this->w->db->query("select table_name, column_name from information_schema.columns
     //         where table_schema='$db' and column_name like 's\_%';")->fetchAll();
 
     //     if (empty($table)) {
@@ -150,7 +150,7 @@ class AdminSecurityAesToOpenssl extends CmfiveMigration
 
     // private function checkMigrationStatus()
     // {
-    //     $result = $this->w->db->query("select id from migration 
+    //     $result = $this->w->db->query("select id from migration
     //     where module = 'admin' and classname = '" . Config::get('system.encryptionMigration') . "' ; ")->fetchAll();
 
     //     $checked = [
@@ -203,7 +203,7 @@ class AdminSecurityAesToOpenssl extends CmfiveMigration
     //         throw new Exception($err);
     //     }
 
-    //     $table = $this->w->db->query("select table_name, column_name from information_schema.columns 
+    //     $table = $this->w->db->query("select table_name, column_name from information_schema.columns
     //          where table_schema='$db' and column_name like 's\_%';")->fetchAll();
 
     //     if (empty($table)) {

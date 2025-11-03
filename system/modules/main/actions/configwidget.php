@@ -1,44 +1,44 @@
 <?php
 
-function configwidget_GET(Web $w) {
+function configwidget_GET(Web $w)
+{
+    $p = $w->pathMatch("origin", "id");
+    $widget = WidgetService::getInstance($w)->getWidgetById($p["id"]);
 
-	$p = $w->pathMatch("origin", "id"); // "origin", "source", "widget");
-	// $widget = WidgetService::getInstance($w)->getWidget($p["origin"], $p["source"], $p["widget"]);
-	$widget = WidgetService::getInstance($w)->getWidgetById($p["id"]);
-	// $widgetname = $p["widget"];
+    if (empty($widget->id)) {
+        $w->error(__("Widget not found"), "/{$p['origin']}");
+    }
+    $widgetname = $widget->widget_name;
+    $widget_config = null;
+    if (class_exists($widgetname)) {
+        $widget_config = new $widgetname($w, $widget);
+    }
 
-	if (empty($widget->id)) {
-		$w->error(__("Widget not found"), "/{$p['origin']}");
-	}
-	$widgetname = $widget->widget_name;
-	$widget_config = null;
-	if (class_exists($widgetname)) {
-		$widget_config = new $widgetname($w, $widget);
-	}
-
-	if (!empty($widget_config)) {
-		$w->out(HtmlBootstrap5::multiColForm($widget_config->getSettingsForm(), "/main/configwidget/{$p['origin']}/{$p['id']}")); // {$p['origin']}/{$p['source']}/{$p['widget']}"));
-	} else {
-		$w->out(__("Could not find widget class ({$widgetname})"));
-	}
+    if (!empty($widget_config)) {
+        if (!empty($widget_config->getSettingsForm())) {
+            $w->out(HtmlBootstrap5::multiColForm($widget_config->getSettingsForm(), "/main/configwidget/{$p['origin']}/{$p['id']}")); // {$p['origin']}/{$p['source']}/{$p['widget']}"));
+        } else {
+            $w->out(__("This widget has no configurable options"));
+        }
+    } else {
+        $w->out(__("Could not find widget class ({$widgetname})"));
+    }
 }
 
-function configwidget_POST(Web $w) {
+function configwidget_POST(Web $w)
+{
+    list($origin, $id) = $w->pathMatch("origin", "id");
+    $widget = WidgetService::getInstance($w)->getWidgetById($id);
 
-	$p = $w->pathMatch("origin", "id"); // "origin", "source", "widget");
-	// $widget = WidgetService::getInstance($w)->getWidget($p["origin"], $p["source"], $p["widget"]);
-	$widget = WidgetService::getInstance($w)->getWidgetById($p["id"]);
-	// $widgetname = $p["widget"];
+    if (empty($widget->id)) {
+        $w->error(__("Widget not found"), "/{$origin}");
+    }
 
-	if (empty($widget->id)) {
-		$w->error(__("Widget not found"), "/{$p['origin']}");
-	}
+    $vars = $_POST;
+    unset($vars[CSRF::getTokenID()]);
 
-	$vars = $_POST;
-	unset($vars[CSRF::getTokenID()]);
+    $widget->custom_config = json_encode($vars);
+    $widget->update();
 
-	$widget->custom_config = json_encode($vars);
-	$widget->update();
-
-	$w->msg(__("Widget updated"), "/{$p['origin']}");
+    $w->msg(__("Widget updated"), "/{$origin}");
 }

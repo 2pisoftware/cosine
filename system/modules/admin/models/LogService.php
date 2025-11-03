@@ -1,7 +1,7 @@
 <?php
 
 use Aws\CloudWatchLogs\CloudWatchLogsClient;
-use Maxbanton\Cwh\Handler\CloudWatch;
+use PhpNexus\Cwh\Handler\CloudWatch;
 use Monolog\Logger as Logger;
 use Monolog\Formatter\LineFormatter as LineFormatter;
 use Monolog\Handler\RotatingFileHandler as RotatingFileHandler;
@@ -17,8 +17,10 @@ defined("LOG_SERVICE_DEFAULT_RETENTION_PERIOD") or define("LOG_SERVICE_DEFAULT_R
  * @method bool warn(string $message, array $context = array())
  * @method bool error(string $message, array $context = array())
  */
-class LogService extends \DbService
+class LogService
 {
+    use SingletonTrait;
+
     private $loggers = [];
     private $logger;
     private static $system_logger = 'cmfive';
@@ -26,10 +28,8 @@ class LogService extends \DbService
 
     private $retention_period = LOG_SERVICE_DEFAULT_RETENTION_PERIOD;
 
-    public function __construct(\Web $w)
+    public function __construct()
     {
-        parent::__construct($w);
-
         $this->retention_period = Config::get('admin.logging.retention_period', LOG_SERVICE_DEFAULT_RETENTION_PERIOD);
 
         $this->addLogger(LogService::$system_logger);
@@ -152,7 +152,7 @@ class LogService extends \DbService
                 // Add the introspection processor if an error (Adds the line/file/class/method from which the log call originated)
                 $this->logger->pushProcessor(new WebProcessor());
             }
-            $this->logger->$name($arguments[0], ["user" => $this->w->session('user_id')]);
+            $this->logger->$name($arguments[0], ["user" => array_key_exists('user_id', $_SESSION) ? $_SESSION['user_id'] : 'unknown']);
         }
 
         // In the interest of not breaking system logs, we will return the logger back to cmfive

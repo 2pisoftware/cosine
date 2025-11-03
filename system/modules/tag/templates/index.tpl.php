@@ -1,1 +1,1 @@
-<?php echo !empty($tags_table) ? $tags_table : ""; ?>
+<?php echo !empty($tags_table) ? $tags_table : "";

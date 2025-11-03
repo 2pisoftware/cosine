@@ -1,7 +1,8 @@
 <?php
 
-class VueComponentRegister extends CmfiveComponentRegister {
+declare(strict_types=1);
 
-	protected static $_register = [];
-	
+class VueComponentRegister extends CmfiveComponentRegister
+{
+    protected static $_register = [];
 }

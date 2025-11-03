@@ -18,7 +18,7 @@ function edit_member_GET(Web $w)
 
     /**
      * Required to type $application correctly
-     * 
+     *
      * @var FormApplication
      **/
     $application = FormApplicationService::getInstance($w)->getFormApplication($id);
@@ -45,7 +45,7 @@ function edit_member_GET(Web $w)
 
     /**
      * Required to type $member correctly
-     * 
+     *
      * @var FormApplicationMember
      */
     $member = empty($memberId) ? null : FormApplicationService::getInstance($w)->getObject("FormApplicationMember", $memberId);
@@ -101,7 +101,7 @@ function edit_member_POST(Web $w)
 
     /**
      * Required to type $application correctly
-     * 
+     *
      * @var FormApplication
      */
     $application = FormApplicationService::getInstance($w)->getFormApplication($id);
@@ -136,7 +136,7 @@ function edit_member_POST(Web $w)
 
         /**
          * Required to type $member correctly
-         * 
+         *
          * @var FormApplicationMember
          */
         $member = FormApplicationService::getInstance($w)->getObject("FormApplicationMember", $memberId);

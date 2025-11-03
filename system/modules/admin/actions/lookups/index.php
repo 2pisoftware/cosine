@@ -6,7 +6,7 @@ function index_ALL(Web &$w)
     AdminService::getInstance($w)->navigation($w, "Lookups");
     History::add("List Lookups");
 
-    $types = array_map(function(array $l) use ($w) {
+    $types = array_map(function (array $l) use ($w) {
         $l[0] = StringSanitiser::sanitise($l[0]);
         $l[1] = StringSanitiser::sanitise($l[1]);
         return $l;
@@ -41,12 +41,14 @@ function index_ALL(Web &$w)
                 HtmlBootstrap5::box(
                     href: $w->localUrl("/admin-lookups/edit/" . $look->id . "/" . urlencode(Request::string('type', ''))),
                     title: "Edit",
-                    class: 'btn btn-sm btn-primary') .
+                    class: 'btn btn-sm btn-primary'
+                ) .
                 HtmlBootstrap5::b(
                     href: $w->localUrl("/admin-lookups/delete/" . $look->id . "/" . urlencode(Request::string('type', ''))),
                     title: "Delete",
                     confirm: "Are you sure you wish to DELETE this Lookup item?",
-                    class: 'btn btn-sm btn-danger')
+                    class: 'btn btn-sm btn-danger'
+                )
             ];
         }
     } else {
@@ -61,7 +63,7 @@ function index_ALL(Web &$w)
     uasort($countries, fn ($a, $b) => $a->name <=> $b->name);
     $country_rows = array_map(fn (Country $c) => [
         StringSanitiser::sanitise($c->name),
-        StringSanitiser::sanitise($c->alpha_2_code) . ' / ' . StringSanitiser::sanitise($c->alpha_3_code), 
+        StringSanitiser::sanitise($c->alpha_2_code) . ' / ' . StringSanitiser::sanitise($c->alpha_3_code),
         StringSanitiser::sanitise($c->demonym),
         HtmlBootstrap5::box(href: "/admin-lookups/edit_country/" . $c->id, title: "Edit", class: 'btn btn-sm btn-primary') .
         HtmlBootstrap5::b(href: "/admin-lookups/delete_country/" . $c->id, title: "Delete", confirm: "Are you sure you wish to delete this Country?", class: 'btn btn-sm btn-danger')

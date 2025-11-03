@@ -39,7 +39,7 @@ class Report extends DbObject
 
     public function getTemplates()
     {
-        return $this->getObjects("ReportTemplate", array("report_id" => $this->id, "is_deleted" => 0));
+        return $this->getObjects("ReportTemplate", ["report_id" => $this->id, "is_deleted" => 0]);
     }
 
     public function getMembers()
@@ -82,7 +82,7 @@ class Report extends DbObject
     // return a category title using lookup with type: ReportCategory
     public function getCategoryTitle()
     {
-        $c = ReportService::getInstance($this->w)->getObject("Lookup", array("type" => "ReportCategory", "code" => $this->category));
+        $c = ReportService::getInstance($this->w)->getObject("Lookup", ["type" => "ReportCategory", "code" => $this->category]);
         if (!empty($c)) {
             return property_exists($c, "title") ? $c->title : null;
         } else {
@@ -220,7 +220,7 @@ class Report extends DbObject
                         }
 
                         if (empty($arr) && !$skip_section_header) {
-                            $arr = array(array("Select Report Criteria", "section"));
+                            $arr = [["Select Report Criteria", "section"]];
                         }
                         // do something different based on form element type
                         switch ($type) {
@@ -237,21 +237,21 @@ class Report extends DbObject
                                         $values = ReportService::getInstance($this->w)->getFormDatafromSQL($sql, $this->getDb());
                                     } else {
                                         // there is a problem, say as much
-                                        $values = array("SQL error");
+                                        $values = ["SQL error"];
                                     }
                                 } else {
                                     // there is a problem, say as much
-                                    $values = array("No SQL statement");
+                                    $values = ["No SQL statement"];
                                 }
                                 // complete array which becomes form dropdown
-                                $arr[] = array($label, $type, $name, Request::string($name), $values, ($type === "autocomplete" ? 3 : null));
+                                $arr[] = [$label, $type, $name, Request::string($name), $values, ($type === "autocomplete" ? 3 : null)];
                                 break;
                             case "checkbox":
                             case "text":
                             case "date":
                             default:
                                 // complete array which becomes other form element type
-                                $arr[] = array($label, $type, $name, Request::string($name));
+                                $arr[] = [$label, $type, $name, Request::string($name)];
                         }
                     }
                 }
@@ -262,17 +262,17 @@ class Report extends DbObject
         //      $format = ReportService::getInstance($this->w)->selectReportFormat();
 
         $templates = $this->getTemplates();
-        $template_values = array();
+        $template_values = [];
         if (!empty($templates)) {
             foreach ($templates as $temp) {
                 $template = $temp->getTemplate();
-                $template_values[] = array($template->title, $temp->id);
+                $template_values[] = [$template->title, $temp->id];
             }
         }
         // merge arrays to give all parameter form requirements
         if (!empty($template_values)) {
-            $arr[] = array("Select an Optional Template", "section");
-            $arr[] = array("Format", "select", "template", null, $template_values);
+            $arr[] = ["Select an Optional Template", "section"];
+            $arr[] = ["Format", "select", "template", null, $template_values];
         }
         // return form
         return !empty($arr) ? $arr : null;
@@ -299,14 +299,14 @@ class Report extends DbObject
 
                         // split into title and statement fields
                         list($stitle, $sql) = preg_split("/\|\|/", $sql);
-                        $title = array(trim($stitle));
+                        $title = [trim($stitle)];
                         $sql = trim($sql);
 
                         // determine type of SQL statement, eg. select, insert, etc.
                         $sql_action = preg_split("/\s+/", $sql);
                         $action = strtolower($sql_action[0]);
 
-                        $crumbs = array(array());
+                        $crumbs = [[]];
                         // each form element should correspond to a field in our SQL where clause ... substitute
                         // do not use $_REQUEST because it includes unwanted cookies
                         foreach (array_merge($params, $_GET, $_POST) as $name => $value) {
@@ -334,9 +334,9 @@ class Report extends DbObject
                             // if valid SQL ...
                             if ($flgsql) {
                                 // starter arrays
-                                $hds = array();
-                                $flds = array();
-                                $line = array();
+                                $hds = [];
+                                $flds = [];
+                                $line = [];
 
                                 // run SQL and return recordset
                                 if ($action == "select") {
@@ -361,7 +361,7 @@ class Report extends DbObject
                                             }
                                         }
                                         // wrap headings array appropriately
-                                        $hds = array($hds);
+                                        $hds = [$hds];
                                         // merge to create completed report for display
                                         $tbl = array_merge($crumbs, $title, $hds, $line);
 
@@ -371,23 +371,23 @@ class Report extends DbObject
                                         unset($crumbs);
                                         unset($tbl);
                                     } else {
-                                        $alltbl[] = array(array("No Data Returned for selections"), $stitle, array("Results"), array("No data returned for selections"));
+                                        $alltbl[] = [["No Data Returned for selections"], $stitle, ["Results"], ["No data returned for selections"]];
                                     }
                                 } else {
                                     // create headings
-                                    $hds = array(array("Status", "Message"));
+                                    $hds = [["Status", "Message"]];
 
                                     // other SQL types do not return recordset so treat differently from SELECT
                                     try {
                                         $this->startTransaction();
                                         $rows = ReportService::getInstance($this->w)->getExefromSQL($sql, $this->getDb());
                                         $this->rollbackTransaction();
-                                        $line = array(array("SUCCESS", "SQL has completed successfully"));
+                                        $line = [["SUCCESS", "SQL has completed successfully"]];
                                     } catch (Exception $e) {
                                         // SQL returns errors so clean up and return error
                                         $this->rollbackTransaction();
                                         LogService::getInstance($this->w)->error($e->getMessage());
-                                        $line = array(array("ERROR", "A SQL error was encountered: " . $e->getMessage()));
+                                        $line = [["ERROR", "A SQL error was encountered: " . $e->getMessage()]];
                                     }
                                     $tbl = array_merge($crumbs, $title, $hds, $line);
                                     $alltbl[] = $tbl;
@@ -398,17 +398,17 @@ class Report extends DbObject
                                 }
                             } else {
                                 // if we fail the SQL check, say as much
-                                $alltbl = array(array("ERROR"), array("There is a problem with your SQL statement:" . $sql));
+                                $alltbl = [["ERROR"], ["There is a problem with your SQL statement:" . $sql]];
                             }
                         } else {
                             // if we fail the SQL check, say as much
-                            $alltbl = array(array("ERROR"), array("There is a problem with your SQL statement"));
+                            $alltbl = [["ERROR"], ["There is a problem with your SQL statement"]];
                         }
                     }
                 }
             }
         } else {
-            $alltbl = array(array("ERROR"), array("There is a problem with your SQL statement"));
+            $alltbl = [["ERROR"], ["There is a problem with your SQL statement"]];
         }
 
         return $alltbl;

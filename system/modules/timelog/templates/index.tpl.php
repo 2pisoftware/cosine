@@ -1,7 +1,7 @@
 <div class='row'>
     <?php if (!empty($time_entries)) : ?>
         <?php foreach ($time_entries as $date => $entry_struct) : ?>
-            <h4 style='border-bottom: 1px solid #777;' class="mt-2">
+            <h4 style='border-bottom: 1px solid #777;' class="mt-4 mb-0">
                 <?php echo $date; ?>
                 <div style="float: right">
                     <?php echo TaskService::getInstance($w)->getFormatPeriod($entry_struct['total']); ?>
@@ -14,7 +14,7 @@
                         formatDate($val->dt_start, "H:i:s"),
                         formatDate($val->dt_end, "H:i:s"),
                         class_exists($val->object_class) ? ($val->getLinkedObject() ? get_class(object: $val->getLinkedObject()) . ": " . $val->getLinkedObject()->toLink() : '') : 'Invalid Timelog object',
-                        "<pre class='break-pre text-truncate d-block mt-3' style='width: 250px;''>" . strip_tags($val->getComment()->comment) . "</pre>",
+                        "<pre class='break-pre text-truncate d-block m-0' style='width: 250px;''>" . strip_tags($val->getComment()->comment) . "</pre>",
                     ];
 
                     $actions = [];
@@ -45,7 +45,7 @@
 </div>
 
 <?php if (!empty($pagination)) : ?>
-    <div class="pagination-centered">
+    <div class="pagination-centered mt-4">
         <?php echo $pagination; ?>
     </div>
 <?php endif;

@@ -11,7 +11,7 @@ class SearchService extends DbService
      */
     public function getIndexes()
     {
-        $indexes = array();
+        $indexes = [];
         foreach ($this->w->modules() as $module) {
             $search = Config::get("{$module}.search");
             if (!empty($search)) {
@@ -29,7 +29,7 @@ class SearchService extends DbService
             $sql = "DELETE FROM object_index WHERE class_name = '{$this->_db->quote($index)}'";
             $this->_db->sql($sql)->execute();
 
-            $objects = $this->getObjects($index, array("is_deleted" => 0));
+            $objects = $this->getObjects($index, ["is_deleted" => 0]);
             if (!empty($objects)) {
                 foreach ($objects as $object) {
                     $object->_searchable->insert();
@@ -47,7 +47,7 @@ class SearchService extends DbService
             $o = new $index($this->w);
             $table = $o->getDbTableName();
             if ($this->_db->get($table)) {
-                $objects = $this->getObjects($index, array("is_deleted" => 0));
+                $objects = $this->getObjects($index, ["is_deleted" => 0]);
                 if (!empty($objects)) {
                     foreach ($objects as $object) {
                         if (property_exists($object, "_searchable")) {
@@ -173,6 +173,6 @@ class SearchService extends DbService
 
         $results = $this->_db->sql($select)->fetchAll();
 
-        return array($results, $max_result);
+        return [$results, $max_result];
     }
 }

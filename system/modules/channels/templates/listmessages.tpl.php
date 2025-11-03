@@ -1,6 +1,6 @@
 <?php
 if (!empty($messages)) {
-    $table = array(array("ID", "Type", "Channel", "Failed Processes", "Time Recieved", "Actions", "sort_key" => null));
+    $table = [["ID", "Type", "Channel", "Failed Processes", "Time Recieved", "Actions", "sort_key" => null]];
 
     foreach ($messages as $m) {
         $channel = $m->getChannel();

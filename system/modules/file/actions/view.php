@@ -1,6 +1,7 @@
 <?php
 
-function view_GET(Web $w) {
+function view_GET(Web $w)
+{
     $redirect_url = Request::string("redirect_url");
     [$attachment_id] = $w->pathMatch("id");
 

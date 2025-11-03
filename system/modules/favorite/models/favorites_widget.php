@@ -1,14 +1,11 @@
 <?php
 
 /**
- * widget for displaying favoritres
- *
- * @author Steve Ryan, steve@2pisoftware.com, 2015
+ * A widget for displaying favorites
  */
-
+// phpcs:ignore
 class favorites_widget extends ModuleWidget
 {
-
     public static $widget_count = 0;
 
     public function getSettingsForm($current_settings = null)

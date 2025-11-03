@@ -1,14 +1,15 @@
 <?php
 
 // list available feeds in the feed dashboard
-function listfeed_ALL(Web &$w) {
+function listfeed_ALL(Web &$w)
+{
     ReportService::getInstance($w)->navigation($w, "Feeds");
 
     // get all feeds
     $feeds = ReportService::getInstance($w)->getFeeds();
 
     // prepare table headings
-    $line = array(array("Feed", "Report", "Description", "Created", ""));
+    $line = [["Feed", "Report", "Description", "Created", ""]];
 
     // if feeds exists and i am suitably authorised, list them
     if (($feeds) && (AuthService::getInstance($w)->user()->hasRole("report_editor") || AuthService::getInstance($w)->user()->hasRole("report_admin"))) {
@@ -18,19 +19,19 @@ function listfeed_ALL(Web &$w) {
 
             // display the details
             if ($rep) {
-                $line[] = array(
+                $line[] = [
                     $feed->title,
                     $rep->title,
                     $feed->description,
                     formatDateTime($feed->dt_created),
                     HtmlBootstrap5::b(WEBROOT . "/report/editfeed/" . $feed->id, " View ") .
                     HtmlBootstrap5::b(WEBROOT . "/report/deletefeed/" . $feed->id, " Delete ", "Are you sure you wish to DELETE this feed?")
-                );
+                ];
             }
         }
     } else {
         // no feeds and/or no access
-        $line[] = array("No feeds to list", "", "", "", "");
+        $line[] = ["No feeds to list", "", "", "", ""];
     }
 
     // display results

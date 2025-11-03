@@ -4,9 +4,10 @@
  * PDO Extension class for Cmfive
  *
  * See: http://www.php.net/manual/en/book.pdo.php for the PDO Class reference
- *
- * @author Adam Buckley <adam@2pisoftware.com>
  */
+
+declare(strict_types=1);
+
 class DbPDO extends PDO
 {
     public $sql = null;
@@ -14,7 +15,7 @@ class DbPDO extends PDO
 
     private $table_names = [];
     private static $_QUERY_CLASSNAME = ["\Envms\FluentPDO\Queries\Insert", "\Envms\FluentPDO\Queries\Select", "\Envms\FluentPDO\Queries\Update", "Envms\FluentPDO\Queries\Insert", "Envms\FluentPDO\Queries\Select", "Envms\FluentPDO\Queries\Update"];
-    private $query = null;
+    private mixed $query = null;
     private $fpdo = null;
     private static $trx_token = 0;
     private $config;
@@ -127,8 +128,7 @@ class DbPDO extends PDO
     public function get($table_name)
     {
         if (!in_array($table_name, $this->getAvailableTables())) {
-            trigger_error("Table $table_name does not exist in the database", E_USER_ERROR);
-            return null;
+            throw new Exception("Table $table_name does not exist in the database");
         }
         $this->query = $this->fpdo->from($table_name);
         return $this;
@@ -228,7 +228,7 @@ class DbPDO extends PDO
      * statement can be reset by passing NULL as the first parameter
      *
      * @param string|array $column
-     * @param string $equals
+     * @param string|array|null $equals
      * @return \DbPDO|null
      */
     public function where($column, $equals = null)
@@ -469,8 +469,6 @@ class DbPDO extends PDO
         switch ($func) {
             case 'and':
                 return $this->where($args[0], $args[1]);
-                break;
-
             default:
                 /**
                  * What this does is palm off unknown function calls to the parent
@@ -483,7 +481,7 @@ class DbPDO extends PDO
                  * NOTE: You only need to prefix the first method when chaining as the return value for
                  * the first call is a PDOStatement
                  */
-                return call_user_func_array("parent::" . $func, $args);
+                return call_user_func_array([parent::class, $func], $args);
         }
     }
 
@@ -538,17 +536,14 @@ class DbPDO extends PDO
      * PDO::lastInsertId will cause an infinite loop via FluentPDOs use of
      * the same function.
      */
-    // public function lastInsertId($seqname = null)
-    // {
-    //
-    // }
 
     /**
-     * Returns the lsat inserted id
+     * Returns the last inserted id
      *
      * @return int|null
      */
-    public function last_insert_id()
+    // phpcs:ignore
+    public function last_insert_id(string|null $name = null): string|false
     {
         if ($this->query !== null) {
             // Checks if execute hasn't been called yet, and calls it
@@ -557,11 +552,11 @@ class DbPDO extends PDO
             }
 
             $last_id = $this->query;
-			$this->query = null;
-			return $last_id;
+            $this->query = null;
+            return $last_id;
         }
 
-        return null;
+        return false;
     }
 
     /**

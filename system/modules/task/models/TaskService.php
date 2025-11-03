@@ -2,7 +2,6 @@
 
 class TaskService extends DbService
 {
-
     public $_tasks_loaded;
 
     public function getSubscriber($subscriber_id)
@@ -93,8 +92,10 @@ class TaskService extends DbService
             $taskgroup_details["statuses"] = $taskgroup->getStatus();
             $taskgroup_details["priorities"] = $taskgroup->getPriority();
             $taskgroup_details["members"] = $this->getMembersInGroup($taskgroup->id);
-            $task_type_array = $taskgroup->getTaskGroupTypeObject()->getTaskTypeArray();
-            $taskgroup_details["types"][key($task_type_array)] = [$task_type_array[key($task_type_array)], key($task_type_array)];
+            $task_type_array = $taskgroup->getTaskGroupTypeObject()?->getTaskTypeArray();
+            if (!empty($task_type_array)) {
+                $taskgroup_details["types"][key($task_type_array)] = [$task_type_array[key($task_type_array)], key($task_type_array)];
+            }
         }
 
         return $taskgroup_details;
@@ -245,7 +246,7 @@ class TaskService extends DbService
     }
 
     // get a task group from the database by its ID
-    public function getTaskGroup($id)
+    public function getTaskGroup($id): TaskGroup|null
     {
         return $this->getObject("TaskGroup", $id);
     }
@@ -282,17 +283,17 @@ class TaskService extends DbService
     // prepare to get all task groups of type $class as defined in our tasks file
     public function getTaskGroupTypeObject($class)
     {
-        return $this->_getTaskObjectGeneric($class, "TaskGroupType_");
+        return $this->getTaskObjectGeneric($class, "TaskGroupType_");
     }
 
     // prepare to get all task types of type $class as defined in our tasks file
     public function getTaskTypeObject($class)
     {
-        return $this->_getTaskObjectGeneric($class, "TaskType_");
+        return $this->getTaskObjectGeneric($class, "TaskType_");
     }
 
     // get all task groups or task types of type $class as defined in our task file
-    public function _getTaskObjectGeneric($class, $type)
+    public function getTaskObjectGeneric($class, $type)
     {
         $this->_loadTaskFiles();
         $class = startsWith($class, $type) ? $class : $type . $class;
@@ -517,67 +518,8 @@ class TaskService extends DbService
         return $this->getObjects("Task", $where);
     }
 
-    // given a where clause, return all tasks created by a given user ID
-    // required to join with modifiable aspect to determine task creator
-    public function getCreatorTasks($id, $clause = null)
-    {
-        $where = '';
-        if (is_array($clause)) {
-            foreach ($clause as $name => $value) {
-                $where .= "and t." . $name . " = '" . $value . "' ";
-            }
-        } elseif ($clause != "") {
-            $where = " and " . $clause;
-        }
-        $where .= " and t.is_deleted = 0 and g.is_active = 1 and g.is_deleted = 0";
-
-        // check that task group is active and not deleted
-        $rows = $this->_db->sql("SELECT t.* from " . Task::$_db_table . " as t inner join " . ObjectModification::$_db_table . " as o on t.id = o.object_id inner join " . TaskGroup::$_db_table . " as g on t.task_group_id = g.id where o.creator_id = " . $this->_db->quote($id) . " and o.table_name = '" . Task::$_db_table . "' " . $this->_db->quote($where) . " order by t.id")->fetchAll();
-        $rows = $this->fillObjects("Task", $rows);
-        return $rows;
-    }
-
-    // return all resulting tasks from the database modified in the last week
-    public function getTaskWeek($group, $assignee, $from, $to)
-    {
-        $grps = $who = $grplist = "";
-
-        // if no group supplied, get all my groups
-        if ($group != "") {
-            $grplist = $group;
-        } else {
-            // list the groups i am a member of
-            $groups = $this->getMemberGroups($_SESSION['user_id']);
-            if ($groups) {
-                foreach ($groups as $group) {
-                    $grplist .= $group->task_group_id . ",";
-                }
-            } else {
-                return null;
-            }
-            $grplist = rtrim($grplist, ",");
-        }
-
-        if ($assignee != "") {
-            $who = " c.creator_id = " . $assignee . " and ";
-        }
-
-        // create where clause giving all active tasks which have shown activity in the last week
-        // need to check if task group is deleted
-        $grps = "t.task_group_id in (" . $grplist . ") and ";
-        $where = "where " . $grps . $who . " t.is_deleted = 0 and g.is_active = 1 and g.is_deleted = 0";
-        $where .= " and date_format(c.dt_modified,'%Y-%m-%d') >= '" . $this->date2db($from) . "' and date_format(c.dt_modified,'%Y-%m-%d') <= '" . $this->date2db($to) . "'";
-
-        // get and return tasks
-        $rowQry = "SELECT t.id, t.title, t.task_group_id, c.comment, c.creator_id, c.dt_modified from " . Task::$_db_table . " as t inner join "
-         . TaskComment::$_db_table . " as c on t.id = c.obj_id and c.obj_table = '" . Task::$_db_table . "' inner join "
-          . TaskGroup::$_db_table . " as g on t.task_group_id = g.id " . $where . " order by c.dt_modified desc";
-        $rows = $this->_db->sql($rowQry)->fetchAll();
-        return $rows;
-    }
-
     // get a task from the database given its ID
-    public function getTask($id)
+    public function getTask($id): Task|null
     {
         return $this->getObject("Task", $id);
     }
@@ -764,19 +706,19 @@ class TaskService extends DbService
     }
 
     // return a member object given the task_group_member database ID: targets specific member in specific task group
-    public function getMemberById($id)
+    public function getMemberById($id): ?TaskGroupMember
     {
         return $this->getObject("TaskGroupMember", ["id" => $id]);
     }
 
     // return a member object given a task group ID and a user ID
-    public function getMemberGroupById($group, $uid)
+    public function getMemberGroupById($group, $uid): ?TaskGroupMember
     {
         return $this->getObject("TaskGroupMember", ["task_group_id" => $group, "user_id" => $uid, "is_active" => 1]);
     }
 
     // return a users full name given their user ID
-    public function getUserById($id)
+    public function getUserById($id): string
     {
         $u = AuthService::getInstance($this->w)->getUser($id);
         return $u ? StringSanitiser::sanitise($u->getFullName()) : "";
@@ -801,12 +743,12 @@ class TaskService extends DbService
         $this->_tasks_loaded = true;
     }
 
-    public function getTaskGroupByUniqueTitle($title)
+    public function getTaskGroupByUniqueTitle($title): ?TaskGroup
     {
         return $this->getObject("TaskGroup", ["title" => $title, "is_deleted" => 0]);
     }
 
-    public function addMemberToTaskGroup($taskgroup_id, $user_id, $role = "GUEST")
+    public function addMemberToTaskGroup($taskgroup_id, $user_id, $role = "GUEST"): void
     {
         if (empty($taskgroup_id) || empty($user_id)) {
             return;
@@ -837,15 +779,17 @@ class TaskService extends DbService
     /**
      * Create a new Task
      *
-     * @param unknown $task_type
-     * @param unknown $task_group_id
-     * @param unknown $title
-     * @param unknown $description
-     * @param unknown $priority
-     * @param unknown $dt_due
-     * @param unknown $first_assignee_id
+     * @param string $task_type
+     * @param string|int $task_group_id
+     * @param string $title
+     * @param string $description
+     * @param string $priority
+     * @param string $dt_due
+     * @param string|int $first_assignee_id
+     * @param bool $_skip_creation_notification
+     * @return Task
      */
-    public function createTask($task_type, $task_group_id, $title, $description, $priority, $dt_due, $first_assignee_id, $_skip_creation_notification = false)
+    public function createTask(string $task_type, string|int $task_group_id, string $title, string $description, string $priority, string $dt_due, string|int $first_assignee_id, bool $_skip_creation_notification = false): Task
     {
         $task = new Task($this->w);
         $task->task_type = $task_type;
@@ -864,15 +808,15 @@ class TaskService extends DbService
     /**
      * Create a new Taskgroup using all the form details of the taskgroup form
      *
-     * @param task_group_type, eg. "TaskGroupType_TaskTodo"
-     * @param title, the task group title
-     * @param can_assign, OWNER|MEMBER|GUEST
-     * @param can_view, OWNER|MEMBER|GUEST
-     * @param can_create, OWNER|MEMBER|GUEST
-     * @param is_active, 0|1
-     * @param is_deleted, 0|1
-     * @param description, a description
-     * @param default_assignee_id, a user_id or null
+     * @param string $task_group_type, eg. "TaskGroupType_TaskTodo"
+     * @param string $title, the task group title
+     * @param string $can_assign, OWNER|MEMBER|GUEST
+     * @param string $can_view, OWNER|MEMBER|GUEST
+     * @param string $can_create, OWNER|MEMBER|GUEST
+     * @param string|int|bool $is_active, 0|1
+     * @param string|int|bool $is_deleted, 0|1
+     * @param string $description, a description
+     * @param string|int|null $default_assignee_id, a user_id or null
      *
      * @return TaskGroup
      */
@@ -952,110 +896,6 @@ class TaskService extends DbService
         if (empty($task)) {
             return [];
         }
-
-        /*
-        $me = [];
-        // This may be called from cron
-        if (!empty($_SESSION['user_id'])) {
-            $me = [$this->getMemberGroupById($task->task_group_id, $_SESSION['user_id'])];
-        }
-
-        // get member object for task creator
-        $creator_id = $task->getTaskCreatorId();
-
-        // Notify assignee too
-        $creator = [$this->getMemberGroupById($task->task_group_id, $creator_id), !empty($task->assignee_id) ? $this->getMemberGroupById($task->task_group_id, $task->assignee_id) : null];
-        // get member object(s) for task group owner(s)
-
-        $users = $this->getTaskGroupUsers($task->task_group_id);
-
-        // us is everyone
-        if (empty($users) || !is_array($users)) {
-            $users = [];
-        }
-
-        $us = (object) array_merge($me, $creator, $users);
-
-        if (empty($us)) {
-            return [];
-        }
-
-        // foreach relavent member
-        foreach ($us as $i) {
-            if (empty($i)) {
-                continue;
-            }
-
-            // set default notification value. 0 = no notification
-            $shouldNotify = false;
-            // set current user's role
-            $role = strtolower($i->role);
-            // determine current user's 'type' for this task
-            $assignee = ($task->assignee_id == $i->user_id);
-            $creator = ($creator_id == $i->user_id);
-
-            if ($this->getIsOwner($task->task_group_id, $i->user_id) || $this->getIsMember($task->task_group_id, $i->user_id))
-            {
-                $user = true;
-            }
-
-            // this user may be any or all of the 'types'
-            // need to check each 'type' for a notification
-            $types = [];
-            if (!empty($assignee)) {
-                $types[] = "assignee";
-            }
-            if (!empty($creator)) {
-                $types[] = "creator";
-            }
-            if (!empty($user)) {
-                $types[] = "other";
-            }
-
-
-            // if they have a type ... look for notifications
-            if (!empty($types)) {
-                // check user task notifications
-                $notify = $this->getTaskUserNotify($i->user_id, $task->id);
-                // if there is a record, get notification flag
-                if (!empty($notify)) {
-                    $shouldNotify = (bool) $notify->$event;
-                } else {
-                    // if no user task notification present, check user task group notification for role and type
-                    // for each type, check the User defined notification table
-                    foreach ($types as $type) {
-                        $notify = $this->getTaskGroupUserNotifyType($i->user_id, $task->task_group_id, $role, $type);
-                        // if there is a notification flag and it equals 1, no need to go further, a notification will be sent
-                        if (!empty($notify)) {
-                            if ($notify->value == "1") {
-                                $shouldNotify = (bool) $notify->$event;
-                                break;
-                            }
-                        }
-                    }
-                }
-
-                // if no user task group notification present, check task group default notification for role and type
-                if (empty($notify)) {
-                    foreach ($types as $type) {
-                        $notify = $this->getTaskGroupNotifyType($task->task_group_id, $role, $type);
-                        // if notification exists, set its value
-                        if (!empty($notify)) {
-                            $shouldNotify = (bool) $notify->value;
-                        }
-                        // if its value is 1, no need to go further, a notification will be sent
-                        if ($shouldNotify) {
-                            break;
-                        }
-                    }
-                }
-                // if somewhere we have found a positive notification, add user_id to our send list
-                if ($shouldNotify) {
-                    $notifyUsers[$i->user_id] = $i->user_id;
-                }
-            }
-            unset($types);
-        }*/
 
         $notifyUsers = [];
 

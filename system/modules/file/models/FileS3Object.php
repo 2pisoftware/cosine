@@ -22,7 +22,7 @@ class FileS3Object extends DbObject
 
     /**
      * The s3 key of this upload
-     * 
+     *
      * 'key' is reserved word in sql
      */
     public $key_path;
@@ -36,7 +36,7 @@ class FileS3Object extends DbObject
     /**
      * The table to attribute this upload to.
      * Once completed, a new Attachment will be made for this parent table
-     * 
+     *
      * @var string
      */
     public $parent_table;

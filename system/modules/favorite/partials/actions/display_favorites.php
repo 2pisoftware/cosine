@@ -6,11 +6,11 @@ function display_favorites(\Web $w)
 {
     $results = \FavoriteService::getInstance($w)
         ->getFavoritesForUser(\AuthService::getInstance($w)->user()->id);
-    $categorisedFavorites = array();
+    $categorisedFavorites = [];
     if (!empty($results)) {
         foreach ($results as $k => $favorite) {
             if (!array_key_exists($favorite->object_class, $categorisedFavorites)) {
-                $categorisedFavorites[$favorite->object_class] = array();
+                $categorisedFavorites[$favorite->object_class] = [];
             }
 
             $object = $favorite->getLinkedObject();
