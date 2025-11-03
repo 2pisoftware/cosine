@@ -14,12 +14,15 @@ class PrinterService extends DbService
         return $this->getObject("Printer", $printer_id);
     }
 
+    /**
+    * @return Printer[]
+    */
     public function getPrinters(): array
     {
         return $this->getObjects("Printer");
     }
 
-    public function getPrinterByName($printer_name)
+    public function getPrinterByName(string $printer_name): Printer|null
     {
         return $this->getObject('Printer', ['name' => $printer_name]);
     }
