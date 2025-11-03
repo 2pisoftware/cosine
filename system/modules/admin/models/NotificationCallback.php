@@ -16,8 +16,8 @@ class NotificationCallback
      * Constructor method
      *
      * @param User $recipient_user
-     * @param Array $template_data
-     * @param Array $attachments
+     * @param array $template_data
+     * @param array $attachments
      */
     public function __construct($recipient_user = null, $template_data = [], $attachments = [])
     {

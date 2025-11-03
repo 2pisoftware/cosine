@@ -217,7 +217,7 @@
                     if (!empty($inject)) :
                         foreach ($inject as $i) : ?>
                             <li><?php echo $i; ?></li>
-                    <?php
+                            <?php
                         endforeach;
                     endif;
                     ?>
@@ -292,13 +292,13 @@
                                         <li <?php echo $w->_module == $module ? 'class="active"' : ''; ?>><?php echo $menu_link; ?></li>
                                     <?php endif; ?>
                                     <li class="divider"></li>
-                            <?php endif;
+                                <?php endif;
                             endif;
                         }
 
                         if (Config::get('system.help_enabled', true) && AuthService::getInstance($w)->allowed('/help/view')) : ?>
                             <li><?php echo Html::box(WEBROOT . "/help/view/" . $w->_module . ($w->_submodule ? "-" . $w->_submodule : "") . "/" . $w->_action, "<span class='fi-q show-for-medium-up'>?</span><span class='show-for-small'>Help</span>", false, true, 750, 500, "isbox", null, null, null, 'cmfive-help-modal'); ?> </li>
-                    <?php endif;
+                        <?php endif;
                     endif; ?>
                 </ul> <!-- End left nav section -->
             </section>
@@ -348,8 +348,8 @@
             reveal: {
                 animation_speed: <?php echo defaultVal(Config::get('core_template.foundation.reveal.animation_speed'), 150); ?>,
                 animation: '<?php echo defaultVal(Config::get('core_template.foundation.reveal.animation'), 'fade'); ?>',
-                close_on_background_click: <?php echo defaultVal(Config::get('core_template.foundation.reveal.close_on_background_click'), 'true'); // Must be string value in PHP 
-                                            ?>
+                close_on_background_click: <?php echo defaultVal(Config::get('core_template.foundation.reveal.close_on_background_click'), 'true'); // Must be string value in PHP
+                ?>
             },
             accordion: {
                 multi_expand: <?php echo defaultVal(Config::get('core_template.foundation.accordion.multi_expand'), 'true'); ?>,

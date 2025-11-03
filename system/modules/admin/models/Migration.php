@@ -1,7 +1,7 @@
 <?php
 
-class Migration extends DbObject {
-
+class Migration extends DbObject
+{
     public $path;
     public $classname;
     public $module;
@@ -10,6 +10,8 @@ class Migration extends DbObject {
     public $pretext;
     public $posttext;
     public $description;
+
+    public $creator_id;
 
     /**
      * A static array of string arrays to be used for validaiton when creating forms with a Migration in it.

@@ -1,6 +1,7 @@
 <?php
 
-function printers_GET(Web $w) {
+function printers_GET(Web $w)
+{
     $w->setLayout('layout-bootstrap-5');
     $w->ctx('title', 'Printer List');
 
@@ -8,7 +9,7 @@ function printers_GET(Web $w) {
     $table_data = [];
     $table_header = ["Name", "Server", "Port", "Actions"];
     if (!empty($printers)) {
-        foreach($printers as $printer) {
+        foreach ($printers as $printer) {
             $table_data[] = [
                 StringSanitiser::sanitise($printer->name), StringSanitiser::sanitise($printer->server), StringSanitiser::sanitise($printer->port),
                 HtmlBootstrap5::box("/admin/editprinter/{$printer->id}", "Edit", true, false, null, null, 'isbox', null, 'btn btn-sm btn-primary') .

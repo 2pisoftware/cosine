@@ -40,7 +40,7 @@ function edit_GET(Web &$w)
     ];
 
     if (empty($lookup->id)) {
-        array_push($form[(!empty($lookup->id) ? 'Edit' : 'Create') . ' Lookup Item'][0], (new \Html\Form\InputField\Text([
+        array_push($form[(!empty($lookup->id) ? 'Edit' : 'Create') . ' Lookup Item'][0], (new Text([
             'id|name' => 'ntype',
             'label' => 'or Add New Type',
         ])));

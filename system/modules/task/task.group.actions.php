@@ -4,9 +4,9 @@ use Html\Form\InputField;
 use Html\Form\InputField\Hidden;
 use Html\Form\Select;
 
-////////////////////////////////////////////
-//				TASK GROUPS				  //
-////////////////////////////////////////////
+////////////////////////////////////
+//          TASK GROUPS           //
+////////////////////////////////////
 
 function createtaskgroup_POST(Web &$w)
 {
@@ -28,8 +28,6 @@ function createtaskgroup_POST(Web &$w)
     // return
     $w->msg("<div id='saved_record_id' data-id='" . $taskgroup->id . "' >Task Group " . StringSanitiser::sanitise($taskgroup->title) . " added</div>", "/task-group/viewmembergroup/" . $taskgroup->id . "#members");
 }
-
-
 
 function deletetaskgroup_GET(Web &$w)
 {
@@ -88,10 +86,9 @@ function deletetaskgroup_POST(Web &$w)
     $w->msg("Task Group " . StringSanitiser::sanitise($taskgroup->title) . " deleted.", "/task-group/viewtaskgrouptypes");
 }
 
-////////////////////////////////////////////////////
-//			MEMBER GROUPS						  //
-////////////////////////////////////////////////////
-
+////////////////////////////////////
+//         MEMBER GROUPS          //
+////////////////////////////////////
 
 function updategroupnotify_POST(Web &$w)
 {
@@ -217,10 +214,9 @@ function updategroupmembers_POST(Web &$w)
         $mem->fill($arrdb);
         $mem->update();
     }
+
     // prepare input array for next selected member to insert/update
     unset($arrdb['user_id']);
-    //	}
-    // return
     $w->msg("Task Group updated", "/task-group/viewmembergroup/" . $_REQUEST['task_group_id']);
 }
 
@@ -267,7 +263,7 @@ function deletegroupmember_GET(Web &$w)
 function deletegroupmember_POST(Web &$w)
 {
     $p = $w->pathMatch("id");
-    // get the details of the person to delete 
+    // get the details of the person to delete
     $member = TaskService::getInstance($w)->getMemberById($p['id']);
     // get the task group ID for returning to group display
     $tgid = $member->task_group_id;

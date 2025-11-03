@@ -1,11 +1,14 @@
 <script setup lang="ts">
-import { defineProps, ref, defineModel } from 'vue';
+import { defineProps, ref, defineModel, onMounted } from 'vue';
+import { startRegistration } from "~/@simplewebauthn/browser";
 
 const props = defineProps<{
 	user_id: string;
 	locked: boolean;
 	mfa_enabled: boolean
 	pw_min_length: number;
+	allow_adding_passkeys: boolean;
+	allow_passkeys: boolean;
 }>();
 
 const locked = ref(props.locked);
@@ -21,6 +24,13 @@ const mfa_code = defineModel<string>("mfa_code");
 
 const new_password = defineModel<string>("new_password");
 const new_password_repeat = defineModel<string>("new_password_repeat");
+
+const passkeys = ref();
+const passkey_edit = ref();	// id of passkey being edited
+
+onMounted(async () => {
+	passkeys.value = await getPasskeys();
+})
 
 const displayToast = (msg: string) => {
 	//@ts-ignore
@@ -142,6 +152,51 @@ const confirmMfaCode = loadingBoundary("Failed to enable MFA", async () => {
 			displayToast("MFA enabled");
 		})
 })
+
+const getPasskeys = async () => {
+	return await fetch(`/auth-webauthn/ajax_get_keys/${user_id}`).then(x => x.json()).then(x => x.data.keys)
+}
+
+const registerPasskey = async () => {
+	const options = await fetch(
+		"/auth-webauthn/ajax_init_register",
+		{
+			method: "POST",
+			body: JSON.stringify({ user_id })
+		}
+	).then(x => x.json());
+
+	const attResp = await startRegistration({ optionsJSON: options });
+
+	await fetch("/auth-webauthn/ajax_register", {
+		method: "POST",
+		body: JSON.stringify(attResp),
+		headers: {
+			'Content-Type': 'application/json',
+		},
+	});
+
+	window.location.reload();
+}
+
+const removePasskey = async (id: string) => {
+	await fetch(`/auth-webauthn/ajax_remove_key/${id}`);
+
+	window.location.reload();
+}
+
+const savePasskeyName = async (ev: SubmitEvent) => {
+	const data = new FormData(ev.target as HTMLFormElement);
+
+	await fetch(`/auth-webauthn/ajax_nick/${passkey_edit.value}`, {
+		method: "POST",
+		body: JSON.stringify({
+			name: data.get("name"),
+		})
+	});
+
+	window.location.reload();
+}
 </script>
 
 <template>
@@ -183,16 +238,17 @@ const confirmMfaCode = loadingBoundary("Failed to enable MFA", async () => {
 		</div>
 
 		<div class="col-6">
-			<div class="panel clearfix">
-				<div class="row g-0 clearfix section-header">
+			<div class="panel">
+				<div class="row g-0 section-header">
 					<h4 class="col">Google Authenticator</h4>
 				</div>
 
-				<button v-if="!mfa_enabled && !mfa_qr_code_url" @click.prevent="getMfaCode" class="btn btn-primary">
+				<button v-if="!mfa_enabled && !mfa_qr_code_url" @click.prevent="getMfaCode"
+					class="btn btn-primary ms-0">
 					Enable MFA
 				</button>
 
-				<button v-if="mfa_enabled" @click.prevent="disableMfa" class="btn btn-warning">
+				<button v-if="mfa_enabled" @click.prevent="disableMfa" class="btn btn-warning ms-0">
 					Disable MFA
 				</button>
 
@@ -212,6 +268,49 @@ const confirmMfaCode = loadingBoundary("Failed to enable MFA", async () => {
 
 						<button class="btn btn-primary m-0" @click.prevent="confirmMfaCode">Enable MFA</button>
 					</form>
+				</div>
+			</div>
+
+			<div class="panel" v-if="props.allow_passkeys">
+				<h4 class="section-header">Passkey</h4>
+
+				<button v-if="allow_adding_passkeys" @click.prevent="registerPasskey" class="btn btn-primary ms-0">
+					Register device
+				</button>
+
+				<div class="mt-2" v-if="passkeys?.length">
+					<h5>Registered passkeys</h5>
+
+					<table class="table">
+						<thead>
+							<tr>
+								<th scope="col">Name</th>
+								<th scope="col">Created</th>
+								<th scope="col"></th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr v-for="(passkey, i) in passkeys" class="align-middle">
+								<th scope="row">
+									<form v-if="passkey_edit == passkey.id" @submit.prevent="savePasskeyName">
+										<input class="form-control-sm" :value="passkey.name" aria-label="Passkey name"
+											name="name" />
+										<button type="submit" class="btn btn-sm btn-primary">Save</button>
+									</form>
+									<span v-else>
+										{{ passkey.name ?? `Passkey ${i}` }}
+										<button class="btn m-0 p-0" @click.prevent="passkey_edit = passkey.id"><i
+												class="bi-pencil"></i></button>
+									</span>
+								</th>
+								<th scope="row">{{ (new Date(passkey.dt_created * 1000)).toLocaleString() }}</th>
+								<th scope="row">
+									<button class="btn btn-danger ms-0"
+										@click.prevent="() => removePasskey(passkey.id)">Remove</button>
+								</th>
+							</tr>
+						</tbody>
+					</table>
 				</div>
 			</div>
 		</div>

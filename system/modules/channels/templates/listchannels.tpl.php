@@ -3,7 +3,7 @@ echo HtmlBootstrap5::box("/channels-web/edit", "Add Web Channel", true, false, n
 echo HtmlBootstrap5::box("/channels-email/edit", "Add Email Channel", true, false, null, null, "isbox", null, "btn-sm btn-primary");
 
 if (!empty($channels)) {
-    $table = array(array("ID", "Type", "Name", "Active", "Actions", "sort_key" => null));
+    $table = [["ID", "Type", "Name", "Active", "Actions", "sort_key" => null]];
 
     foreach ($channels as $c) {
         $base_channel = $c->getChannel();

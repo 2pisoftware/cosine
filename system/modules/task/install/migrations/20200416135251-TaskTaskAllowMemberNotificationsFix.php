@@ -1,11 +1,11 @@
 <?php
 
-class TaskTaskAllowMemberNotificationsFix extends CmfiveMigration {
-
-    public function up() {
+class TaskTaskAllowMemberNotificationsFix extends CmfiveMigration
+{
+    public function up()
+    {
         // UP
         if ($this->hasTable("task_group_notify")) {
-            
             $task_groups = TaskService::getInstance($this->w)->getTaskGroups();
             foreach ($task_groups as $task_group) {
                 //If this permission doesn't already exist
@@ -19,20 +19,19 @@ class TaskTaskAllowMemberNotificationsFix extends CmfiveMigration {
                     $notify->insert();
                 }
             }
-		}
-
+        }
     }
 
-    public function down() {
+    public function down()
+    {
         // DOWN
         $task_groups = TaskService::getInstance($this->w)->getTaskGroups();
         if (!empty($task_groups)) {
             foreach ($task_groups as $task_group) {
                 $notify = TaskService::getInstance($this->w)->getTaskGroupNotifyType($task_group->id, "member", "other");
                 $notify->delete();
-             }
+            }
         }
-        
     }
 
     public function preText()

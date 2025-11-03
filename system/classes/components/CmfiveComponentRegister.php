@@ -1,23 +1,24 @@
 <?php
 
+declare(strict_types=1);
+
 class CmfiveComponentRegister
 {
-
     protected static $_register = [];
 
-    public static function registerComponent($key, CmfiveComponent $details)
+    public static function registerComponent(string $key, CmfiveComponent $details): void
     {
         if (!array_key_exists($key, static::$_register)) {
             static::$_register[$key] = $details;
         }
     }
 
-    public static function getComponents()
+    public static function getComponents(): array
     {
         return static::$_register;
     }
 
-    public static function getComponent($key)
+    public static function getComponent($key): CmfiveComponent|null
     {
         if (array_key_exists($key, static::$_register)) {
             return static::$_register[$key];
@@ -26,7 +27,7 @@ class CmfiveComponentRegister
         return null;
     }
 
-    public static function compareWeights($a, $b)
+    public static function compareWeights($a, $b): int
     {
         if (is_array($a)) {
             $aw = intval($a["weight"]);

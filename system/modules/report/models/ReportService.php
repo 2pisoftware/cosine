@@ -11,7 +11,7 @@ class ReportService extends DbService
 
     public function getReports()
     {
-        return $this->getObjects("Report", array("is_deleted" => 0));
+        return $this->getObjects("Report", ["is_deleted" => 0]);
     }
 
     public function getReportByModuleAndCategory($module, $category)
@@ -22,7 +22,7 @@ class ReportService extends DbService
     // return list of members attached to a report for given report ID
     public function getReportMembers($id)
     {
-        return $this->getObjects("ReportMember", array("report_id" => $id, "is_deleted" => 0));
+        return $this->getObjects("ReportMember", ["report_id" => $id, "is_deleted" => 0]);
     }
 
     // return member for given report ID and user id
@@ -81,16 +81,16 @@ class ReportService extends DbService
     /**
      * Returns array of connection objects
      *
-     * @return Array connections
+     * @return array connections
      */
     public function getConnections()
     {
-        return $this->getObjects("ReportConnection", array("is_deleted" => "0"));
+        return $this->getObjects("ReportConnection", ["is_deleted" => "0"]);
     }
 
     public function getConnection($id)
     {
-        return $this->getObject("ReportConnection", array("id" => $id, "is_deleted" => "0"));
+        return $this->getObject("ReportConnection", ["id" => $id, "is_deleted" => "0"]);
     }
 
     // function to sort lists by date schedule
@@ -117,37 +117,37 @@ class ReportService extends DbService
     // static list of group permissions
     public function getReportPermissions()
     {
-        return array("USER", "EDITOR");
+        return ["USER", "EDITOR"];
     }
 
     // return a report given its ID
     public function getReportInfo($id)
     {
-        return $this->getObject("Report", array("id" => $id));
+        return $this->getObject("Report", ["id" => $id]);
     }
 
     // return list of feeds
     public function getFeeds()
     {
-        return $this->getObjects("ReportFeed", array("is_deleted" => 0));
+        return $this->getObjects("ReportFeed", ["is_deleted" => 0]);
     }
 
     // return a feed given its id
     public function getFeedInfobyId($id)
     {
-        return $this->getObject("ReportFeed", array("id" => $id, "is_deleted" => 0));
+        return $this->getObject("ReportFeed", ["id" => $id, "is_deleted" => 0]);
     }
 
     // return a feed given its report id
     public function getFeedInfobyReportId($id)
     {
-        return $this->getObject("ReportFeed", array("report_id" => $id, "is_deleted" => 0));
+        return $this->getObject("ReportFeed", ["report_id" => $id, "is_deleted" => 0]);
     }
 
     // return a feed given its key
     public function getFeedInfobyKey($key)
     {
-        return $this->getObject("ReportFeed", array("report_key" => $key, "is_deleted" => 0));
+        return $this->getObject("ReportFeed", ["report_key" => $key, "is_deleted" => 0]);
     }
 
     // return list of APPROVED and NOT DELETED report IDs for a given a user ID and a where clause
@@ -284,7 +284,7 @@ class ReportService extends DbService
     // return menu links of APPROVED and NOT DELETED report IDs for a given a user ID as member
     public function getReportsforNav()
     {
-        $repts = array();
+        $repts = [];
         $reports = $this->getReportsbyModuleId();
 
         if ($reports) {
@@ -336,7 +336,7 @@ class ReportService extends DbService
     // return all tables in the DB for display
     public function getAllDBTables()
     {
-        $dbtbl = array();
+        $dbtbl = [];
         foreach ($this->_db->_query("show tables")->fetchAll(PDO::FETCH_NUM) as $table) {
             $dbtbl[] = $table[0];
         }
@@ -452,7 +452,7 @@ class ReportService extends DbService
                 $csv = new ParseCsv\Csv();
                 $csv->output_filename = $filename;
                 // ignore lib wrapper csv->output, to keep control over header re-sends!
-                $this->w->out($csv->unparse($row, $hds, null, null, null));
+                $this->w->out($csv->unparse($row, $hds));
                 // can't use this way without commenting out header section, which composer won't like
                 // $this->w->out($csv->output($filename, $row, $hds));
                 unset($ukey);
@@ -475,8 +475,8 @@ class ReportService extends DbService
         $pdf = new TCPDF(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
         $pdf->SetCreator(PDF_CREATOR);
         $pdf->SetTitle($title);
-        $pdf->setHeaderFont(array(PDF_FONT_NAME_MAIN, '', PDF_FONT_SIZE_MAIN));
-        $pdf->setFooterFont(array(PDF_FONT_NAME_DATA, '', PDF_FONT_SIZE_DATA));
+        $pdf->setHeaderFont([PDF_FONT_NAME_MAIN, '', PDF_FONT_SIZE_MAIN]);
+        $pdf->setFooterFont([PDF_FONT_NAME_DATA, '', PDF_FONT_SIZE_DATA]);
         $pdf->SetDefaultMonospacedFont(PDF_FONT_MONOSPACED);
         $pdf->SetMargins(PDF_MARGIN_LEFT, PDF_MARGIN_TOP, PDF_MARGIN_RIGHT);
         $pdf->SetHeaderMargin(PDF_MARGIN_HEADER);
@@ -522,20 +522,20 @@ class ReportService extends DbService
                     $pdf->writeHTML($results, true, false, true, false);
                 }
             } else {
-                $templatedata = array();
+                $templatedata = [];
                 foreach ($rows as $row) {
                     $crumbs = array_shift($row);
                     $title = array_shift($row);
                     $hds = array_shift($row);
                     $hds = array_values($hds);
 
-                    $templatedata[] = array("title" => $title, "headers" => $hds, "results" => $row);
+                    $templatedata[] = ["title" => $title, "headers" => $hds, "results" => $row];
                 }
 
                 if (!empty($report_template) && !empty($templatedata)) {
                     $results = TemplateService::getInstance($this->w)->render(
                         $report_template->template_id,
-                        array("data" => $templatedata, "w" => $this->w, "POST" => $_POST)
+                        ["data" => $templatedata, "w" => $this->w, "POST" => $_POST]
                     );
 
                     $pdf->writeHTML($results, true, false, true, false);
@@ -594,8 +594,8 @@ class ReportService extends DbService
     public function putSpecialSQL($sql)
     {
         if ($sql != "") {
-            $special = array();
-            $replace = array();
+            $special = [];
+            $replace = [];
 
             // get user roles
             $usr = AuthService::getInstance($this->w)->user();
@@ -649,7 +649,7 @@ class ReportService extends DbService
             $w->ctx("title", $title);
         }
 
-        $nav = $nav ? $nav : array();
+        $nav = $nav ? $nav : [];
 
         if (AuthService::getInstance($w)->loggedIn()) {
             $w->menuLink("report/index", "Report Dashboard", $nav);

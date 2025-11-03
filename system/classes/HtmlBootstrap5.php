@@ -28,24 +28,27 @@ class HtmlBootstrap5 extends Html
 
     public static function buttonGroup(string $content): string
     {
-        return '<div class="btn-group btn-group-sm" role="group">' . $content . '</div>';
+        return <<<HTML
+<div class="btn-group btn-group-sm" role="group">$content</div>
+HTML;
     }
 
     public static function dropdownButton($title, $contents, $class)
     {
         $content = '';
         foreach ($contents as $item) {
-            $content .= '<li>' . $item . '</li>';
+            $content .= "<li>$item</li>";
         }
-
-        return '<div class="dropdown">
-            <button class="' . $class . ' dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">'
-            . $title .
-            '</button>
-            <ul class="dropdown-menu">'
-            . $content .
-            '</ul>
-        </div>';
+        return <<<HTML
+<div class="dropdown">
+    <button class="{$class} dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+        {$title}
+    </button>
+    <ul class="dropdown-menu">
+        {$content}
+    </ul>
+</div>
+HTML;
     }
 
     /**
@@ -299,15 +302,11 @@ class HtmlBootstrap5 extends Html
             $buffer .= "<div class='row g-0 clearfix section-header'><h4 class='col'>{$section}<span class='changed_status position-absolute bg-danger rounded p-1 d-none' style='right: 1rem; top: 0.5rem; font-size: 1rem'>Changed</span></h4></div>";
 
             // Loop through each row
-            foreach ($rows as $row) {
-                if (empty($row)) {
-                    continue;
-                }
-
+            foreach (array_filter($rows) as $row) {
                 // Print each field
                 $buffer .= "<div class='row'>";
 
-                foreach ($row as $entry) {
+                foreach (array_filter($row) as $entry) {
                     // Backwards compatibility - provide option to pass additional data
                     $field = null;
                     $tooltip = null;
@@ -571,18 +570,17 @@ class HtmlBootstrap5 extends Html
      * This function invokes multiColForm with default parameters
      * to remove unnecessary html when displaying data
      *
-     * @param Array $data
-     * @return String html
+     * @param array $data
+     * @return string html
      */
     public static function multiColTable($data)
     {
         if (empty($data)) {
-            return;
+            return '';
         }
 
         // Set up shell layout
-        $buffer = "<div class='row'>";
-        $buffer .= "<div class='col'>";
+        $buffer = "<div class='row'><div class='col'>";
         foreach ($data as $section => $rows) {
             $buffer .= "<div class='item " . toSlug($section) . "'><div class='panel flat'><h4>{$section}</h4><table class='table'>";
             foreach ($rows as $row) {
@@ -627,12 +625,12 @@ class HtmlBootstrap5 extends Html
      * @param int $page_size
      * @param int $total_results
      * @param string $base_url
-     * @param string|optional $sort
-     * @param string|optional $sort_direction
-     * @param string|optional $page_query_param
-     * @param string|optional $pagesize_query_param
-     * @param string|optional $total_results_query_param
-     * @param string|optional $sort_query_param
+     * @param string|null $sort
+     * @param string $sort_direction
+     * @param string $page_query_param
+     * @param string $pagesize_query_param
+     * @param string $total_results_query_param
+     * @param string $sort_query_param
      */
     public static function paginatedTable(
         $header,
@@ -1044,17 +1042,23 @@ class HtmlBootstrap5 extends Html
 
     public static function datePicker($name, $value = null, $size = null, $required = null)
     {
-        return '<input class="form-control" type="date" name="' . $name . '" value="' . $value . '" size="' . $size . '" id="' . $name . '" ' . $required . ' />';
+        return <<<HTML
+            <input class="form-control" type="date" name="$name" value="$value" size="$size" id="$name" $required />
+        HTML;
     }
 
     public static function datetimePicker($name, $value = null, $size = null, $required = null)
     {
-        return '<input class="form-control" type="datetime-local" name="' . $name . '" value="' . $value . '" size="' . $size . '" id="' . $name . '" ' . $required . ' />';
+        return <<<HTML
+            <input class="form-control" type="datetime-local" name="$name" value="$value" size="$size" id="$name" $required />
+        HTML;
     }
 
     public static function timePicker($name, $value = null, $size = null, $required = null)
     {
-        return '<input class="form-control" type="time" name="' . $name . '" value="' . $value . '" size="' . $size . '" id="' . $name . '" ' . $required . ' />';
+        return <<<HTML
+            <input class="form-control" type="time" name="$name" value="$value" size="$size" id="$name" $required />
+        HTML;
     }
 
     /**
@@ -1084,8 +1088,10 @@ class HtmlBootstrap5 extends Html
      * If width and height not specified, creates a responsive chart.
      * You don't need to use this function if you want more control over the chart.
      * Create a div with a data-chart attribute containing your chartjs config, as well as an inner canvas.
+     *
+     * @return string
      */
-    public static function chart($id = "chartjs", $type = "line", $data = [], $options = [], $height = "100%", $width = "100%", $class = null)
+    public static function chart($id = "chartjs", $type = "line", $data = [], $options = [], $height = "100%", $width = "100%", $class = null): string
     {
         $config = htmlentities(json_encode([
             "type" => $type,
@@ -1094,12 +1100,10 @@ class HtmlBootstrap5 extends Html
             "data" => $data,
         ]));
 
-        $buffer = <<<HERE
+        return <<<HERE
             <div style="position: relative; width: $width; height: $width;" class="$class" data-chart="$config">
                 <canvas style="max-width: 100%" id="$id"></canvas>
             </div>
-        HERE;
-
-        return $buffer;
+HERE;
     }
 }

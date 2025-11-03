@@ -14,7 +14,7 @@ function showReport(\Web $w, $params = [])
 
     CmfiveStyleComponentRegister::registerComponent('styles', new CmfiveStyleComponent('/system/templates/scss/redesign.scss', ['/system/templates/scss/']));
 
-    $report = ReportService::getInstance($w)->getReportByModuleAndCategory($params['module'], $params['category']);
+    $report = \ReportService::getInstance($w)->getReportByModuleAndCategory($params['module'], $params['category']);
     $form = $report->getReportCriteria(true);
 
     // Determine if it's a multicolform
@@ -30,12 +30,8 @@ function showReport(\Web $w, $params = [])
 
     if (true || !empty($params['include_export_options']) && $params['include_export_options'] === true) {
         $format_form = [
-            [
-                new \Html\Form\InputField\Radio(['id' => 'pdf', "name" => "format", "label" => "PDF", "value" => "pdf", "checked" => true, "class" => ""])
-            ],
-            [
-                new \Html\Form\InputField\Radio(['id' => 'csv', "name" => "format", "label" => "CSV", "value" => "csv", "class" => ""])
-            ]
+            [new \Html\Form\InputField\Radio(['id' => 'pdf', "name" => "format", "label" => "PDF", "value" => "pdf", "checked" => true, "class" => ""])],
+            [new \Html\Form\InputField\Radio(['id' => 'csv', "name" => "format", "label" => "CSV", "value" => "csv", "class" => ""]),]
         ];
         $form["Select format"] = $format_form; // ($is_multicol_form ? [$format_form] : $format_form);
     }

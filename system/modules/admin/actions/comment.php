@@ -114,7 +114,7 @@ function comment_GET(Web $w)
     ];
 
     // make sure line breaks are escaped for correct processing in js
-    $w->ctx("comment", addcslashes($comment->comment, "\n\""));
+    $w->ctx("comment", addcslashes($comment->comment ?? "", "\n\""));
 
     $w->ctx("comment_id", $comment_id == "{0}" ? "0" : $comment_id);
     $w->ctx("viewers", json_encode($viewers, JSON_HEX_APOS));

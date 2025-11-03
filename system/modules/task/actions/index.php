@@ -1,7 +1,7 @@
 <?php
 
 //////////////////////////////////////////
-//          TASK DASHBOARD   		//
+//          TASK DASHBOARD          //
 //////////////////////////////////////////
 
 function index_ALL(Web $w)
@@ -17,7 +17,7 @@ function index_ALL(Web $w)
     $total_tasks = $w->db->get("task")->where("is_deleted", 0)->count();
     $task_rows = $w->db->get("task")->leftJoin("task_group")
         ->where("task.assignee_id", AuthService::getInstance($w)->user()->id)
-        ->where("task.is_deleted", array(0, null))
+        ->where("task.is_deleted", [0, null])
         ->where("task_group.is_active", 1)
         ->where("task_group.is_deleted", 0)
         ->fetchAll();
@@ -49,9 +49,9 @@ function index_ALL(Web $w)
             foreach ($tasks as $task) {
                 if (!empty($task->dt_due) && ($task->dt_due < time())) {
                     $count_overdue++;
-                } else if (!empty($task->dt_due) && ($task->dt2time($task->dt_due) <= (time() + (60 * 60 * 24 * 7)))) {
+                } elseif (!empty($task->dt_due) && ($task->dt2time($task->dt_due) <= (time() + (60 * 60 * 24 * 7)))) {
                     $count_due_soon++;
-                } else if (empty($task->dt_due)) {
+                } elseif (empty($task->dt_due)) {
                     $count_no_due_date++;
                 }
                 if ($task->isUrgent()) {

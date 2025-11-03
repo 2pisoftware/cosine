@@ -2,7 +2,8 @@
 
 use Html\Form\InputField\Text;
 
-function edit_GET(Web $w) {
+function edit_GET(Web $w)
+{
     $p = $w->pathMatch("id");
     
     $t = TagService::getInstance($w)->getTag($p['id']);
@@ -21,7 +22,8 @@ function edit_GET(Web $w) {
     $w->ctx("edittagform", HtmlBootstrap5::multiColForm($newForm, $w->localUrl('/tag/edit/'.$t->id)));
 }
 
-function edit_POST(Web $w) {
+function edit_POST(Web $w)
+{
     $p = $w->pathMatch("id");
     
     $existing_tag = TagService::getInstance($w)->getObject("Tag", ['tag' => trim(strip_tags(Request::string('tag'))), 'is_deleted' => 0]);

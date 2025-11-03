@@ -22,7 +22,7 @@
 
             <div id="new_attachments_restricted" class="d-none">
                 <input class="form-check-input" type="checkbox" name="is_restricted">
-                <label class="form-check-label d-inline" for="is_restricted">Limit who can view this comment</label>
+                <label class="form-check-label d-inline" for="is_restricted">Limit who can view this attachment</label>
 
                 <div id="new_attachments_viewers" class="pt-1"></div>
             </div>

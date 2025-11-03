@@ -15,7 +15,7 @@ function attach_form_GET(Web $w)
 
     /**
      * Required to type $application correctly
-     * 
+     *
      * @var FormApplication
      * */
     $application = FormApplicationService::getInstance($w)->getFormApplication($id);
@@ -66,7 +66,7 @@ function attach_form_POST(Web $w)
 
     /**
      * Required to type $application correctly
-     * 
+     *
      * @var FormApplication
      * */
     $application = FormApplicationService::getInstance($w)->getFormApplication($id);

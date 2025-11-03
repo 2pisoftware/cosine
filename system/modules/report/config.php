@@ -4,8 +4,8 @@ Config::set('report', [
     'active' => true,
     'path' => 'system/modules',
     "dependencies" => [
-        "tecnickcom/tcpdf" => "~6.2",
-        "parsecsv/php-parsecsv" => "1.2.0",
+        "tecnickcom/tcpdf" => "^6.10.0",
+        "parsecsv/php-parsecsv" => "^1.3.2",
     ],
     '__password' => 'maybeconsiderchangingthis',
     'topmenu' => true,

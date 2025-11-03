@@ -2,20 +2,17 @@
 
 /**
  * CURL helper static class
- * 
- * @author <adam@2pisoftware.com>
  */
 class CurlService extends DbService
 {
-
     /**
      * Creates and runs a get request and passes the response to a callback
-     * 
+     *
      * @param string $url
      * @param array $data
-     * @param Function $callback
+     * @param ?callable $callback
      */
-    public static function getRequest($url, array $data = [], $callback = null)
+    public static function getRequest($url, array $data = [], ?callable $callback = null)
     {
         $handle = curl_init();
 
@@ -36,12 +33,12 @@ class CurlService extends DbService
 
     /**
      * Creates and runs a post request and passes the response to a callback
-     * 
+     *
      * @param string $url
      * @param array $data
-     * @param Function $callback
+     * @param ?callable $callback
      */
-    public static function postRequest($url, array $data = [], $callback = null)
+    public static function postRequest($url, array $data = [], ?callable $callback = null)
     {
         $handle = curl_init();
 
@@ -65,12 +62,12 @@ class CurlService extends DbService
 
     /**
      * Creates and runs a post request and passes the response to a callback
-     * 
+     *
      * @param string $url
      * @param array $data
-     * @param Function $callback
+     * @param ?callable $callback
      */
-    public static function postRequestWithAuth($url, string $username, string $password, array $data = [], $callback = null)
+    public static function postRequestWithAuth($url, string $username, string $password, array $data = [], ?callable $callback = null)
     {
         $handle = curl_init();
 
@@ -100,14 +97,13 @@ class CurlService extends DbService
      * @param string $url
      * @param string $token
      * @param array $data
-     * @param callable|null $callback
+     * @param ?callable $callback
      */
-    public static function getRequestWithCognitoAuth(string $url, string $token, array $data = [], callable|null $callback = null)
+    public static function getRequestWithCognitoAuth(string $url, string $token, array $data = [], ?callable $callback = null)
     {
         $handle = curl_init();
 
         curl_setopt($handle, CURLOPT_URL, $url . '?' . http_build_query($data));
-
         curl_setopt($handle, CURLOPT_HTTPHEADER, [
             'Authorization: Bearer ' . $token
         ]);
@@ -132,9 +128,9 @@ class CurlService extends DbService
      * @param string $url
      * @param string $token
      * @param array $data
-     * @param callable|null $callback
+     * @param ?callable $callback
      */
-    public static function postRequestWithCognitoAuth(string $url, string $token, array $data = [], callable|null $callback = null)
+    public static function postRequestWithCognitoAuth(string $url, string $token, array $data = [], ?callable $callback = null)
     {
         $handle = curl_init();
 

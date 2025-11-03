@@ -6,6 +6,7 @@ use Gaufrette\File as File;
 // use Gaufrette\Adapter\InMemory as InMemoryAdapter;
 // use Gaufrette\Adapter\AwsS3 as AwsS3;
 use Aws\S3\S3Client as S3Client;
+
 // use Gaufrette\StreamWrapper as StreamWrapper;
 
 /**
@@ -173,7 +174,7 @@ class FileService extends DbService
     }
 
     /**
-     * 
+     *
      */
     public function getS3Client(): Aws\S3\S3Client
     {
@@ -350,8 +351,8 @@ class FileService extends DbService
 
         return $this->getObjectsFromRows("Attachment", $this->_db->get("attachment")
             ->where("parent_table", $table)
-            ->and("parent_id", $id)
-            ->and("is_deleted", 0)
+            ->where("parent_id", $id)
+            ->where("is_deleted", 0)
             ->paginate($page, $page_size)
             ->fetchAll());
     }
@@ -469,9 +470,9 @@ class FileService extends DbService
                 // per : https://www.php.net/manual/en/function.readfile.php
                 // readfile() will not present any memory issues on its own.
                 // If you encounter an out of memory error ensure that output buffering is off
-                if (ob_get_level()) {
-                    ob_end_clean();
-                }
+        if (ob_get_level()) {
+            ob_end_clean();
+        }
                 $this->w->header('Content-Description: File Transfer');
                 $this->w->header('Content-Type: ' . (empty($att->mimetype) ? "application/octet-stream" : $att->mimetype));
                 $this->w->header('Content-Disposition: attachment; filename="' . ($saveAs ?? $att->filename) . '"');
@@ -480,11 +481,11 @@ class FileService extends DbService
                 $this->w->header('Pragma: public');
 
                 $filesystem = $att->getFileSystem();
-                try {
-                    $this->w->header('Content-Length: ' . $filesystem->fileSize($att->filename));
-                } catch (Exception $e) {
-                    LogService::getInstance($this->w)->error('Attachment write out error: ' . $e->getMessage());
-                }
+        try {
+            $this->w->header('Content-Length: ' . $filesystem->fileSize($att->filename));
+        } catch (Exception $e) {
+            LogService::getInstance($this->w)->error('Attachment write out error: ' . $e->getMessage());
+        }
                 echo $filesystem->read($att->filename);
                 exit(0);
         // }
@@ -856,7 +857,7 @@ class FileService extends DbService
 
     public function getMimetypeList(): array
     {
-       return [
+        return [
             '.aac'  => 'audio/aac',
             '.abw'  => 'application/x-abiword',
             '.arc'  => 'application/x-freearc',

@@ -10,31 +10,30 @@ use Html\Form\InputField\Text;
 function groupadd_GET(Web $w)
 {
 
-	$w->setLayout('layout-bootstrap-5');
+    $w->setLayout('layout-bootstrap-5');
 
-	$w->out(HtmlBootstrap5::multiColForm([
+    $w->out(HtmlBootstrap5::multiColForm([
         'New Group' => [
             [
-				(new \Html\Form\InputField\Text([
-				'id|name' => 'title',
-				'label' => 'Group title',
-				'required' => true,
-				]))
+                (new \Html\Form\InputField\Text([
+                'id|name' => 'title',
+                'label' => 'Group title',
+                'required' => true,
+                ]))
             ]
-		]],  "/admin/groupadd", "POST", "Save"));
-
+        ]], "/admin/groupadd", "POST", "Save"));
 }
 
 function groupadd_POST(Web $w)
 {
-	$user = new User($w);
-	$user->login = $_REQUEST['title'];
-	$user->is_group = 1;
+    $user = new User($w);
+    $user->login = $_REQUEST['title'];
+    $user->is_group = 1;
     $user->is_active = 1;
-	$user->insert();
+    $user->insert();
 
     if (!empty($user->id)) {
-    	$w->msg("New group added", "/admin/groups");       
+        $w->msg("New group added", "/admin/groups");
     } else {
         $w->msg("Unable to create group.", "/admin/groups");
     }

@@ -37,7 +37,7 @@ function manageMembers_ALL(Web $w)
             // the actions column is used to hold buttons that link to actions per item. Note the item id is added to the href on these buttons.
             $actions = [];
             $actions[] = HtmlBootstrap5::buttonGroup(
-                HtmlBootstrap5::box("/insights-members/editMembers/$member->id?" . $member->insight_class, "Edit", true, false, null, null, "isbox", "editbutton", 'btn-sm btn-primary') . 
+                HtmlBootstrap5::box("/insights-members/editMembers/$member->id?" . $member->insight_class, "Edit", true, false, null, null, "isbox", "editbutton", 'btn-sm btn-primary') .
                 HtmlBootstrap5::b("/insights-members/deleteMembers/$member->id?" . $member->insight_class, "Delete", 'Are you sure you want to delete this member?', "deletebutton", false, 'btn-sm btn-danger')
             );
             $row[] = implode('', $actions);

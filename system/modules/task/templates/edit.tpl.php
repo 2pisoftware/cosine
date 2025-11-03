@@ -142,7 +142,7 @@
                                             <?php $subscriber_user = $subscriber->getUser(); ?>
                                             <?php if (!empty($subscriber_user)) : ?>
                                                 <tr>
-                                                    <td>
+                                                    <td class="align-middle">
                                                         <div>
                                                             <?php echo $subscriber_user->getFullName() ?>
                                                         </div>
@@ -151,7 +151,7 @@
                                                         </div>
                                                     </td>
 
-                                                    <td>
+                                                    <td class="align-middle text-end">
                                                         <?php echo HtmlBootstrap5::b(
                                                             href: '/task-subscriber/delete/' . $subscriber->id,
                                                             title: '×',
@@ -197,7 +197,7 @@
                                         </tbody>
                                     </table>
                                 </div>
-                        <?php endif;
+                            <?php endif;
                         }
                         ?>
                     <?php endif; ?>

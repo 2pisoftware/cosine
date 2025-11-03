@@ -19,7 +19,7 @@ function index_GET($w)
                 StringSanitiser::sanitise($t->title), StringSanitiser::sanitise($t->module), StringSanitiser::sanitise($t->category),
                 [$t->is_active ? "Active" : "Inactive", true],
                 // [Date("H:i d-m-Y", $t->dt_created), true],
-                // [Date("H:i d-m-Y", $t->dt_modified), true], 
+                // [Date("H:i d-m-Y", $t->dt_modified), true],
                 HtmlBootstrap5::b("/admin-templates/edit/" . $t->id, "Edit", null, null, false, "btn-sm btn-secondary"),
             ];
         }

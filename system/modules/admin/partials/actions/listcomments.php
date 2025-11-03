@@ -53,12 +53,12 @@ function listcomments(\Web $w, $params)
             $user = \AuthService::getInstance($w)->getUser($user_id);
             if (!empty($user)) {
                 if ($internal_only === true && $user->is_external == 0) {
-                    $recipients_form_html .= '<li><label classs="small-12 columns">' . addcslashes($user->getFullName(), '\'') . ' <input type="checkbox" name="recipient_' . $user->id . '" value="1" ';
+                    $recipients_form_html .= '<li><label classs="small-12 columns">' . addcslashes($user->getFullName() ?? "", '\'') . ' <input type="checkbox" name="recipient_' . $user->id . '" value="1" ';
                     $recipients_form_html .= $user->id != \AuthService::getInstance($w)->loggedIn() && $is_notify == 1 ? 'checked="checked"' : '';
                     $recipients_form_html .= 'id="recipient_' . $user_id . '" class=""></label></li>';
                 } else {
                     if ($internal_only === false) {
-                        $recipients_form_html .= '<li><label class="small-12 columns">' . addcslashes($user->getFullName(), '\'') . ($user->is_external == 1 ? ' (external)' : '') . ' <input type="checkbox" name="recipient_' . $user->id . '" value="1" ';
+                        $recipients_form_html .= '<li><label class="small-12 columns">' . addcslashes($user->getFullName() ?? "", '\'') . ($user->is_external == 1 ? ' (external)' : '') . ' <input type="checkbox" name="recipient_' . $user->id . '" value="1" ';
                         $recipients_form_html .= $user->id != \AuthService::getInstance($w)->loggedIn() && $is_notify == 1 ? 'checked="checked"' : '';
                         $recipients_form_html .= 'id="recipient_' . $user_id . '" class=""></label></li>';
                     }

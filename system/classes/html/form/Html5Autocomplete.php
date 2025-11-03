@@ -152,23 +152,23 @@ class Html5Autocomplete extends \Html\Form\InputField
                 "value" => $val->getSelectOptionValue(),
                 "text" => $val->getSelectOptionTitle()
             ];
-        } else if (isset($val["value"]) && isset($val["text"])) {
+        } elseif (isset($val["value"]) && isset($val["text"])) {
             return [
                 "value" => $val["value"],
                 "text" => $val["text"],
-                "type" => $val["type"],
+                "type" => !empty($val["type"]) ? $val["type"] : "",
             ];
-        } else if (isset($val["id"]) && isset($val["name"])) {
+        } elseif (isset($val["id"]) && isset($val["name"])) {
             return [
                 "value" => $val["id"],
                 "text" => $val["name"],
             ];
-        } else if (is_scalar($val)) {
+        } elseif (is_scalar($val)) {
             return [
                 "value" => $val,
                 "text" => $val,
             ];
-        } else if (is_array($val) && count($val) === 2) {
+        } elseif (is_array($val) && count($val) === 2) {
             return [
                 "value" => $val[0],
                 "text" => $val[1],

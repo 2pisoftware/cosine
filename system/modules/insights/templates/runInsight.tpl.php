@@ -1,5 +1,5 @@
 <?php
-echo HtmlBootstrap5::b("/insights/viewInsight/" . $insight_class_name . "?" . $request_string,"Change Insight Parameters", null, null, false, "btn-sm btn-primary");
+echo HtmlBootstrap5::b("/insights/viewInsight/" . $insight_class_name . "?" . $request_string, "Change Insight Parameters", null, null, false, "btn-sm btn-primary");
 echo HtmlBootstrap5::b("/insights-export/csv/" . $insight_class_name . "?" . $request_string, "Export to CSV", null, null, false, "btn-sm btn-primary");
 echo HtmlBootstrap5::box("/insights-export/bindpdf/" . $insight_class_name . "?" . $request_string, "Export to PDF", true, false, null, null, "isbox", null, "btn-sm btn-primary");
 

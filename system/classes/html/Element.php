@@ -6,6 +6,8 @@
  *
  * @author Adam Buckley <adam@2pisoftware.com>
  */
+
+#[\AllowDynamicProperties]
 abstract class Element
 {
     /**

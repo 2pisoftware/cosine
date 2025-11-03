@@ -4,20 +4,18 @@
 /**
  * Display member and permission infomation
  *
- * @param <type> $w
+ * @param Web $w
  */
-function moreInfo_GET(Web &$w)
+function moreInfo_GET(Web $w)
 {
-    $w->setLayout('layout-bootstrap-5');
-
     $option = $w->pathMatch("group_id");
 
     AdminService::getInstance($w)->navigation($w, AuthService::getInstance($w)->getUser($option['group_id'])->login);
 
     if (AuthService::getInstance($w)->user()->is_admin || AuthService::getInstance($w)->getRoleForLoginUser($option['group_id'], AuthService::getInstance($w)->user()->id) == "owner") {
-        $w->ctx("addMember", HtmlBootstrap5::box("/admin/groupmember/" . $option['group_id'], "New Member", true));
+        $w->ctx("addMember", HtmlBootstrap5::box(href: "/admin/groupmember/" . $option['group_id'], title: "New Member", button: true, class: "btn btn-primary btn-sm ms-0"));
     }
-    $w->ctx("editPermission", HtmlBootstrap5::b("/admin/permissionedit/" . $option['group_id'], "Edit Permissions"));
+    $w->ctx("editPermission", HtmlBootstrap5::b(href: "/admin/permissionedit/" . $option['group_id'], title: "Edit Permissions", class: "btn btn-secondary btn-sm ms-2"));
 
     //fill in member table;
     $table = [["Name", "Role", "Operations"]];

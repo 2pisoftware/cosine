@@ -3,7 +3,12 @@
 function login_GET(Web $w)
 {
     $w->ctx('title', Config::get('auth.login_title', 'Login'));
-    
+
+    CmfiveScriptComponentRegister::registerComponent(
+        'webauthn-login',
+        new CmfiveScriptComponent("/system/templates/base/dist/WebAuthnLogin.js", ['type' => 'module'])
+    );
+
     // Check if logged in already
     $user = AuthService::getInstance($w)->user();
     if (AuthService::getInstance($w)->loggedIn() && AuthService::getInstance($w)->allowed($user->redirect_url)) {

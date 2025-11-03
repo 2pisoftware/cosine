@@ -8,8 +8,7 @@ Config::set('main', [
     'company_name' => 'cmfive',
     'company_url' => 'https://github.com/2pisoftware',
     "dependencies" => [
-        // "monolog/monolog" => "1.22.*@dev",
-        "scssphp/scssphp" => "1.9.0"
+        "scssphp/scssphp" => "^2.0.1"
     ],
     'hooks' => [
         'core_dbobject',

@@ -1,6 +1,6 @@
 <?php
 if (!empty($statuses)) {
-    $table = array(array("Processor ID", "Message", "Was Successful", "Actions", "sort_key" => null));
+    $table = [["Processor ID", "Message", "Was Successful", "Actions", "sort_key" => null]];
 
     foreach ($statuses as $s) {
         $message = ChannelService::getInstance($w)->getMessage($s->message_id);

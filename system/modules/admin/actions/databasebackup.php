@@ -37,8 +37,8 @@ function databasebackup_ALL(Web $w)
     }
     if (!empty($command)) {
         $command = str_replace(
-            array('$username', '$password', '$dbname', '$filename'),
-            array(Config::get('database.username'), Config::get('database.password'), Config::get('database.database'), $filedir.$filename),
+            ['$username', '$password', '$dbname', '$filename'],
+            [Config::get('database.username'), Config::get('database.password'), Config::get('database.database'), $filedir.$filename],
             $command
         );
 

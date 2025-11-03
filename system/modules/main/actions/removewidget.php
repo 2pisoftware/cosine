@@ -1,16 +1,16 @@
 <?php
 
-function removewidget_ALL(Web $w) {
+function removewidget_ALL(Web $w)
+{
 
-	$p = $w->pathMatch("origin", "id"); // "source", "widget");
+    $p = $w->pathMatch("origin", "id"); // "source", "widget");
 
-	$widget = WidgetService::getInstance($w)->getWidgetById($p["id"]); //, $p["source"], $p["widget"]);
-	if (empty($widget->id)) {
-		$w->error(__("Widget not found"), "/{$p['origin']}");
-	}
+    $widget = WidgetService::getInstance($w)->getWidgetById($p["id"]); //, $p["source"], $p["widget"]);
+    if (empty($widget->id)) {
+        $w->error(__("Widget not found"), "/{$p['origin']}");
+    }
 
-	$widget->delete();
+    $widget->delete();
 
-	$w->msg(__("Widget removed"), "/{$p['origin']}");
-
+    $w->msg(__("Widget removed"), "/{$p['origin']}");
 }

@@ -42,7 +42,7 @@ class CmfiveMigration extends Phinx\Migration\AbstractMigration
      * @param array $options
      * @return Table
      */
-    public function table($table_name, $options = []) : Table
+    public function table($table_name, $options = []): Table
     {
         return new Table($table_name, $options, $this->getAdapter());
     }
@@ -53,12 +53,13 @@ class CmfiveMigration extends Phinx\Migration\AbstractMigration
      * @param string $table_name
      * @return Table
      */
-    public function tableWithId($table_name) : Table
+    public function tableWithId($table_name): Table
     {
         $id = $this->Column();
         $id->setName('id')
             ->setType('biginteger')
-            ->setIdentity(true);
+            ->setIdentity(true)
+            ->setNull(false);
 
         return $this->table($table_name, [
             'id' => false,

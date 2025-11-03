@@ -2,8 +2,8 @@
 
 function index_GET(Web $w)
 {
-    $w->setLayout('layout-bootstrap-5');
-
+    $w->ctx("layout-size", "large");
+    
     $available = MigrationService::getInstance($w)->getAvailableMigrations('all');
     $installed = MigrationService::getInstance($w)->getInstalledMigrations('all');
     $seeds = MigrationService::getInstance($w)->getSeedMigrations();
@@ -22,7 +22,7 @@ function index_GET(Web $w)
         foreach ($available as $module => $_available) {
             foreach ($_available as $file => $class) {
                 if (!MigrationService::getInstance($w)->isInstalled($class['class_name'])) {
-                    $not_installed[$module][$file] = array("class" => $class, "path" => $file);
+                    $not_installed[$module][$file] = ["class" => $class, "path" => $file];
                 }
             }
         }

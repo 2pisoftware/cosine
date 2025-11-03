@@ -8,7 +8,6 @@
  */
 function groups_GET(Web &$w)
 {
-    $w->setLayout('layout-bootstrap-5');
     AdminService::getInstance($w)->navigation($w, "Groups");
 
     $table = [["Title", "Parent Groups", "Operations"]];
@@ -46,7 +45,7 @@ function groups_GET(Web &$w)
     }
 
     if (AuthService::getInstance($w)->user()->is_admin) {
-        $w->out(HtmlBootstrap5::box("/admin/groupadd", "New Group", true));
+        $w->out(HtmlBootstrap5::box(href: "/admin/groupadd", title: "New Group", button: true, class: 'btn btn-primary btn-sm ms-0'));
     }
 
     $w->out(HtmlBootstrap5::table($table, null, "tablesorter"));

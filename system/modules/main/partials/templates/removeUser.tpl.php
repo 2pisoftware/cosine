@@ -1,7 +1,10 @@
 <div v-cloak id="app">
     <div v-show="!new_owner_set && owner_links.length > 0">
         <h3>Main</h3>
-        <p>This user has ownership of the following restricted object(s). Select a new user to take over ownership. <strong>If a new User is not selected these restricted objects will be unretrievable</strong></p>
+        <p>
+            This user has ownership of the following restricted object(s). Select a new user to take over ownership.
+            <strong>If a new User is not selected these restricted objects will be unretrievable</strong>
+        </p>
         <ul>
             <li v-for="restricted_object_class in restricted_object_classes">
                 {{ restricted_object_class.count + " " + restricted_object_class.name + (restricted_object_class.count > 1 ? "s" : "") }}
@@ -18,7 +21,7 @@
     </div>
 </div>
 <script>
-    cosnt {
+    const {
         createApp
     } = Vue;
     createApp({
@@ -36,7 +39,7 @@
             updateSelectedOwner: function(event) {
                 this.new_owner = JSON.parse(event.target.value);
             },
-            setNewOwner: function() {
+            setNewOwner: async function() {
                 if (!confirm("Are you sure you want to set this user as the new owner of these restricted object(s)?")) {
                     return;
                 }
@@ -57,7 +60,7 @@
                     console.log(error);
                     window.history.go();
                 });
-                
+
                 this.new_owner_set = true;
                 new Toast("New owner successfully set").show();
                 window.history.go();

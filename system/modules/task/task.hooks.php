@@ -330,6 +330,10 @@ function task_core_dbobject_after_update_TaskGroup(Web $w, $object)
     $members = $object->getMembers();
     foreach ($members as $member) {
         $user = AuthService::getInstance($w)->getUser($member->user_id);
+        if (empty($user->id)) {
+            continue;
+        }
+
         $tasks = $object->getTasks();
         foreach ($tasks as $task) {
             //Check if user is subscribed to the task & can no longer view it

@@ -1,7 +1,6 @@
 <style>
     td {
-        /* hack, don't care. don't want to fight css rule precedence */
-        padding: 5px 20px 5px 20px !important;
+        padding: 5px 20px !important;
     }
 </style>
 
@@ -15,7 +14,7 @@ if (!empty($table_data)) {
         page: $page,
         page_size: $page_size,
         total_results: $total_results,
-        base_url: $base_url,
+        base_url: "/task/tasklist",
         sort: $sort,
         sort_direction: $sort_direction,
         page_query_param: 'task__page',
