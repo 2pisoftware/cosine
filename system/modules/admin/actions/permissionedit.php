@@ -40,7 +40,7 @@ function permissionedit_GET(Web $w)
         $result[$module][] = implode("_", $parts);
     }
 
-    $permission = array();
+    $permission = [];
     foreach ($result as $module => $parts) {
         $parts = array_chunk($parts, 4);
 

@@ -62,7 +62,9 @@ class EmailParser
     {
         $headers = preg_replace('/\r\n\s+/m', '', $headers);
         preg_match_all('/([^: ]+): (.+?(?:\r\n\s(?:.+?))*)?\r\n/m', $headers, $matches);
-        foreach ($matches[1] as $key => $value) $result[$value] = $matches[2][$key];
+        foreach ($matches[1] as $key => $value) {
+            $result[$value] = $matches[2][$key];
+        }
         return ($result);
     }
 
@@ -70,7 +72,9 @@ class EmailParser
     {
         $mail = imap_fetchstructure($imap, $mid);
         $mail = mail_get_parts($imap, $mid, $mail, 0);
-        if ($parse_headers) $mail[0]["parsed"] = mail_parse_headers($mail[0]["data"]);
+        if ($parse_headers) {
+            $mail[0]["parsed"] = mail_parse_headers($mail[0]["data"]);
+        }
         return ($mail);
     }
 

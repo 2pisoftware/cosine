@@ -52,9 +52,12 @@ function bindpdf_GET(Web $w)
         "POST",
         "Export",
         "template_select_form",
-        null, null,
+        null,
+        null,
         "_self",
-        true, null, $displayOverlay = false
+        true,
+        null,
+        $displayOverlay = false
     );
 
     $w->out($template_select);

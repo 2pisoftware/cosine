@@ -81,5 +81,4 @@ class TagAbstractMigration extends CmfiveMigration
 
         $this->dropTable('tag_assign');
     }
-
 }

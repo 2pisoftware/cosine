@@ -41,5 +41,4 @@ class FileInitialMigration extends CmfiveMigration
         $this->hasTable('attachment') ? $this->dropTable('attachment') : null;
         $this->hasTable('attachment_type') ? $this->dropTable('attachment_type') : null;
     }
-
 }

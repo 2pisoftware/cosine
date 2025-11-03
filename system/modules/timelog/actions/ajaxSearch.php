@@ -1,6 +1,7 @@
 <?php
 
-function ajaxSearch_GET(Web $w) {
+function ajaxSearch_GET(Web $w)
+{
     $results = SearchService::getInstance($w)->getResults(Request::string("term"), Request::string("index"));
     $result_ids = [];
     $result_objects = [];

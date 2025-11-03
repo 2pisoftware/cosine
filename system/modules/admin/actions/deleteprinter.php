@@ -1,9 +1,10 @@
 <?php
 
-function deleteprinter_ALL(Web $w) {
+function deleteprinter_ALL(Web $w)
+{
     $p = $w->pathMatch("id");
 
-    if (!empty($p["id"])){
+    if (!empty($p["id"])) {
         $printer = PrinterService::getInstance($w)->getPrinter($p["id"]);
         if (!empty($printer->id)) {
             $printer->delete();
@@ -12,6 +13,4 @@ function deleteprinter_ALL(Web $w) {
     }
     
     $w->error("Could not find printer", "/admin");
-
 }
-

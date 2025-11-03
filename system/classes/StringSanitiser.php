@@ -1,9 +1,10 @@
 <?php
 
-class StringSanitiser {
+class StringSanitiser
+{
     /**
      * Converts input data to encoded entities for safe display to screen
-     * 
+     *
      * @param ?string $data
      * @return string
      */
@@ -17,7 +18,7 @@ class StringSanitiser {
 
     /**
      * Strips default Quill HTML tags from the input string
-     * 
+     *
      * @param ?string $string
      * @param ?array $tags
      * @return string
@@ -37,7 +38,7 @@ class StringSanitiser {
 
     /**
      * Strips anything that is not alphanumeric from the input string
-     * 
+     *
      * @param ?string $string
      * @return string
      */
@@ -51,7 +52,7 @@ class StringSanitiser {
 
     /**
      * Escapes quotes of the input string
-     * 
+     *
      * @param ?string $string
      * @return string
      */

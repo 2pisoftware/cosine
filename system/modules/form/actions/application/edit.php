@@ -12,7 +12,7 @@ function edit_GET(Web $w)
 
     /**
      * Required to type $application correctly
-     * 
+     *
      * @var FormApplication
      **/
     $application = FormApplicationService::getInstance($w)->getFormApplication($id);
@@ -84,7 +84,7 @@ function edit_POST(Web $w)
 
     /**
      * Required to type $application correctly
-     * 
+     *
      * @var FormApplication
      */
     $application = FormApplicationService::getInstance($w)->getFormApplication($id);

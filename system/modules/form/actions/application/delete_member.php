@@ -1,6 +1,7 @@
 <?php
 
-function delete_member_GET(Web $w) {
+function delete_member_GET(Web $w)
+{
     list($id) = $w->pathMatch('id');
 
     if (empty($id)) {
@@ -16,7 +17,7 @@ function delete_member_GET(Web $w) {
 
     /**
      * Required to type $application correctly
-     * 
+     *
      * @var FormApplication
      */
     $application = FormApplicationService::getInstance($w)->getFormApplication($id);
@@ -27,7 +28,7 @@ function delete_member_GET(Web $w) {
 
     /**
      * Required to type $member correctly
-     * 
+     *
      * @var FormApplicationMember
      */
     $member = FormApplicationService::getInstance($w)->getObject("FormApplicationMember", $memberId);

@@ -1,6 +1,7 @@
 <?php
 
-function delete_GET(Web $w) {
+function delete_GET(Web $w)
+{
     $p = $w->pathMatch("id");
     if (empty($p['id'])) {
         $w->error("Report template not found", "/report-templates");

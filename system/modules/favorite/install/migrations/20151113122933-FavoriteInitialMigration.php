@@ -18,5 +18,4 @@ class FavoriteInitialMigration extends CmfiveMigration
     {
         $this->hasTable('favorite') ? $this->dropTable('favorite') : null;
     }
-
 }

@@ -1,18 +1,18 @@
  <?php
 
-class TemplateCest
-{
-    public function testTemplate($I)
-    {
-        $I->wantTo('Create a template');
-        $I->login($I, 'admin', 'admin');
+ class TemplateCest
+ {
+     public function testTemplate($I)
+     {
+         $I->wantTo('Create a template');
+         $I->login($I, 'admin', 'admin');
 
-        $I->createTemplate(
-            $I,
-            'Test Template',
-            'Admin',
-            'Templates',
-            "	  <table width='100%' align='center' class='form-table' cellpadding='1'>	"
+         $I->createTemplate(
+             $I,
+             'Test Template',
+             'Admin',
+             'Templates',
+             "	  <table width='100%' align='center' class='form-table' cellpadding='1'>	"
                 . "	           	"
                 . "	            <tr>	"
                 . "	             <td colspan='2' style='border:none;'><img width='400' src='' style='width: 400px;' />	"
@@ -27,10 +27,10 @@ class TemplateCest
                 . "	            </tr>	"
                 . "	             	"
                 . "	            </table>	"
-        );
-        $I->see('Template Saved');
-        $I->demoTemplate($I, 'Test Template');
-        $I->wait(2);
-        $I->see("Test Company");
-    }
-}
+         );
+         $I->see('Template Saved');
+         $I->demoTemplate($I, 'Test Template');
+         $I->wait(2);
+         $I->see("Test Company");
+     }
+ }

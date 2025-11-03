@@ -1,10 +1,12 @@
 <?php
 
-function ajaxAddTag_POST(Web $w) {
+function ajaxAddTag_POST(Web $w)
+{
     return ajaxAddTag_GET($w);
 }
 
-function ajaxAddTag_GET(Web $w) {
+function ajaxAddTag_GET(Web $w)
+{
     $w->setLayout(null);
     
     list($class, $id) = $w->pathMatch();
@@ -41,5 +43,4 @@ function ajaxAddTag_GET(Web $w) {
     }
     
     $w->out(json_encode(['id' => $tag->id, 'tag' => $tag->tag], JSON_FORCE_OBJECT));
-    
 }

@@ -1,16 +1,18 @@
 <?php
 
-class AuditReport extends CmfiveSeedMigration {
+class AuditReport extends CmfiveSeedMigration
+{
 
-	public $name = "Audit Report";
-	public $description = "Audit log report";
+    public $name = "Audit Report";
+    public $description = "Audit log report";
 
-	public function seed() {
-		$report = new Report($this->w);
-		$report->title = "Audit report";
-    	$report->module = "Audit";
-    	$report->description = "Shows audit information";
-    	$report->report_code = "[[dt_from||date||Date From]]
+    public function seed()
+    {
+        $report = new Report($this->w);
+        $report->title = "Audit report";
+        $report->module = "Audit";
+        $report->description = "Shows audit information";
+        $report->report_code = "[[dt_from||date||Date From]]
 
 [[dt_to||date||Date To]]
 
@@ -45,14 +47,13 @@ and ('{{user_id}}' = '' or a.creator_id = '{{user_id}}')
 
 @@
 ";
-    	$report->is_approved = 1;
-    	$report->insert();
+        $report->is_approved = 1;
+        $report->insert();
 
-    	$member = new ReportMember($this->w);
-    	$member->report_id = $report->id;
-    	$member->user_id = AuthService::getInstance($this->w)->user()->id;
-    	$member->role = 'OWNER';
-    	$member->insert();
+        $member = new ReportMember($this->w);
+        $member->report_id = $report->id;
+        $member->user_id = AuthService::getInstance($this->w)->user()->id;
+        $member->role = 'OWNER';
+        $member->insert();
     }
-
 }

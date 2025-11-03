@@ -1,6 +1,7 @@
 <?php
 
-function delete_ALL(Web $w) {
+function delete_ALL(Web $w)
+{
     $p = $w->pathMatch("id");
     if (empty($p['id'])) {
         $w->error("Group not found", "/admin-groups");

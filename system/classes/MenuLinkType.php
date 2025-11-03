@@ -1,6 +1,6 @@
 <?php
 
 enum MenuLinkType {
-    case Link;
-    case Modal;
-}
+case Link;
+case Modal;
+    }

@@ -132,7 +132,7 @@ function edit_GET(Web $w)
                     "id|name" => "title_lookup_id",
                     'label' => 'Title',
                     'selected_option' => !empty($contact->title_lookup_id) ? LookupService::getInstance($w)->getLookup($contact->title_lookup_id)->code : null,
-                    'options' => array_map(function(Lookup $lookup) use ($w) {
+                    'options' => array_map(function (Lookup $lookup) use ($w) {
                         $lookup->title = StringSanitiser::sanitise($lookup->title);
                         $lookup->code = StringSanitiser::sanitise($lookup->code);
                         return $lookup;

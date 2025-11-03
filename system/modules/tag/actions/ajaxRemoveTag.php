@@ -1,10 +1,12 @@
 <?php
 
-function ajaxRemoveTag_POST(Web $w) {
+function ajaxRemoveTag_POST(Web $w)
+{
     return ajaxRemoveTag_GET($w);
 }
 
-function ajaxRemoveTag_GET(Web $w) {
+function ajaxRemoveTag_GET(Web $w)
+{
     $w->setLayout(null);
     
     list($class, $id) = $w->pathMatch();
@@ -36,5 +38,4 @@ function ajaxRemoveTag_GET(Web $w) {
     }
     
     $w->out('{}');
-    
 }

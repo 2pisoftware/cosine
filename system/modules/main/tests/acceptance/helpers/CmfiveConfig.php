@@ -1,6 +1,7 @@
 <?php
 
 namespace Tests\Support\Helper;
+
 use Tests\Support\AcceptanceTester;
 
 class CmfiveConfig extends \Codeception\Module

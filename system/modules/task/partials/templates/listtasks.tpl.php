@@ -1,4 +1,4 @@
-<?php 
+<?php
 echo (empty($hide_filter) || $hide_filter !== true) ? HtmlBootstrap5::filter("Filter Tasks", $filter_data, '/' . $redirect, "GET", "Filter", "task_list") : '';
 
 if (!empty($tasks)) :
@@ -10,7 +10,7 @@ if (!empty($tasks)) :
     foreach ($tasks as $task) {
         if ($task->getCanIView()) {
             $table_line = [];
-			$table_line[] = HtmlBootstrap5::a("/task/edit/" . $task->id, StringSanitiser::sanitise($task->title));
+            $table_line[] = HtmlBootstrap5::a("/task/edit/" . $task->id, StringSanitiser::sanitise($task->title));
 
             // Append the rest of the data
             $table_line += [null,

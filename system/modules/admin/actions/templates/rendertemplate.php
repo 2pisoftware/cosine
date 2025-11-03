@@ -1,8 +1,9 @@
 <?php
 
-function rendertemplate_ALL(Web $w) {
+function rendertemplate_ALL(Web $w)
+{
     $p = $w->pathMatch("id");
-	
+    
     $t = TemplateService::getInstance($w)->getTemplate($p['id']);
     $t = $t ? $t : new Template($w);
     
@@ -10,8 +11,8 @@ function rendertemplate_ALL(Web $w) {
 
     $testTitle = $t->testTitle();
     if (!empty($testTitle)) {
-	    $w->out($testTitle);
-	    $w->out("<hr/>");
-	}
+        $w->out($testTitle);
+        $w->out("<hr/>");
+    }
     $w->out($t->testBody());
 }

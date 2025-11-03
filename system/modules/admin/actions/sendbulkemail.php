@@ -2,11 +2,12 @@
 
 /*
  * sends emails from queue via cron
- * 
+ *
  * @author Isaac Lynnah isaac@2pisoftware.com Aug 2016
- */ 
+ */
 
-function sendbulkemail_ALL (Web $w) {
+function sendbulkemail_ALL(Web $w)
+{
     //force authentication for getting attachments
     AuthService::getInstance($w)->forceLogin(Config::get('admin.bulkemail.auth_user'));
     //get current batch id
@@ -14,7 +15,7 @@ function sendbulkemail_ALL (Web $w) {
     
     if (!empty($batch_id)) {
         $batch = MailService::getInstance($w)->getBatchForId($batch_id['id']);
-        $emails = MailService::getInstance($w)->getNextEmailsForBatch($batch_id['id'],Config::get('admin.bulkemail.number_per_cron'));
+        $emails = MailService::getInstance($w)->getNextEmailsForBatch($batch_id['id'], Config::get('admin.bulkemail.number_per_cron'));
         if (empty($emails)) {
             //batch is finished
             $batch->completed();
@@ -41,6 +42,4 @@ function sendbulkemail_ALL (Web $w) {
             $batch->Update();
         }
     }
-    
 }
-
