@@ -12,10 +12,11 @@
         var dtEnd = document.getElementById("dt_end").value;
         var format = document.querySelector("input[name='format']:checked").value;
 
-        action += "?dt_start=" + encodeURIComponent(dtStart) +
-                  "&dt_end=" + encodeURIComponent(dtEnd) +
-                  "&format=" + encodeURIComponent(format);
+        const url = new URL(action, window.location.href);
+        url.searchParams.set("dt_start", dtStart);
+        url.searchParams.set("dt_end", dtEnd);
+        url.searchParams.set("format", format);
 
-        form.setAttribute('action', action);
+        form.setAttribute('action', url.href);
     });
 </script>

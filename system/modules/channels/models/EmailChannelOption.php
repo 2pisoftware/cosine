@@ -222,7 +222,7 @@ class EmailChannelOption extends DbObject
     )]
     public function getFolderList($shouldDecrypt = true)
     {
-        list($connected, $connection) = $this->connectToMail($shouldDecrypt);
+        [$connected, $connection] = $this->connectToMail($shouldDecrypt);
         $folders = [];
 
         // if ($connected && $connection) {
