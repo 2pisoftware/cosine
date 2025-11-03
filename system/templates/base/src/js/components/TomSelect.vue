@@ -29,13 +29,10 @@ import {
 	onUpdated,
 } from "vue";
 
-/* @ts-ignore */
 import TomSelect from "~/tom-select";
 
-const emit = defineEmits<{
-	update: [string]
-}>();
-const props = defineProps(["modelValue", "settings"]);
+const model = defineModel();
+const props = defineProps(["settings"]);
 const el = ref(null);
 
 const select = ref(null);
@@ -43,7 +40,7 @@ const select = ref(null);
 onMounted(() => {
 	select.value = new TomSelect(el.value, props.settings);
 });
-// the options are empty in onMounted. probably cause of the slots usage thing. so we sync onUpdated
+
 onUpdated(() => {
 	select.value.sync();
 });
@@ -51,13 +48,10 @@ onUpdated(() => {
 defineExpose({
 	select
 });
-
 </script>
 
-
 <template>
-	<select ref="el" @input="(e) => emit('update', (e.target as HTMLSelectElement).value)" v-bind="$attrs"
-		:value="props.modelValue">
+	<select ref="el" v-model="model" v-bind="$attrs">
 		<slot></slot>
 	</select>
 </template>
