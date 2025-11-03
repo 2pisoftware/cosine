@@ -3,6 +3,7 @@
 /**
  * A widget for displaying favorites
  */
+// phpcs:ignore
 class favorites_widget extends ModuleWidget
 {
     public static $widget_count = 0;

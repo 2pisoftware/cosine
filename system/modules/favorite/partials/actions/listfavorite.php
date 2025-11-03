@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Partial action that lists favorite objects
  * @author Steve Ryan steve@2pisoftware.com 2015
