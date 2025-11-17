@@ -18,7 +18,6 @@ function ajax_get_mfa_qr_code_GET(Web $w)
 
     $tfa = AuthService::getInstance($w)->createTfaProvider();
 
-    // TODO: in 3.0, the default secret length increases to 160
     $user->mfa_secret = $tfa->createSecret(bits: 160);
 
     $qr_code = $tfa->getQRCodeImageAsDataUri(
