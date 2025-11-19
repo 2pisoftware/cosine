@@ -240,7 +240,7 @@ class DbService
      */
     public function getObjects(
         string $class,
-        array|null $where = null,
+        array|string|null $where = null,
         array|bool|null $cache_list = false,
         bool|null $use_cache = true,
         string|null $order_by = null,
