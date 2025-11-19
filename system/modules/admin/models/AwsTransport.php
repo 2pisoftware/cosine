@@ -5,6 +5,7 @@ use Aws\Sqs\SqsClient;
 class AwsTransport implements GenericTransport
 {
     private $w;
+    private $transport;
 
     public function __construct($w, $layer)
     {
