@@ -576,8 +576,6 @@ class AuthService extends DbService
     {
         $issuer = str_replace(" ", "", Config::get("main.application_name", "Cosine"));
 
-        // TODO: when updating to 3.0, this signature changes
-        // to require qrcodeprovider
         return new TwoFactorAuth(
             issuer: $issuer,
             qrcodeprovider: new QRServerProvider(),
