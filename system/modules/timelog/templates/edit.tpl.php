@@ -16,8 +16,7 @@ use Html\Form\Select;
     method="POST"
     name="timelog_edit_form"
     target="_self"
-    id="timelog_edit_form"
->
+    id="timelog_edit_form">
     <div class="mb-3">
         <label for="user_id" class="form-label m-0">
             Assigned user
@@ -96,14 +95,14 @@ use Html\Form\Select;
             echo new Date([
                 "id|name" => "date_start",
                 "class" => "form-control",
-                "value" => $timelog->getDateStart(),
+                "value" => $timelog->getDateStart() ?? date("Y-m-d"),
                 "required" => true
             ])
             ?>
         </div> <!-- date_start -->
 
         <div class="col">
-        <label for="date_start" class="form-label">
+            <label for="date_start" class="form-label">
                 Time started
                 <small>Required</small>
             </label>
@@ -125,15 +124,15 @@ use Html\Form\Select;
             <div class="col">
                 <span class="form-check d-inline ps-0">
                     <?php
-                        echo new Radio([
-                            "id" => "select_end_method_time",
-                            "name" => "select_end_method",
-                            "class" => "",
-                            "select" => "form-check-input",
-                            "value" => "time",
-                            "checked" => "true",
-                            "tabindex" => -1
-                        ]);
+                    echo new Radio([
+                        "id" => "select_end_method_time",
+                        "name" => "select_end_method",
+                        "class" => "",
+                        "select" => "form-check-input",
+                        "value" => "time",
+                        "checked" => "true",
+                        "tabindex" => -1
+                    ]);
                     ?>
                 </span>
 
@@ -157,14 +156,14 @@ use Html\Form\Select;
             <div class="col">
                 <span class="form-check d-inline ps-0">
                     <?php
-                        echo new Radio([
-                            "id" => "select_end_method_hours",
-                            "name" => "select_end_method",
-                            "class" => "",
-                            "select" => "form-check-input",
-                            "value" => "hours",
-                            "tabindex" => -1
-                        ]);
+                    echo new Radio([
+                        "id" => "select_end_method_hours",
+                        "name" => "select_end_method",
+                        "class" => "",
+                        "select" => "form-check-input",
+                        "value" => "hours",
+                        "tabindex" => -1
+                    ]);
                     ?>
                 </span>
 
@@ -247,8 +246,7 @@ use Html\Form\Select;
             hours_worked.setAttribute("disabled", "disabled");
             minutes_worked.setAttribute("disabled", "disabled");
             time_end.removeAttribute("disabled");
-        }
-        else {
+        } else {
             hours_worked.removeAttribute("disabled");
             minutes_worked.removeAttribute("disabled");
             time_end.setAttribute("disabled", "disabled");
