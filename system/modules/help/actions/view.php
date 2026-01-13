@@ -13,7 +13,7 @@ function view_GET(Web &$w)
 
     $submodule = "";
     // check for submodule
-    if (strcontains($p['m'], array("-"))) {
+    if (strcontains($p['m'], ["-"])) {
         $ms = explode("-", $p['m']);
         $module = $ms[0];
         $submodule = $ms[1];
@@ -65,9 +65,9 @@ function pruneRestricted($w, $content)
             if (!AuthService::getInstance($w)->user()->hasAnyRole($roles)) {
                 $restricted = true;
             }
-        } else if (startsWith($l, "[[endrestricted]]")) {
+        } elseif (startsWith($l, "[[endrestricted]]")) {
             $restricted = false;
-        } else if (!$restricted) {
+        } elseif (!$restricted) {
             $c .= $l . "\r\n";
         }
     }

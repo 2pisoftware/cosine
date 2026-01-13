@@ -1,6 +1,7 @@
 <?php
 // Create Report: show fields in selected table to assist in Report creation
-function taskAjaxSelectbyTable_ALL(Web $w) {
+function taskAjaxSelectbyTable_ALL(Web $w)
+{
     $tbl = $_REQUEST['id'];
 
     // create dropdowns loaded with respective data

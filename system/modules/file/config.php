@@ -6,10 +6,10 @@ Config::set('file', [
     'fileroot' => dirname(__FILE__) . '/../uploads',
     'topmenu' => false,
     "dependencies" => [
-        "knplabs/gaufrette" => "~0.8",
-        "aws/aws-sdk-php" => "~3.69",
-        "league/flysystem-aws-s3-v3" => "^2.0",
-        "league/flysystem-memory" => "^2.0",
+        "knplabs/gaufrette" => "^0.11",
+        "aws/aws-sdk-php" => "^3.356.22",
+        "league/flysystem-aws-s3-v3" => "^3.29",
+        "league/flysystem-memory" => "^3.29",
     ],
     'hooks' => [
         'admin',

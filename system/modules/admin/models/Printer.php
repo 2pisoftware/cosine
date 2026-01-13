@@ -1,6 +1,7 @@
 <?php
 
-class Printer extends DbObject {
+class Printer extends DbObject
+{
 
     public $name;
     public $server;

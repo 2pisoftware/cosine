@@ -9,7 +9,7 @@ class DateTimeVsTimeZone extends TestCase //\Codeception\Test\Unit
         require_once("system/web.php");
         require_once("system/classes/Config.php");
 
-        $w = new Web();  
+        $w = new Web();
         
         $timezone = Config::get('system.timezone');
         if (empty($timezone)) {

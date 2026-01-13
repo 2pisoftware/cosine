@@ -5,11 +5,12 @@
 *
 * @param unknown_type $w
 */
-function media_GET(Web &$w) {
-	$p = $w->pathMatch("m","f");
-	$m = $p['m'];
-	$f = $p['f'];
+function media_GET(Web &$w)
+{
+    $p = $w->pathMatch("m", "f");
+    $m = $p['m'];
+    $f = $p['f'];
 
-	$filename = str_replace("..", "", ROOT."/".$w->getModuleDir($m).'/help/media/'.$f);
-	$w->sendFile($filename);
+    $filename = str_replace("..", "", ROOT."/".$w->getModuleDir($m).'/help/media/'.$f);
+    $w->sendFile($filename);
 }

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * updates or removes favorited item 
+ * updates or removes favorited item
  *
  * @author Steve Ryan, steve@2pisoftware.com, 2015
  * @author Adam Buckley, adam@2pisoftware.com, 2015

@@ -161,11 +161,11 @@ class Request
      * Returns an array of all the parameters in the $_REQUEST superglobal. If a
      * predicate is supplied, only the parameters that pass the predicate will be
      * returned.
-     * 
+     *
      * @param callable|null $predicate
      * @return array
      */
-    public static function params(callable $predicate = null): array
+    public static function params(callable|null $predicate = null): array
     {
         if (empty($predicate)) {
             return $_REQUEST;

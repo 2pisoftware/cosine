@@ -14,8 +14,8 @@ use Carbon\Carbon; ?>
     </div>
     <div class="tab-body clearfix">
         <div id="batch">
-            <div class="responsive-flex">
-                <div style="width: 14rem; margin-right: 1rem">
+            <div class="d-flex flex-row">
+                <div style="min-width: 20rem; width: 20rem; margin-right: 1rem">
                     <ul id="batch_list" class="list-group" role="tablist">
                         <?php
                         $active = true;
@@ -39,143 +39,149 @@ use Carbon\Carbon; ?>
                         ?>
                     </ul>
                 </div>
-                <div class="col-9">
-                    <div class="tab-content">
-                        <?php
-                        $active = true;
-                        if (!empty($not_installed)) {
-                            echo '<div class="tab-pane active" id="not-installed" role="tabpanel" aria-labelledby="not-installed-tab">';
+                <div class="tab-content w-100">
+                    <?php
+                    $active = true;
+                    if (!empty($not_installed)) {
+                        echo '<div class="tab-pane active" id="not-installed" role="tabpanel" aria-labelledby="not-installed-tab">';
 
-                            echo HtmlBootstrap5::b("/admin-migration/run/all?ignoremessages=false&prevpage=batch", "Install migrations", "Are you sure you want to install migrations?", null, false, "btn btn-sm btn-primary");
+                        echo HtmlBootstrap5::b("/admin-migration/run/all?ignoremessages=false&prevpage=batch", "Install migrations", "Are you sure you want to install migrations?", null, false, "btn btn-sm btn-primary");
+                        echo HtmlBootstrap5::b("/admin-migration/rollbackbatch", "Rollback latest batch", "Are you sure you want to rollback migrations?", null, false, "btn btn-sm btn-danger");
+
+
+                        $active = false;
+                        $header = ["Name", "Description", "Pre Text", "Post Text"];
+                        $data = [];
+                        foreach ($not_installed as $module => $_not_installed) {
+                            foreach ($_not_installed as $_migration_class) {
+                                $migration_path = $_migration_class['path'];
+                                if (file_exists(ROOT_PATH . '/' . $migration_path)) {
+                                    include_once ROOT_PATH . '/' . $migration_path;
+                                    $classname = $_migration_class['class']['class_name'];
+                                    if (class_exists($classname)) {
+                                        $migration = (new $classname(1, formatDate(time(), 'YmdHis')))->setWeb($w);
+                                        $migration_description = $migration->description();
+                                        $migration_preText = $migration->preText();
+                                        $migration_postText = $migration->postText();
+                                    }
+                                    $data[] = [
+                                        $module . ' - ' . $classname,
+                                        $migration_description,
+                                        $migration_preText,
+                                        $migration_postText,
+                                    ];
+                                }
+                            }
+                        }
+
+                        echo HtmlBootstrap5::table($data, null, "table-striped", $header);
+                        echo '</div>';
+                    }
+
+                    if (!empty($batched)) {
+                        krsort($batched);
+
+                        foreach ($batched as $batch_no => $batched_migrations) {
+                            $id = "batch" . $batch_no . "-tab";
+                            $control = "batch" . $batch_no;
+                            $target = "#batch" . $batch_no;
+
+                            echo '<div class="tab-pane' . ($active ? ' active' : '') . '" id="' . $control . '" role="tabpanel" aria-labelledby="' . $id . '">';
                             echo HtmlBootstrap5::b("/admin-migration/rollbackbatch", "Rollback latest batch", "Are you sure you want to rollback migrations?", null, false, "btn btn-sm btn-danger");
-
 
                             $active = false;
                             $header = ["Name", "Description", "Pre Text", "Post Text"];
                             $data = [];
-                            foreach ($not_installed as $module => $_not_installed) {
-                                foreach ($_not_installed as $_migration_class) {
-                                    $migration_path = $_migration_class['path'];
-                                    if (file_exists(ROOT_PATH . '/' . $migration_path)) {
-                                        include_once ROOT_PATH . '/' . $migration_path;
-                                        $classname = $_migration_class['class']['class_name'];
-                                        if (class_exists($classname)) {
-                                            $migration = (new $classname(1))->setWeb($w);
-                                            $migration_description = $migration->description();
-                                            $migration_preText = $migration->preText();
-                                            $migration_postText = $migration->postText();
-                                        }
-                                        $row = [];
-                                        $row[] = $module . ' - ' . $classname;
-                                        $row[] = $migration_description;
-                                        $row[] = $migration_preText;
-                                        $row[] = $migration_postText;
-                                        $data[] = $row;
-                                    }
-                                }
+                            foreach ($batched_migrations as $batched_migration) {
+                                $data[] = [
+                                    $batched_migration['module'] . ' - ' . $batched_migration['classname'],
+                                    $batched_migration['description'],
+                                    $batched_migration['pretext'],
+                                    $batched_migration['posttext'],
+                                ];
                             }
-
                             echo HtmlBootstrap5::table($data, null, "table-striped", $header);
                             echo '</div>';
                         }
-
-                        if (!empty($batched)) {
-                            krsort($batched);
-
-                            foreach ($batched as $batch_no => $batched_migrations) {
-                                $id = "batch" . $batch_no . "-tab";
-                                $control = "batch" . $batch_no;
-                                $target = "#batch" . $batch_no;
-
-                                echo '<div class="tab-pane' . ($active ? ' active' : '') . '" id="' . $control . '" role="tabpanel" aria-labelledby="' . $id . '">';
-                                echo HtmlBootstrap5::b("/admin-migration/rollbackbatch", "Rollback latest batch", "Are you sure you want to rollback migrations?", null, false, "btn btn-sm btn-danger");
-
-                                $active = false;
-                                $header = ["Name", "Description", "Pre Text", "Post Text"];
-                                $data = [];
-                                foreach ($batched_migrations as $batched_migration) {
-                                    $row = [];
-                                    $row[] = $batched_migration['module'] . ' - ' . $batched_migration['classname'];
-                                    $row[] = $batched_migration['description'];
-                                    $row[] = $batched_migration['pretext'];
-                                    $row[] = $batched_migration['posttext'];
-                                    $data[] = $row;
-                                }
-                                echo HtmlBootstrap5::table($data, null, "table-striped", $header);
-                                echo '</div>';
-                            }
-                        }
-                        ?>
-                    </div>
+                    }
+                    ?>
                 </div>
             </div>
         </div>
 
         <div id="individual">
             <?php if (!empty($available)) : ?>
-                <div class="responsive-flex">
-                    <div style="width: 14rem; margin-right: 1rem">
+                <div class="d-flex flex-row">
+                    <div style="min-width: 20rem; width: 20rem; margin-right: 1rem">
                         <ul id="migrations_list" class="list-group" role="tablist">
                             <?php
                             $active = true;
-                            foreach ($available as $module => $available_in_module) {
-                                $id = $module . "-tab";
-                                $target = "#" . $module;
-
-                                echo '<li class="list-group-item list-group-item-action d-flex justify-content-between align-items-start' . ($active ? ' active' : '') . '" id="' . $id . '" data-bs-toggle="list" href="' . $target . '" role="tab" aria-controls="' . $module . '">' . ucfirst($module);
-                                $active = false;
-
-                                // installed and non-installed migrations badges
-                                $installed_count = is_array($installed[$module]) ? count($installed[$module]) : 0;
-                                echo '<span class="right" role="status" aria-label="installation status">';
-                                echo $installed_count > 0 ? '<span class="badge bg-success rounded-pill" aria-label="installed">' . $installed_count . '</span>' : '';
-                                echo (count($available_in_module) - $installed_count) > 0 ? '<span class="badge bg-warning rounded-pill" style="margin-left: 5px" aria-label="not installed">' . (count($available_in_module) - $installed_count) . '</span>' : '';
-                                echo '</span>';
-
-                                echo '</li>';
-                            }
-                            ?>
+                            foreach ($available as $module => $available_in_module) : ?>
+                                <li class="list-group-item list-group-item-action d-flex justify-content-between align-items-start <?php echo $active ? 'active' : ''; ?>" id="<?php echo $module; ?>-tab" data-bs-toggle="list" href="#<?php echo $module; ?>" role="tab" aria-controls="<?php echo $module; ?>"><?php echo ucfirst($module); ?>
+                                    <?php $active = false;
+                                    $installed_count = is_array($installed[$module]) ? count($installed[$module]) : 0; ?>
+                                    <span class="right" role="status" aria-label="installation status">
+                                        <?php if ($installed_count > 0) : ?>
+                                            <span class="badge bg-success rounded-pill" aria-label="installed"><?php echo $installed_count; ?></span>
+                                        <?php endif;
+                                        if (count($available_in_module) - $installed_count > 0) : ?>
+                                            <span class="badge bg-warning rounded-pill" style="margin-left: 5px" aria-label="not installed"><?php echo (count($available_in_module) - $installed_count); ?></span>
+                                        <?php endif; ?>
+                                    </span>
+                                </li>
+                            <?php endforeach; ?>
                         </ul>
                     </div>
-                    <div class="col-9">
-                        <div class="tab-content">
-                            <?php
-                            $active = true;
-                            foreach ($available as $module => $available_in_module) {
-                                $labelledby = $module . "-tab";
-                                echo '<div class="tab-pane' . ($active ? ' active' : '') . '" id="' . $module . '" role="tabpanel" aria-labelledby="' . $labelledby . '">';
-                                $active = false;
+                    <div class="tab-content w-100">
+                        <?php
+                        $active = true;
+                        foreach ($available as $module => $available_in_module) {
+                            $labelledby = $module . "-tab";
+                            echo '<div class="tab-pane' . ($active ? ' active' : '') . '" id="' . $module . '" role="tabpanel" aria-labelledby="' . $labelledby . '">';
+                            $active = false;
 
-                                echo HtmlBootstrap5::box("/admin-migration/create/" . $module, "Create a" . (in_array($module[0], ['a', 'e', 'i', 'o', 'u']) ? 'n' : '') . ' ' . $module . " migration", true, false, null, null, null, null, "btn btn-sm btn-primary");
+                            echo HtmlBootstrap5::box(
+                                href: "/admin-migration/create/" . $module,
+                                title: "Create a" . (in_array($module[0], ['a', 'e', 'i', 'o', 'u']) ? 'n' : '') . ' ' . $module . " migration",
+                                button: true,
+                                class: "btn btn-sm btn-primary"
+                            );
+                            
+                            if (count($available[$module]) > 0) {
+                                echo HtmlBootstrap5::b("/admin-migration/run/" . $module . "?ignoremessages=false&prevpage=individual", "Run all " . $module . " migrations", "Are you sure you want to run all outstanding migrations for this module?", null, false, "btn btn-sm btn-primary");
+                                $header = ["Name", "Description", "Date run", "Pre Text", "Post Text", "Actions"];
+                                $data = [];
+                                foreach ($available_in_module as $a_migration_path => $migration_data) {
+                                    $row = [];
+                                    $row[] = $migration_data['class_name'];
+                                    $row[] = $migration_data['description'];
+                                    $migration = MigrationService::getInstance($w)->getMigrationByClassname($migration_data['class_name']);
 
-                                if (count($available[$module]) > 0) {
-                                    echo HtmlBootstrap5::b("/admin-migration/run/" . $module . "?ignoremessages=false&prevpage=individual", "Run all " . $module . " migrations", "Are you sure you want to run all outstanding migrations for this module?", null, false, "btn btn-sm btn-primary");
-                                    $header = ["Name", "Description", "Date run", "Pre Text", "Post Text", "Actions"];
-                                    $data = [];
-                                    foreach ($available_in_module as $a_migration_path => $migration_data) {
-                                        $row = [];
-                                        $row[] = $migration_data['class_name'];
-                                        $row[] = $migration_data['description'];
-                                        $row[] = MigrationService::getInstance($w)->isInstalled($migration_data['class_name']) ? "<span data-tooltip aria-haspopup='true' title='" . @formatDate(MigrationService::getInstance($w)->getMigrationByClassname($migration_data['class_name'])->dt_created, "d-M-Y \a\\t H:i") . "'>Run " . Carbon::createFromTimeStamp(MigrationService::getInstance($w)->getMigrationByClassname($migration_data['class_name'])->dt_created)->diffForHumans() . " by " . (!empty(MigrationService::getInstance($w)->getMigrationByClassname($migration_data['class_name'])->creator_id) && !empty(AuthService::getInstance($w)->getUser(MigrationService::getInstance($w)->getMigrationByClassname($migration_data['class_name'])->creator_id)) ? AuthService::getInstance($w)->getUser(MigrationService::getInstance($w)->getMigrationByClassname($migration_data['class_name'])->creator_id)->getContact()->getFullName() : "System") . "</span>" : "";
-                                        $row[] = $migration_data['pretext'];
-                                        $row[] = $migration_data['posttext'];
+                                    $row[] = MigrationService::getInstance($w)->isInstalled($migration_data['class_name']) ?
+                                            "<span data-tooltip aria-haspopup='true' title='" . @formatDate($migration->dt_created, "d-M-Y \a\\t H:i") . "'>Run " . Carbon::createFromTimeStamp($migration->dt_created)->diffForHumans() . " by " .
+                                                (!empty($migration->creator_id) && !empty(AuthService::getInstance($w)->getUser($migration->creator_id)) ?
+                                                    AuthService::getInstance($w)->getUser($migration->creator_id)->getContact()->getFullName() :
+                                                    "System"
+                                                ) . "</span>"
+                                            : "";
+                                    $row[] = $migration_data['pretext'];
+                                    $row[] = $migration_data['posttext'];
 
-                                        if (MigrationService::getInstance($w)->isInstalled($migration_data['class_name'])) {
-                                            $row[] = HtmlBootstrap5::b('/admin-migration/rollback/' . $module . '/' . basename($a_migration_path, ".php"), "Rollback to here", "Are you 110% sure you want to rollback a migration? DATA COULD BE LOST PERMANENTLY!", null, false, "btn btn-sm btn-danger");
-                                        } else {
-                                            $row[] = HtmlBootstrap5::b('/admin-migration/run/' . $module . '/' . basename($a_migration_path, ".php") . "?ignoremessages=false&prevpage=individual", "Migrate to here", "Are you sure you want to run a migration?", null, false, "btn btn-sm btn-primary");
-                                        }
-
-                                        $data[] = $row;
+                                    if (MigrationService::getInstance($w)->isInstalled($migration_data['class_name'])) {
+                                        $row[] = HtmlBootstrap5::b('/admin-migration/rollback/' . $module . '/' . basename($a_migration_path, ".php"), "Rollback to here", "Are you 110% sure you want to rollback a migration? DATA COULD BE LOST PERMANENTLY!", null, false, "btn btn-sm btn-danger");
+                                    } else {
+                                        $row[] = HtmlBootstrap5::b('/admin-migration/run/' . $module . '/' . basename($a_migration_path, ".php") . "?ignoremessages=false&prevpage=individual", "Migrate to here", "Are you sure you want to run a migration?", null, false, "btn btn-sm btn-primary");
                                     }
 
-                                    echo HtmlBootstrap5::table($data, null, "table-striped width-20", $header);
+                                    $data[] = $row;
                                 }
 
-                                echo '</div>';
+                                echo HtmlBootstrap5::table($data, null, "table-striped width-20", $header);
                             }
-                            ?>
-                        </div>
+
+                            echo '</div>';
+                        }
+                        ?>
                     </div>
                 </div>
             <?php else : ?>
@@ -184,8 +190,8 @@ use Carbon\Carbon; ?>
         </div>
         <div id='seed'>
             <?php if (!empty($seeds)) : ?>
-                <div class="responsive-flex">
-                    <div style="width: 14rem; margin-right: 1rem">
+                <div class="d-flex flex-row">
+                    <div style="min-width: 20rem; width: 20rem; margin-right: 1rem">
                         <ul id="seeds_list" class="list-group" role="tablist">
                             <?php
                             // installed and not-installed seed counts for each module to be displayed as badges
@@ -218,93 +224,94 @@ use Carbon\Carbon; ?>
                             }
 
                             $active = true;
-                            foreach ($seeds as $module => $available_seeds) {
-                                $id = $module . "-tab-seed";
-                                $target = "#" . $module . "-seed";
-                                $seedmodule = $module . "-seed";
+                            foreach ($seeds as $module => $available_seeds) : ?>
+                                <li class="list-group-item list-group-item-action d-flex justify-content-between align-items-start <?php echo $active ? ' active' : ''; ?>"
+                                    id="<?php echo $module; ?>-tab-seed"
+                                    data-bs-toggle="list"
+                                    href="#<?php echo $module; ?>-seed"
+                                    role="tab"
+                                    aria-controls="<?php echo $module; ?>-seed">
+                                    <?php echo ucfirst($module); ?>
+                                    <?php $active = false; ?>
 
-                                echo '<li class="list-group-item list-group-item-action d-flex justify-content-between align-items-start' . ($active ? ' active' : '') . '" id="' . $id . '" data-bs-toggle="list" href="' . $target . '" role="tab" aria-controls="' . $seedmodule . '">' . ucfirst($module);
-                                $active = false;
-
-                                // installed and non-installed migrations badges
-                                echo '<span class="right" role="status" aria-label="installation status">';
-                                echo $seed_status_counts[$module][0] > 0 ? '<span class="badge bg-success rounded-pill" aria-label="installed">' . $seed_status_counts[$module][0] . '</span>' : '';
-                                echo $seed_status_counts[$module][1] > 0 ? '<span class="badge bg-warning rounded-pill" style="margin-left: 5px"  aria-label="not installed">' . $seed_status_counts[$module][1] . '</span>' : '';
-                                echo '</span>';
-
-                                echo '</li>';
-                            }
-                            ?>
+                                    <span class="right" role="status" aria-label="installation status">
+                                        <?php if ($seed_status_counts[$module][0] > 0) : ?>
+                                            <span class="badge bg-success rounded-pill" aria-label="installed"><?php echo $seed_status_counts[$module][0]; ?></span>
+                                        <?php endif; ?>
+                                        <?php if ($seed_status_counts[$module][1] > 0) : ?>
+                                            <span class="badge bg-warning rounded-pill" style="margin-left: 5px"  aria-label="not installed"><?php echo $seed_status_counts[$module][1]; ?></span>
+                                        <?php endif; ?>
+                                    </span>
+                                </li>
+                            <?php endforeach; ?>
                         </ul>
                     </div>
-                    <div class="col-9">
-                        <div class="tab-content">
-                            <script>
-                                // set default module selection for seed creation modal based on currently selected module in seeds_list
-                                document.addEventListener('DOMContentLoaded', function() {
-                                    var create_seed = document.getElementById('create-seed');
-                                    var seeds_list = document.getElementById('seeds_list');
+                    <div class="tab-content w-100">
+                        <script>
+                            // set default module selection for seed creation modal based on currently selected module in seeds_list
+                            document.addEventListener('DOMContentLoaded', function() {
+                                var create_seed = document.getElementById('create-seed');
+                                var seeds_list = document.getElementById('seeds_list');
 
-                                    function setDefaultSelectedModule() {
-                                        var active = seeds_list.querySelector('.active');
-                                        var module_name = active.innerHTML.split('<')[0].toLowerCase();
+                                function setDefaultSelectedModule() {
+                                    var active = seeds_list.querySelector('.active');
+                                    var module_name = active.innerHTML.split('<')[0].toLowerCase();
 
-                                        var url = create_seed.dataset.modalTarget;
-                                        var selection_value = /(?<=default-selection=)[^&]+/;
+                                    var url = create_seed.dataset.modalTarget;
+                                    var selection_value = /(?<=default-selection=)[^&]+/;
 
-                                        create_seed.dataset.modalTarget = url.match(selection_value) ?
-                                            url.replace(selection_value, module_name) :
-                                            url + `${url.includes('?') ? '&' : '?'}default-selection=${module_name}`;
-                                    }
+                                    create_seed.dataset.modalTarget = url.match(selection_value) ?
+                                        url.replace(selection_value, module_name) :
+                                        url + `${url.includes('?') ? '&' : '?'}default-selection=${module_name}`;
+                                }
 
-                                    // set default selected module on page load
-                                    setDefaultSelectedModule();
+                                // set default selected module on page load
+                                setDefaultSelectedModule();
 
-                                    // add setDefaultSelectedModule to seeds_list click event
-                                    // when seeds_list module selection changes, update create_seed's default-selection request param
-                                    seeds_list.addEventListener("click", setDefaultSelectedModule);
-                                });
-                            </script>
-                            <?php
-                            echo HtmlBootstrap5::box('/admin-migration/createseed', 'Create a seed', true, false, null, null, null, "create-seed", "btn btn-sm btn-primary");
+                                // add setDefaultSelectedModule to seeds_list click event
+                                // when seeds_list module selection changes, update create_seed's default-selection request param
+                                seeds_list.addEventListener("click", setDefaultSelectedModule);
+                            });
+                        </script>
+                        <?php
+                        echo HtmlBootstrap5::box(href: '/admin-migration/createseed', title: 'Create a seed', button: true, id: "create-seed", class: "btn btn-sm btn-primary ms-0");
 
-                            $active = true;
-                            foreach ($seeds as $module => $available_seeds) {
-                                $id = $module . "-tab-seed";
-                                $seedmodule = $module . "-seed";
+                        $active = true;
+                        foreach ($seeds as $module => $available_seeds) {
+                            $id = $module . "-tab-seed";
+                            $seedmodule = $module . "-seed";
 
-                                echo '<div class="tab-pane' . ($active ? ' active' : '') . '" id="' . $seedmodule . '" role="tabpanel" aria-labelledby="' . $id . '">';
-                                $active = false;
+                            echo '<div class="tab-pane' . ($active ? ' active' : '') . '" id="' . $seedmodule . '" role="tabpanel" aria-labelledby="' . $id . '">';
+                            $active = false;
 
-                                $header = ["Name", "Description", "Status", "Action"];
-                                $data = [];
+                            $header = ["Name", "Description", "Status", "Action"];
+                            $data = [];
 
-                                foreach ($available_seeds as $seed => $classname) {
-                                    if (is_file($seed)) {
-                                        require_once($seed);
+                            foreach ($available_seeds as $seed => $classname) {
+                                if (is_file($seed)) {
+                                    require_once($seed);
 
-                                        $seed_obj = null;
-                                        if (class_exists($classname)) {
-                                            $seed_obj = new $classname($w);
-                                        }
-                                    }
-
-                                    if (!empty($seed_obj)) {
-                                        $migration_exists = MigrationService::getInstance($w)->migrationSeedExists($classname);
-                                        $row = [];
-                                        $row[] = $seed_obj->name;
-                                        $row[] = $seed_obj->description;
-                                        $row[] = $migration_exists ? "<span class='btn btn-success btn-sm'>Installed</span>" : "<span class='btn btn-warning btn-sm'>Not installed</span>";
-                                        $row[] = !$migration_exists ? HtmlBootstrap5::b('/admin-migration/installseed?url=' . urlencode($seed), "Install", null, null, false, "btn btn-sm btn-primary") : '';
-                                        $data[] = $row;
+                                    $seed_obj = null;
+                                    if (class_exists($classname)) {
+                                        $seed_obj = new $classname($w);
                                     }
                                 }
 
-                                echo HtmlBootstrap5::table($data, null, "table-striped center-3rd-column", $header);
-                                echo '</div>';
+                                if (!empty($seed_obj)) {
+                                    $migration_exists = MigrationService::getInstance($w)->migrationSeedExists($classname);
+                                    $row = [];
+                                    $row[] = $seed_obj->name;
+                                    $row[] = $seed_obj->description;
+                                    $row[] = $migration_exists ? "<span class='btn btn-success btn-sm'>Installed</span>" : "<span class='btn btn-warning btn-sm'>Not installed</span>";
+                                    $row[] = !$migration_exists ? HtmlBootstrap5::b('/admin-migration/installseed?url=' . urlencode($seed), "Install", null, null, false, "btn btn-sm btn-primary") : '';
+                                    $data[] = $row;
+                                }
                             }
-                            ?>
-                        </div>
+
+                            echo HtmlBootstrap5::table($data, null, "table-striped", $header);
+                            echo '</div>';
+                        }
+                        ?>
                     </div>
                 </div>
             <?php endif; ?>

@@ -5,7 +5,7 @@ class CommentService extends DbService
 
     public function getCommentsForTable($table = null, $object_id = null, $internal_only = false, $external_only = false)
     {
-        $where = array("is_deleted = NULL OR is_deleted = ?" => 0);
+        $where = ["is_deleted = NULL OR is_deleted = ?" => 0];
         if (!empty($table)) {
             if (is_a($table, "DbObject")) {
                 // This way is probably better cause you dont hard code the table name in anywhere
@@ -31,14 +31,14 @@ class CommentService extends DbService
         return null;
     }
 
-    public function countCommentsForTable($table, $object_id = null, $internal_only = false, $external_only = false) {
+    public function countCommentsForTable($table, $object_id = null, $internal_only = false, $external_only = false)
+    {
         $query = $this->w->db->get("comment")
             ->where("is_deleted = NULL OR is_deleted = 0");
 
         if (is_a($table, "DbObject")) {
             $query->where(["obj_table" => $table->getDbTableName()]);
-        }
-        else {
+        } else {
             $query->where(["obj_table" => $table]);
         }
 
@@ -48,8 +48,7 @@ class CommentService extends DbService
 
         if ($internal_only === true) {
             $query->where(["is_internal" => 1]);
-        }
-        else if ($external_only === true) {
+        } elseif ($external_only === true) {
             $query->where(["is_internal" => 0]);
         }
 
@@ -59,7 +58,7 @@ class CommentService extends DbService
     public function getComment($id = null)
     {
         if (!empty($id)) {
-            return $this->getObject("Comment", array("id" => intval($id)));
+            return $this->getObject("Comment", ["id" => intval($id)]);
         }
         return null;
     }

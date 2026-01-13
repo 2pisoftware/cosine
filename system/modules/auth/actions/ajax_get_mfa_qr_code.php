@@ -1,8 +1,5 @@
 <?php
 
-use \Sonata\GoogleAuthenticator\GoogleAuthenticator;
-use \Sonata\GoogleAuthenticator\GoogleQrUrl;
-
 function ajax_get_mfa_qr_code_GET(Web $w)
 {
     $w->setLayout(null);
@@ -19,8 +16,14 @@ function ajax_get_mfa_qr_code_GET(Web $w)
         return;
     }
 
-    $user->mfa_secret = (new GoogleAuthenticator())->generateSecret();
-    $qr_code = GoogleQrUrl::generate(str_replace(" ", "", $user->getFullName()), $user->mfa_secret, str_replace(" ", "", Config::get("main.application_name", "Cmfive")));
+    $tfa = AuthService::getInstance($w)->createTfaProvider();
+
+    $user->mfa_secret = $tfa->createSecret(bits: 160);
+
+    $qr_code = $tfa->getQRCodeImageAsDataUri(
+        label: str_replace(" ", "", $user->getFullName()),
+        secret: $user->mfa_secret,
+    );
 
     if (!$user->update()) {
         $w->out((new JsonResponse())->setErrorResponse("Failed to update generate MFA code", null));

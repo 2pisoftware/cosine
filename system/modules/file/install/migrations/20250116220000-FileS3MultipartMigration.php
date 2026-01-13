@@ -4,8 +4,7 @@ class FileS3MultipartMigration extends CmfiveMigration
 {
     public function up()
     {
-        if (!$this->hasTable("file_s3_object"))
-        {
+        if (!$this->hasTable("file_s3_object")) {
             $this->tableWithId("file_s3_object")
                 ->addColumn("upload_id", "string")
                 ->addColumn("bucket", "string")

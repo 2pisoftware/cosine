@@ -38,9 +38,11 @@ class TabbedPagination extends \Html\Element
 
         $controls = HtmlBootstrap5::pagination(1, count($this->_pages), null, null, null, tab: $this->_tab);
 
-        return "<div id='$this->_tab-tabbed-pagination'>
-            $pages
-            $controls
-        </div>";
+        return <<<HERE
+            <div id='{$this->_tab}-tabbed-pagination'>
+                $pages
+                $controls
+            </div>
+        HERE;
     }
 }

@@ -1,8 +1,7 @@
 <?php
 
-Config::set('help', array(
-	'version' => '0.8.0',
+Config::set('help', [
     'active' => true,
     'path' => 'system/modules',
     'topmenu' => false,
-));
+]);

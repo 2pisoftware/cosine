@@ -12,7 +12,7 @@
 # NOTE: See the .dockerignore file to see what is excluded from the image.
 
 # Define the Alpine version to use
-ARG ALPINE_VERSION=3.19.4
+ARG ALPINE_VERSION=3.22
 
 # ==========================================================================
 # STAGE 1: Build the theme
@@ -41,7 +41,7 @@ FROM alpine:${ALPINE_VERSION}
 
 # PHP version
 # note: see Alpine packages for available versions
-ARG PHP_VERSION=81
+ARG PHP_VERSION=84
 ENV PHP_VERSION=$PHP_VERSION
 ARG UID=1000
 ARG GID=1000
@@ -61,6 +61,8 @@ RUN apk --no-cache add \
     php$PHP_VERSION-cli \
     php$PHP_VERSION-curl \
     php$PHP_VERSION-gd \
+    php$PHP_VERSION-iconv \
+    php$PHP_VERSION-imap \
     php$PHP_VERSION-json \
     php$PHP_VERSION-mbstring \
     php$PHP_VERSION-mysqli \
@@ -74,6 +76,8 @@ RUN apk --no-cache add \
     php$PHP_VERSION-session \
     php$PHP_VERSION-simplexml \
     php$PHP_VERSION-fileinfo \
+    php$PHP_VERSION-opcache \
+    php$PHP_VERSION-dom \
     nginx \
     mysql-client \
     mariadb-connector-c-dev \

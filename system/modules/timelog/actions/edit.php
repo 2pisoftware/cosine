@@ -68,7 +68,7 @@ function edit_GET(Web $w)
     if (AuthService::getInstance($w)->user()->is_admin) {
         $users = AuthService::getInstance($w)->getUsers();
         usort($users, function ($a, $b) {
-            return strcmp($a->getContact()->getFullName(), $b->getContact()->getFullName());
+            return strcmp($a->getContact()->getFullName() ?? "", $b->getContact()->getFullName() ?? "");
         });
         $w->ctx("options", $users);
     }

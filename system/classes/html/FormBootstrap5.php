@@ -2,7 +2,8 @@
 
 class FormBootstrap5 extends form
 {
-    public function close($button_title = 'Save', $extrabuttons = null) {
+    public function close($button_title = 'Save', $extrabuttons = null)
+    {
         if (!empty($button_title)) {
             $button = new \Html\button();
             $button->_class = 'btn';

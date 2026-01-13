@@ -1,6 +1,7 @@
 <?php
 
-function ajaxGetTaskTypeFormFields_GET($w) {
+function ajaxGetTaskTypeFormFields_GET($w)
+{
     $tid = Request::string('task_type');
     $tg = TaskService::getInstance($w)->getTaskGroup(Request::int('task_group_id'));
     
@@ -8,7 +9,7 @@ function ajaxGetTaskTypeFormFields_GET($w) {
         return;
     }
     
-    $form_fields = array();
+    $form_fields = [];
     if (!empty($tid)) {
         $form_fields = TaskService::getInstance($w)->getFormFieldsByTask($tid, $tg);
         

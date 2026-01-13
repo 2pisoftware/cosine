@@ -1,11 +1,12 @@
 <?php
 
-function start_GET(Web $w) {
+function start_GET(Web $w)
+{
     $indexes = SearchService::getInstance($w)->getIndexes();
     $select_indexes = [];
     if (!empty($indexes)) {
-        foreach($indexes as $friendly_name => $search_name) {
-            $select_indexes[] = array($friendly_name, $search_name);
+        foreach ($indexes as $friendly_name => $search_name) {
+            $select_indexes[] = [$friendly_name, $search_name];
         }
     }
     

@@ -1,3 +1,12 @@
+/**
+ * If you're trying to use this in Vue, use TomSelect.vue instead.
+ * 
+ * This class provides an easy abstraction to be used in combination with PHP Html5Autocomplete class.
+ * It implements generic load and change callbacks so that
+ * any endpoint can be specified by PHP and as long as it follows a known format, will work.
+ * It is not intended to be used outside of the matching PHP class.
+ * If you must, use the npm package directly instead.
+ */
 
 import TomSelect from 'tom-select';
 

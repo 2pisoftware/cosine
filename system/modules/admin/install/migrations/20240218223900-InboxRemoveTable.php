@@ -15,7 +15,9 @@ class InboxRemoveTable extends CmfiveMigration
         }
     }
 
-    public function down(): void {}
+    public function down(): void
+    {
+    }
 
     public function description()
     {

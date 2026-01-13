@@ -62,7 +62,6 @@ class ExternalFormXMLProcessor extends ProcessorType
 
         if (!empty($messages)) {
             foreach ($messages as $message) {
-
                 $messagestatus = $message->messagestatus; //$processor->w->Channel->getMessageStatus($message->id, $processor->id);
                 if (empty($messagestatus)) {
                     $messagestatus = new ChannelMessageStatus($processor->w);
@@ -109,7 +108,6 @@ class ExternalFormXMLProcessor extends ProcessorType
                                 // Mark message as complete
                                 $messagestatus->is_successful = 1;
                                 $messagestatus->insertOrUpdate();
-
                             } catch (Exception $e) {
                                 LogService::getInstance($processor->w)->setLogger("EXTERNAL_FORM_PROCESSOR")->error("Exception: " . $e->getMessage());
                             }

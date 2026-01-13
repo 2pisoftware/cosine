@@ -55,10 +55,11 @@ Config::set('system.csrf', [
 ]);
 
 Config::set('email.transports', [
-    'ses' => 'SesTransport',
-    'smtp' => 'SwiftMailerTransport',
-    'swiftmailer' => 'SwiftMailerTransport',
-    'sendmail' => 'SwiftMailerTransport',
+    'ses' => 'SymfonyMailerTransport',
+    'smtp' => 'SymfonyMailerTransport',
+    'swiftmailer' => 'SymfonyMailerTransport',
+    'sendmail' => 'SymfonyMailerTransport',
+    "symfonymailer" => 'SymfonyMailerTransport',
     'aws' => 'AwsTransport',
     'mock' => 'MockTransport',
 ]);
@@ -94,5 +95,7 @@ Config::set('system.aws', [
         'secret' => '',
     ],
 ]);
+
+Config::set('system.include_frame_options_header', true); // set to false to disable X-Frame-Options header
 
 Config::set('system.use_api', true);

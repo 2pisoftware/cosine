@@ -16,10 +16,8 @@
 /**
  * A Todo task group.
  * all properties are defined in the config.php
- *
- * @author careck
- *
  */
+// phpcs:disable
 class TaskGroupType_TaskTodo extends TaskGroupType
 {
 }
@@ -45,9 +43,6 @@ class TaskType_Todo extends TaskType
 /**
  * A Software Development task group.
  * all properties are defined in the config.php
- *
- * @author careck
- *
  */
 class TaskGroupType_SoftwareDevelopment extends TaskGroupType
 {
@@ -59,8 +54,6 @@ class TaskGroupType_SoftwareDevelopment extends TaskGroupType
  *
  * Modules can be added via the Lookup table:
  * Type = "<TaskGroupTitle> Modules"
- *
- * @author admin
  *
  */
 class TaskType_ProgrammingTicket extends TaskType
@@ -81,7 +74,7 @@ class TaskType_ProgrammingTicket extends TaskType
         return "Use this to report any issue or feature request.";
     }
 
-    public function getFieldFormArray(TaskGroup $taskgroup, Task $task = null)
+    public function getFieldFormArray(TaskGroup $taskgroup, ?Task $task = null)
     {
         $taskdata = null;
         if (!empty($task)) {
@@ -122,8 +115,6 @@ class TaskType_ProgrammingTicket extends TaskType
 
 /**
  * Cmfive support taskgroup
- *
- * @author Adam Buckley <adam@2pisoftware.com>
  */
 class TaskGroupType_CmfiveSupport extends TaskGroupType
 {
@@ -131,22 +122,20 @@ class TaskGroupType_CmfiveSupport extends TaskGroupType
 
 /**
  * Cmfive ticket class
- *
- * @author Adam Buckley <adam@2pisoftware.com>
  */
 class TaskType_CmfiveTicket extends TaskType
 {
 
-    public function getFieldFormArray(\TaskGroup $taskgroup, \Task $task = null)
+    public function getFieldFormArray(TaskGroup $taskgroup, ?Task $task = null)
     {
         return [];
     }
 
-    public function displayExtraButtons(\Task $task)
+    public function displayExtraButtons(Task $task)
     {
     }
 
-    public function displayExtraDetails(\Task $task)
+    public function displayExtraDetails(Task $task)
     {
         return [];
     }

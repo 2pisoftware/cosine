@@ -1,9 +1,10 @@
 <?php
-function reindexall_GET(Web $w) {
+function reindexall_GET(Web $w)
+{
 
-	ini_set('max_execution_time', 0);
+    ini_set('max_execution_time', 0);
 
-	SearchService::getInstance($w)->reindexAll();
-	SearchService::getInstance($w)->reindexAllFulltextIndex();
-	$w->msg("Objects have been reindexed", "/search/reindexpage");
+    SearchService::getInstance($w)->reindexAll();
+    SearchService::getInstance($w)->reindexAllFulltextIndex();
+    $w->msg("Objects have been reindexed", "/search/reindexpage");
 }

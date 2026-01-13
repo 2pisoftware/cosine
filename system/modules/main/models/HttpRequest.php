@@ -2,7 +2,6 @@
 
 class HttpRequest
 {
-
     public $url = '';
     public $data = [];
     public $method = 'GET';
@@ -18,12 +17,11 @@ class HttpRequest
         $this->data = $data;
 
         switch (strtoupper($method)) {
-            case 'POST': {
-                    curl_setopt($this->curl_handle, CURLOPT_URL, $url);
-                    curl_setopt($this->curl_handle, CURLOPT_POST, 1);
-                    curl_setopt($this->curl_handle, CURLOPT_POSTFIELDS, $this->data);
-                    break;
-            };
+            case 'POST':
+                curl_setopt($this->curl_handle, CURLOPT_URL, $url);
+                curl_setopt($this->curl_handle, CURLOPT_POST, 1);
+                curl_setopt($this->curl_handle, CURLOPT_POSTFIELDS, $this->data);
+                break;
             case 'DELETE':
                 curl_setopt_array($this->curl_handle, [
                     CURLOPT_URL => $url,
@@ -35,8 +33,6 @@ class HttpRequest
                 curl_setopt($this->curl_handle, CURLOPT_URL, $url . (!empty($data) && is_array($data) ? '?' . http_build_query($data) : ''));
         }
         curl_setopt($this->curl_handle, CURLOPT_RETURNTRANSFER, true);
-
-        return $this;
     }
 
     public function __destruct()
@@ -68,7 +64,7 @@ class HttpRequest
     /**
      * Executes the request and returns the response data, status code & error message.
      *
-     * @return array[string]
+     * @return string[]
      */
     public function execute()
     {

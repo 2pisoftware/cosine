@@ -370,12 +370,10 @@ class Config
      * an exception will be thrown.
      *
      * @param string $parameterName
-     * @param string|null $bucket
-     * @param string|null $key
      * @return void
      * @throws Exception
      */
-    public static function setFromParameterStore(string $parameterName, ?string $bucket = null, ?string $key = null): void 
+    public static function setFromParameterStore(string $parameterName): void
     {
         if (!empty($parameterName)) {
             //retrieve JSON from paramater store and merge with config
@@ -384,42 +382,32 @@ class Config
                 self::$ssm_client = new SsmClient([
                     'region' => getenv('AWS_REGION') ?: 'ap-southeast-2',
                     'version' => 'latest'
-                    ]);
+                ]);
             }
             $result = self::$ssm_client->getParameter([
                     'Name' => $parameterName,
                     'WithDecryption' => true
             ]);
-            $data = json_decode($result, true);
+            $value = $result['Parameter']['Value'];
+            $data = json_decode($value, true);
             if (empty($data)) {
-                if (!empty($bucket) && !empty($key)) {
-                    Config::setFromS3Object($bucket, $key);
-                } else {
-                    throw new Exception("Failed to decode config data from parameter store and no S3 bucket/key provided");
-                }
-                return;
+                throw new Exception("Failed to decode config data from parameter store");
             }
             Config::merge($data, self::$register);
             return;
         }
-        if (!empty($bucket) && !empty($key)) {
-            Config::setFromS3Object($bucket, $key);
-        } else {
-            throw new Exception("No parameter name provided and no S3 bucket/key provided");
-        }
+        throw new Exception("No parameter name provided");
     }
     /**
      * Will get an object from secrets manager and merge it with the existing config. The object
      * is expected to be valid JSON. If the JSON decode fails the function will fall back to using setFromS3Object or
      * an exception will be thrown.
-     * 
+     *
      * @param string $secretName
-     * @param string|null $bucket
-     * @param string|null $key
      * @return void
      * @throws Exception
      */
-    public static function setFromSecretsManager(string $secretName, ?string $bucket = null, ?string $key = null): void
+    public static function setFromSecretsManager(string $secretName): void
     {
         if (!empty($secretName)) {
             //retrieve JSON from secrets manager and merge with config
@@ -428,28 +416,20 @@ class Config
                 self::$secrets_manager_client = new SecretsManagerClient([
                     'region' => getenv('AWS_REGION') ?: 'ap-southeast-2',
                     'version' => 'latest'
-                    ]);
+                ]);
             }
             $result = self::$secrets_manager_client->getSecretValue([
                 'SecretId' => $secretName
             ]);
-            $data = json_decode($result, true);
+            $value = $result->toArray()['SecretString'];
+            $data = json_decode($value, true);
             if (empty($data)) {
-                if (!empty($bucket) && !empty($key)) {
-                    Config::setFromS3Object($bucket, $key);
-                } else {
-                    throw new Exception("Failed to decode config data from secrets manager and no S3 bucket/key provided");
-                }
-                return;
+                throw new Exception("Failed to decode config data from secrets manager");
             }
             Config::merge($data, self::$register);
             return;
         }
-        if (!empty($bucket) && !empty($key)) {
-            Config::setFromS3Object($bucket, $key);
-        } else {
-            throw new Exception("No secret name provided and no S3 bucket/key provided");
-        }
+        throw new Exception("No secret name provided");
     }
 }
 
@@ -466,8 +446,8 @@ class ConfigDependencyLoader
     /**
      * Registers a module to be loaded
      *
-     * @param String $module
-     * @param Array $config
+     * @param string $module
+     * @param array $config
      */
     public static function registerModule($module, $config, $include_path)
     {
@@ -485,7 +465,7 @@ class ConfigDependencyLoader
      * Searches the dependency stack for a registered module
      *
      * @param string $module
-     * @return string|null registered module
+     * @return ?stdClass registered module
      */
     public static function getRegisteredModule($module)
     {
@@ -520,10 +500,10 @@ class ConfigDependencyLoader
      *     e.g module a -> module b -> module a
      *
      * @param stdClass $node
-     * @return null
+     * @return void
      * @throws Exception
      */
-    private static function visitNode($node)
+    private static function visitNode($node): void
     {
         $node->visited = true;
         if ($node->loaded === true) {

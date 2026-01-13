@@ -1,21 +1,22 @@
-<?php namespace System\Modules\Main;
+<?php
+namespace System\Modules\Main;
 
-function listwidgets(\Web $w, $params) {
+function listwidgets(\Web $w, $params)
+{
     $module = null;
-	
+
     if (!empty($params["module"])) {
         $module = $params["module"];
     } else {
-        $module = $w->_module ? : "main";
+        $module = $w->_module ?: "main";
     }
 
     $widgets = \WidgetService::getInstance($w)->getWidgetsForModule($module, \AuthService::getInstance($w)->user()->id);
-    $filter_widgets = array();
-    
-    if (!empty($widgets)) {
+    $filter_widgets = [];
 
+    if (!empty($widgets)) {
         // Filter out widgets in an inactive class
-        $filter_widgets = array_filter($widgets, function($widget) use ($w) {
+        $filter_widgets = array_filter($widgets, function ($widget) use ($w) {
             return $w->isClassActive($widget->widget_name);
         });
 

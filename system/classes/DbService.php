@@ -1,5 +1,7 @@
 <?php
 
+// require_once "SingletonTrait.php";
+
 /**
  * General Service class for subclassing in modules.
  *
@@ -9,6 +11,8 @@
  */
 class DbService
 {
+    use SingletonTrait;
+
     public $_db;
     public $w;
 
@@ -21,7 +25,6 @@ class DbService
     private static $_cache = []; // used for single objects
     public static $_cache2 = []; // used for lists of objects
     public static $_select_cache = [];
-    private static $instances = [];
 
     /**
      * This variable keeps track of active transactions
@@ -30,25 +33,6 @@ class DbService
      */
     public static $_active_trx = false;
 
-    /**
-     * Gets a new instance of the class.
-     *
-     * @param Web $w
-     * @return static
-     */
-    public static function getInstance(Web $w)
-    {
-        $class = get_called_class();
-        if (!isset(self::$instances[$class])) {
-            self::$instances[$class] = new $class($w);
-
-            if (method_exists(self::$instances[$class], "_web_init")) {
-                self::$instances[$class]->_web_init();
-            }
-        }
-
-        return self::$instances[$class];
-    }
 
     public static function getCache()
     {
@@ -142,11 +126,15 @@ class DbService
      * or by passing an array of key,value
      * to be used in a where condition
      *
-     * @param string $table
-     * @param scalar|array $idOrWhere
-     * @return DbObject|null
+     * @template T of DbObject
+     * @param class-string<T> $class
+     * @param mixed $idOrWhere
+     * @param boolean $use_cache
+     * @param string|null $order_by
+     * @param boolean $includeDeleted
+     * @return T|null
      */
-    public function getObject($class, $idOrWhere, $use_cache = true, $order_by = null, $includeDeleted = false)
+    public function getObject(string $class, mixed $idOrWhere, bool $use_cache = true, ?string $order_by = null, bool $includeDeleted = false)
     {
         if (!$idOrWhere || !$class) {
             return null;
@@ -246,14 +234,20 @@ class DbService
     }
     /**
      *
-     * @param string $class
-     * @param mixed $where
-     * @param boolean $useCache
-     *
-     * @return array
+     * @template T of DbObject
+     * @param class-string<T> $class
+     * @return T[]
      */
-    public function getObjects($class, $where = null, $cache_list = false, $use_cache = true, $order_by = null, $offset = null, $limit = null, $includeDeleted = false)
-    {
+    public function getObjects(
+        string $class,
+        array|string|null $where = null,
+        array|bool|null $cache_list = false,
+        bool|null $use_cache = true,
+        string|null $order_by = null,
+        int|null $offset = null,
+        int|null $limit = null,
+        bool $includeDeleted = false
+    ) {
         if (!$class) {
             return null;
         }

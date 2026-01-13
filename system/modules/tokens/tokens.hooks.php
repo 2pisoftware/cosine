@@ -3,7 +3,7 @@
 
     /*
     A request with auth token bearer and no user session state, triggers token handling from auth module:
-     - A hook fires to have the token validated 
+     - A hook fires to have the token validated
         - your APP MODULE should claim *** [module]_auth_get_auth_token_validation ***
         - auth module accepts the token if a hook handler yields a TokensPolicy
         - The policy is internally 'stateless' & never persisted in cmfive DB

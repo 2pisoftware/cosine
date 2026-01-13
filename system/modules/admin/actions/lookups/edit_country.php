@@ -35,7 +35,7 @@ function edit_country_GET(Web $w)
                     'id|name' => 'capital',
                     'label' => 'Capital',
                     'value' => StringSanitiser::sanitise($country->capital ?? ''),
-                ])), 
+                ])),
                 (new \Html\Form\InputField\Text([
                     'id|name' => 'region',
                     'label' => 'Region',
@@ -52,8 +52,8 @@ function edit_country_GET(Web $w)
                     'label' => 'Demonym',
                     'value' => StringSanitiser::sanitise($country->demonym ?? ''),
                 ]))
-        ]
-    ]];
+            ]
+        ]];
 
     $w->out(HtmlBootstrap5::multiColForm($form, '/admin-lookups/edit_country/' . (!empty($id) ? $id : ''), 'POST', 'Save'));
 }

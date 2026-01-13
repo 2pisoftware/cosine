@@ -28,27 +28,30 @@ class HtmlBootstrap5 extends Html
 
     public static function buttonGroup(string $content): string
     {
-        return '<div class="btn-group btn-group-sm" role="group">' . $content . '</div>';
+        return <<<HTML
+<div class="btn-group btn-group-sm" role="group">$content</div>
+HTML;
     }
 
     public static function dropdownButton($title, $contents, $class)
     {
         $content = '';
         foreach ($contents as $item) {
-            $content .= '<li>' . $item . '</li>';
+            $content .= "<li>$item</li>";
         }
-
-        return '<div class="dropdown">
-            <button class="' . $class . ' dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">'
-            . $title .
-            '</button>
-            <ul class="dropdown-menu">'
-            . $content .
-            '</ul>
-        </div>';
+        return <<<HTML
+<div class="dropdown">
+    <button class="{$class} dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+        {$title}
+    </button>
+    <ul class="dropdown-menu">
+        {$content}
+    </ul>
+</div>
+HTML;
     }
 
-/**
+    /**
      * creates a simple one column form from the following array:
      * array(
      *       array("title","type","fieldname","value",{size | array(select options) | cols, rows}),
@@ -299,15 +302,11 @@ class HtmlBootstrap5 extends Html
             $buffer .= "<div class='row g-0 clearfix section-header'><h4 class='col'>{$section}<span class='changed_status position-absolute bg-danger rounded p-1 d-none' style='right: 1rem; top: 0.5rem; font-size: 1rem'>Changed</span></h4></div>";
 
             // Loop through each row
-            foreach ($rows as $row) {
-                if (empty($row)) {
-                    continue;
-                }
-
+            foreach (array_filter($rows) as $row) {
                 // Print each field
                 $buffer .= "<div class='row'>";
 
-                foreach ($row as $entry) {
+                foreach (array_filter($row) as $entry) {
                     // Backwards compatibility - provide option to pass additional data
                     $field = null;
                     $tooltip = null;
@@ -571,18 +570,17 @@ class HtmlBootstrap5 extends Html
      * This function invokes multiColForm with default parameters
      * to remove unnecessary html when displaying data
      *
-     * @param Array $data
-     * @return String html
+     * @param array $data
+     * @return string html
      */
     public static function multiColTable($data)
     {
         if (empty($data)) {
-            return;
+            return '';
         }
 
         // Set up shell layout
-        $buffer = "<div class='row'>";
-        $buffer .= "<div class='col'>";
+        $buffer = "<div class='row'><div class='col'>";
         foreach ($data as $section => $rows) {
             $buffer .= "<div class='item " . toSlug($section) . "'><div class='panel flat'><h4>{$section}</h4><table class='table'>";
             foreach ($rows as $row) {
@@ -627,12 +625,12 @@ class HtmlBootstrap5 extends Html
      * @param int $page_size
      * @param int $total_results
      * @param string $base_url
-     * @param string|optional $sort
-     * @param string|optional $sort_direction
-     * @param string|optional $page_query_param
-     * @param string|optional $pagesize_query_param
-     * @param string|optional $total_results_query_param
-     * @param string|optional $sort_query_param
+     * @param string|null $sort
+     * @param string $sort_direction
+     * @param string $page_query_param
+     * @param string $pagesize_query_param
+     * @param string $total_results_query_param
+     * @param string $sort_query_param
      */
     public static function paginatedTable(
         $header,
@@ -647,7 +645,7 @@ class HtmlBootstrap5 extends Html
         $pagesize_query_param = "page_size",
         $total_results_query_param = "total_results",
         $sort_query_param = "sort",
-        $sort_direction_param = "sort_direction"
+        $sort_direction_param = "sort_direction",
     ) {
         // Build URL for pagination
         $url_parsed = parse_url($base_url);
@@ -674,7 +672,7 @@ class HtmlBootstrap5 extends Html
             . '<div class="col-md-6 col-sm-12" style="margin-top: 5px;">Showing ' . $starting_item . ' - ' . ($starting_item + $count_items - 1) . ' of ' . $total_results . '</div>'
             . '<div class="col-md-6 col-sm-12">';
         if ($num_results > 0) {
-            $buffer .= '<div class="float-md-end">Page: <select class="form-select mb-4 mb-md-0" onchange="location = this.value;">';
+            $buffer .= '<div class="float-md-end d-flex gap-2 align-items-center">Page: <select class="form-select mb-4 mb-md-0" onchange="location = this.value;">';
             // Build URL for dropdown pagination
             $dropdown_url_string = $url_parsed['path'];
             $dropdown_url_string .= (empty($url_parsed['query']) ? "?" : '?' . $url_parsed['query'] . '&') . $sort_query_param . '=' . $sort . '&' . $sort_direction_param . '=' . $sort_direction;
@@ -946,34 +944,71 @@ class HtmlBootstrap5 extends Html
 
     public static function pagination($currentpage, $numpages, $pagesize, $totalresults, $baseurl, $pageparam = "p", $pagesizeparam = "ps", $totalresultsparam = "tr", $tab = null): string
     {
-        // Prepare buffer
-        $buf = '';
-        if ((isNumber($currentpage) && isNumber($numpages)) && ((!empty($tab)) || (isNumber($pagesize) && isNumber($totalresults)))) {
-            // Check that we're within range
-            if ($currentpage > 0 && $currentpage <= $numpages && $numpages > 1) {
-                $buf = "<nav aria-label='pagination'><ul class='pagination justify-content-center flex-wrap'" . ((!empty($tab)) ? " id='$tab-pagination-controls'" : "") . ">";
+        $parsed_url = parse_url($baseurl);
 
-                for ($page = 1; $page <= $numpages; $page++) {
-                    $buf .= "<li class='page-item" . ($currentpage == $page ? " active disabled' aria-current='page'" : "'") . ">";
+        $makeUrl = function (int $page) use ($parsed_url, $pageparam, $pagesizeparam, $pagesize, $totalresultsparam, $totalresults) {
+            $ret = $parsed_url["path"];
 
-                    if (!empty($tab)) { // Tabbed pagination
-                        $buf .= "<a class='page-link' data-tab='$tab' data-tabbed-pagination-page='$page'>$page</a>";
-                    } else { // Standard pagination
-                        $url_parsed = parse_url($baseurl);
-
-                        $url_string = $url_parsed['path'];
-                        $url_string .= (empty($url_parsed['query']) ? '?' : '?' . $url_parsed['query'] . '&') . $pageparam . '=' . $page . '&' . $pagesizeparam . '=' . $pagesize . '&' . $totalresultsparam . '=' . $totalresults;
-                        $url_string .= (!empty($url_parsed['fragment']) ? '#' . $url_parsed['fragment'] : '');
-
-                        $buf .= '<a class="page-link" href=\'' . $url_string . '\'>' . $page . '</a>';
-                    }
-
-                    $buf .= "</li>";
-                }
-
-                $buf .= "</ul></nav>";
+            if (!empty($parsed_url["fragment"])) {
+                $ret .= "#" . $parsed_url["fragment"];
             }
+
+            if (!empty($parsed_url["query"])) {
+                $ret .= "?" . $parsed_url["query"] . "&";
+            } else {
+                $ret .= "?";
+            }
+
+            $ret .= "$pageparam=$page&$pagesizeparam=$pagesize&$totalresultsparam=$totalresults";
+
+            return $ret;
+        };
+
+        $makeElem = function (int $page, bool $disabled) use ($makeUrl) {
+            $url = $makeUrl($page);
+
+            $class = $disabled ? "disabled" : "";
+
+            return <<<DOC
+                <li class="page-item $class">
+                    <a class="page-link" href="$url">
+                        $page
+                    </a>
+                </li>
+            DOC;
+        };
+
+        $links = [];
+
+        if ($currentpage > 1) {
+            $links[] = $makeElem(1, false);
         }
+
+        if ($currentpage > 2) {
+            $links[] = $makeElem($currentpage - 1, false);
+        }
+
+        $links[] = $makeElem($currentpage, true);
+
+        $lastPage = ceil($totalresults / $pagesize);
+
+        if ($currentpage < $lastPage - 1) {
+            $links[] = $makeElem($currentpage + 1, false);
+        }
+
+        if ($currentpage < $lastPage) {
+            $links[] = $makeElem($lastPage, false);
+        }
+
+        $links_str = implode("", $links);
+
+        $buf = <<<DOC
+            <nav aria-label="pagination">
+                <ul class="pagination justify-content-center flex-wrap">
+                    $links_str
+                </ul>
+            </nav>
+        DOC;
 
         return $buf;
     }
@@ -1004,20 +1039,26 @@ class HtmlBootstrap5 extends Html
         return $buffer . '</div></div>';
     }
 
-    
+
     public static function datePicker($name, $value = null, $size = null, $required = null)
     {
-        return '<input class="form-control" type="date" name="' . $name . '" value="' . $value . '" size="' . $size . '" id="' . $name . '" ' . $required . ' />';
+        return <<<HTML
+            <input class="form-control" type="date" name="$name" value="$value" size="$size" id="$name" $required />
+        HTML;
     }
 
     public static function datetimePicker($name, $value = null, $size = null, $required = null)
     {
-        return '<input class="form-control" type="datetime-local" name="' . $name . '" value="' . $value . '" size="' . $size . '" id="' . $name . '" ' . $required . ' />';
+        return <<<HTML
+            <input class="form-control" type="datetime-local" name="$name" value="$value" size="$size" id="$name" $required />
+        HTML;
     }
 
     public static function timePicker($name, $value = null, $size = null, $required = null)
     {
-        return '<input class="form-control" type="time" name="' . $name . '" value="' . $value . '" size="' . $size . '" id="' . $name . '" ' . $required . ' />';
+        return <<<HTML
+            <input class="form-control" type="time" name="$name" value="$value" size="$size" id="$name" $required />
+        HTML;
     }
 
     /**
@@ -1040,5 +1081,29 @@ class HtmlBootstrap5 extends Html
             "minLength" => $minLength,
             "options" => $options,
         ]))->__toString();
+    }
+
+    /**
+     * Create a Chart.js chart. See /components/Chart.js on frontend for default options
+     * If width and height not specified, creates a responsive chart.
+     * You don't need to use this function if you want more control over the chart.
+     * Create a div with a data-chart attribute containing your chartjs config, as well as an inner canvas.
+     *
+     * @return string
+     */
+    public static function chart($id = "chartjs", $type = "line", $data = [], $options = [], $height = "100%", $width = "100%", $class = null): string
+    {
+        $config = htmlentities(json_encode([
+            "type" => $type,
+            ...$options,
+
+            "data" => $data,
+        ]));
+
+        return <<<HERE
+            <div style="position: relative; width: $width; height: $width;" class="$class" data-chart="$config">
+                <canvas style="max-width: 100%" id="$id"></canvas>
+            </div>
+HERE;
     }
 }

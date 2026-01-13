@@ -1,6 +1,7 @@
 <?php
 
-function changeTags_GET(Web $w) {
+function changeTags_GET(Web $w)
+{
     list($object_class, $id) = $w->pathMatch();
 
     if (empty($object_class) || empty($id)) {

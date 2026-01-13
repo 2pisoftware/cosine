@@ -57,7 +57,8 @@ function editMembers_GET(Web &$w)
         'selected_option' => $member->type,
         'options' => InsightService::getInstance($w)->getInsightPermissions(),
         'required' => true,
-    ]));;
+    ]));
+    ;
 
     //if we are editing an existing member we need to send the id to the post method
     $postUrl = '/insights-members/editMembers/' . (!empty($member->id) ? $member->id : '');

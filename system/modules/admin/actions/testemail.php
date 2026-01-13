@@ -1,6 +1,7 @@
 <?php
 
-function testemail_GET(Web $w) {
+function testemail_GET(Web $w)
+{
     $user = AuthService::getInstance($w)->user();
     if (!empty($user)) {
         $contact = $user->getContact();

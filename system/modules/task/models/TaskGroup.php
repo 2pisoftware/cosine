@@ -45,7 +45,7 @@ class TaskGroup extends DbObject
      * @param boolean $saveToDb default false
      * @return TaskGroup
      */
-    public function copy($saveToDb = false)
+    public function copy($saveToDb = false): static
     {
         $new_taskgroup = parent::copy($saveToDb);
 
@@ -56,10 +56,20 @@ class TaskGroup extends DbObject
                 $new_notify->insert();
             }
         } else {
-            LogService::getInstance($this->w)->setLogger('TASK')->warn('$saveToDb is false, skipping copy of task group notify objects');
+            LogService::getInstance($this->w)->setLogger('TASK')->warning('$saveToDb is false, skipping copy of task group notify objects');
         }
 
         return $new_taskgroup;
+    }
+
+    public function printSearchUrl(): string
+    {
+        return "/task-group/viewmembergroup/" . $this->id;
+    }
+
+    public function printSearchTitle(): string
+    {
+        return $this->title;
     }
 
     public function getTaskGroupNotify()
@@ -257,6 +267,6 @@ class TaskGroup extends DbObject
      */
     public function isOwner(User $user)
     {
-        return null != $this->getObject("TaskGroupMember", array("task_group_id" => $this->id, "is_active" => 1, "user_id" => $user->id, "role" => "OWNER"));
+        return null != $this->getObject("TaskGroupMember", ["task_group_id" => $this->id, "is_active" => 1, "user_id" => $user->id, "role" => "OWNER"]);
     }
 }

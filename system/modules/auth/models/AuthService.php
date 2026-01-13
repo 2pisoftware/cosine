@@ -1,5 +1,8 @@
 <?php
 
+use RobThree\Auth\Providers\Qr\QRServerProvider;
+use RobThree\Auth\TwoFactorAuth;
+
 class AuthService extends DbService
 {
     public $_roles;
@@ -73,6 +76,7 @@ class AuthService extends DbService
 
         return $user;
     }
+
     public function externalLogin($login, $password, $skip_session = false)
     {
         $user = $this->getUserForLogin($login);
@@ -337,11 +341,11 @@ class AuthService extends DbService
         // If I have an authentication header: and it has a token -> else fallthrough to original logic
         // ie: expecting [...curl...etc...] -H "Authorization: Bearer {token}"
         /*
-                Note! If under Apache & HTTP_AUTHORIZATION is dropped, prove site HTPPS and then patch access:
-                RewriteEngine On
-                RewriteCond %{HTTP:Authorization} ^(.+)$
-                RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
-                */
+            Note! If under Apache & HTTP_AUTHORIZATION is dropped, prove site HTPPS and then patch access:
+            RewriteEngine On
+            RewriteCond %{HTTP:Authorization} ^(.+)$
+            RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
+        */
 
         if (empty($this->user()) && (Config::get('system.use_api') === true) && !empty($_SERVER['HTTP_AUTHORIZATION'])) {
             $speculativeToken = TokensService::getInstance($this->w)->getTokenFromAuthorisationHeader($_SERVER['HTTP_AUTHORIZATION']);
@@ -353,7 +357,7 @@ class AuthService extends DbService
             // if the token is invalid( jwt fails checks, len == 0 or somesuch) then we stop and don't continue
             if (empty($speculativeToken) || empty($hook_results)) {
                 LogService::getInstance($this->w)->error("Key invalid: '" . ($_SERVER['HTTP_AUTHORIZATION'] ?? "!NONE!") . "' was provided");
-                ApiOutputService::getInstance($this->w)->apiRefuseMessage($path,"Token not valid");
+                ApiOutputService::getInstance($this->w)->apiRefuseMessage($path, "Token not valid");
                 self::$_cache[$key] = false;
                 return false;
             }
@@ -365,7 +369,7 @@ class AuthService extends DbService
                     LogService::getInstance($this->w)->info('Handler ' . $module . ' did not provide Auth');
                 }
             }
-            ApiOutputService::getInstance($this->w)->apiRefuseMessage($path.":[".$speculativeToken."]", "Token not authenticated");
+            ApiOutputService::getInstance($this->w)->apiRefuseMessage($path . ":[" . $speculativeToken . "]", "Token not authenticated");
             self::$_cache[$key] = false;
             return false;
         }
@@ -386,12 +390,12 @@ class AuthService extends DbService
                     if ($user->allowed($path)) {
                         self::$_cache[$key] = $url ? $url : true;
                         // Observed during work for token handler:
-                        // Here, we have forced login, 
+                        // Here, we have forced login,
                         // But do we mean for it to still bounce 1x through auth/login as redirect?
                         // In standing core releases, a _cache[key] 'return' is omitted here
                         // = noting it was required by new tokens model!
                         // Possibly this block should also have return thus:
-                        // return self::$_cache[$key]; 
+                        // return self::$_cache[$key];
                     }
                 } else {
                     LogService::getInstance($this->w)->info($module . ' did not provide passthrough user for:' . $username);
@@ -544,12 +548,12 @@ class AuthService extends DbService
 
     /**
      * Function to recursively check if a user is a member of a group (or parent group)
-     * 
      * @param int|string $group_id
      * @param int|string $user_id
      * @return bool
      */
-    public function isUserGroupMemberRecursive(int|string $group_id, int|string $user_id) : bool {
+    public function isUserGroupMemberRecursive(int|string $group_id, int|string $user_id): bool
+    {
         $groupMembers = $this->getGroupMembers($group_id);
         if (!empty($groupMembers)) {
             foreach ($groupMembers as $groupMember) {
@@ -563,5 +567,18 @@ class AuthService extends DbService
             }
         }
         return false;
+    }
+
+    /**
+     * Create a new TwoFactorAuth instance for generating/verifying 2FA codes.
+     */
+    public function createTfaProvider()
+    {
+        $issuer = str_replace(" ", "", Config::get("main.application_name", "Cosine"));
+
+        return new TwoFactorAuth(
+            issuer: $issuer,
+            qrcodeprovider: new QRServerProvider(),
+        );
     }
 }

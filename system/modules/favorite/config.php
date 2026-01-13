@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Config settings for favorites 
+ * Config settings for favorites
  *
  * @author Steve Ryan, steve@2pisoftware.com, 2015
  **/

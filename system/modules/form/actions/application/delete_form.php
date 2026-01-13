@@ -19,7 +19,7 @@ function delete_form_GET(Web $w)
 
     /**
      * Required to type $application correctly
-     * 
+     *
      * @var FormApplication
      */
     $application = FormApplicationService::getInstance($w)->getFormApplication($id);
@@ -31,7 +31,7 @@ function delete_form_GET(Web $w)
 
     /**
      * Required to type $existing_mapping correctly
-     * 
+     *
      * @var FormApplicationMapping
      */
     $existing_mapping = FormApplicationService::getInstance($w)->getFormApplicationMapping($application->id, $form);

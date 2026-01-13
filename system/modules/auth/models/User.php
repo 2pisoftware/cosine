@@ -1,7 +1,5 @@
 <?php
 
-use Sonata\GoogleAuthenticator\GoogleAuthenticator;
-
 /**
  * User object
  *
@@ -60,9 +58,11 @@ class User extends DbObject
      *
      * @return bool
      */
-    public function checkMfaCode(string $mfa_code) : bool
+    public function checkMfaCode(string $mfa_code): bool
     {
-        return (new GoogleAuthenticator())->checkCode($this->mfa_secret, $mfa_code);
+        $tfa = AuthService::getInstance($this->w)->createTfaProvider();
+
+        return $tfa->verifyCode($this->mfa_secret, $mfa_code);
     }
 
     /**
@@ -78,31 +78,40 @@ class User extends DbObject
     {
         return [
             [
-                __("English"), "en_US.UTF-8"
+                __("English"),
+                "en_US.UTF-8"
             ],
             [
-                __("German"), "de_DE.UTF-8"
+                __("German"),
+                "de_DE.UTF-8"
             ],
             [
-                __("French"), "fr_FR.UTF-8"
+                __("French"),
+                "fr_FR.UTF-8"
             ],
             [
-                __("Chinese"), "zh_CN.UTF-8"
+                __("Chinese"),
+                "zh_CN.UTF-8"
             ],
             [
-                __("Japanese"), "ja_JP.UTF-8"
+                __("Japanese"),
+                "ja_JP.UTF-8"
             ],
             [
-                __("Spanish"), "es_ES.UTF-8"
+                __("Spanish"),
+                "es_ES.UTF-8"
             ],
             [
-                __("Dutch"), "nl_NL.UTF-8"
+                __("Dutch"),
+                "nl_NL.UTF-8"
             ],
             [
-                __("Russian"), "ru_RU.UTF-8"
+                __("Russian"),
+                "ru_RU.UTF-8"
             ],
             [
-                __("Gaelic"), "gd_GB.UTF-8"
+                __("Gaelic"),
+                "gd_GB.UTF-8"
             ]
         ];
     }
@@ -374,7 +383,7 @@ class User extends DbObject
             unset($_SESSION['user_id']);
             $this->w->error("This account is locked, most likely due to too many login attempts. Please contact an Administrator to get your account unlocked", "/auth/login");
         }
-        
+
         if (!$this->is_active) {
             return false;
         }
@@ -408,10 +417,10 @@ class User extends DbObject
     public function encryptPassword($password)
     {
         // If User's password salt is not built into the password hash use SHA1.
-        // Should not be used in Cmfive v5
-        // if (!empty($this->password_salt)) {
-        //     return sha1($this->password_salt . $password);
-        // }
+        // This is actually necessary to prevent issues rehashing SHA1 passwords to the new bcrypt hash
+        if (!empty($this->password_salt)) {
+            return sha1($this->password_salt . $password);
+        }
 
         $hash = false;
         $algorithm = PASSWORD_DEFAULT;
@@ -428,7 +437,8 @@ class User extends DbObject
             $options = [
                 "memory_cost" => PASSWORD_ARGON2_DEFAULT_MEMORY_COST, // Max 1024 bytes.
                 "time_cost" => PASSWORD_ARGON2_DEFAULT_TIME_COST, // Max 2 seconds.
-                "threads" => PASSWORD_ARGON2_DEFAULT_THREADS]; // Max 2 threads.
+                "threads" => PASSWORD_ARGON2_DEFAULT_THREADS
+            ]; // Max 2 threads.
         }
 
         $hash = password_hash($password, $algorithm, $options);
@@ -462,11 +472,16 @@ class User extends DbObject
             return false;
         }
 
-        if (!empty($this->password_salt)) {
-            $this->password_salt = null;
+        // This will need to change if we ever want to rehash to another algorithm.
+        if (startsWith($this->password, "$2y$")) {
+            // The password is already using bcrypt.
+            return false;
         }
 
-        // $this->setPassword($password);
+        $this->password_salt = null;
+
+        // Actually set the password to the new hash.
+        $this->setPassword($password);
         return $this->update(true);
     }
 

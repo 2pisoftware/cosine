@@ -6,6 +6,8 @@ defined('PROJECT_MODULE_DIRECTORY') || define('PROJECT_MODULE_DIRECTORY', 'modul
 defined('SYSTEM_MODULE_DIRECTORY') || define('SYSTEM_MODULE_DIRECTORY', 'system' . DS . 'modules');
 defined('SEED_MIGRATION_DIRECTORY') || define('SEED_MIGRATION_DIRECTORY', MIGRATION_DIRECTORY . DS . 'seeds');
 
+use \Phinx\Db\Adapter\MysqlAdapter;
+
 class MigrationService extends DbService
 {
     public static $_installed = [];
@@ -87,7 +89,7 @@ class MigrationService extends DbService
                                     $migration_class = explode('-', $file)[1];
                                     $migration_class = preg_replace('/.php$/', '', $migration_class);
                                     if (class_exists($migration_class)) {
-                                        $migration = (new $migration_class(1))->setWeb($this->w);
+                                        $migration = (new $migration_class(1, formatDate(time(), 'YmdHis')))->setWeb($this->w);
                                         $availableMigrations[$module][$migration_path . DS . $file] = [
                                             'class_name' => $classname[1],
                                             'timestamp' => $classname[0],
@@ -133,7 +135,6 @@ class MigrationService extends DbService
         if (!empty($migrations)) {
             foreach ($migrations as $migration) {
                 $to_add = true;
-                //var_dump($migration);
                 if (array_key_exists($migration['module'], $migrationsInstalled)) {
                     foreach ($migrationsInstalled[$migration['module']] as $processed_migration) {
                         if ($migration['classname'] == $processed_migration['classname']) {
@@ -269,7 +270,6 @@ MIGRATION;
 
         // If filename is specified then strip out migrations that shouldnt be run
         if (strtolower($module) !== "all" && !empty($filename)) {
-            $offset_index = 1;
             $filename_parts = explode('.', $filename);
             $file_timestamp = (float)  $filename_parts[0];
 
@@ -291,7 +291,7 @@ MIGRATION;
             $this->w->db->setMigrationMode(1);
 
             // Use MySQL for now
-            $mysql_adapter = new \Phinx\Db\Adapter\MysqlAdapter([
+            $mysql_adapter = new MysqlAdapter([
                 'connection' => $this->w->db,
                 'name' => Config::get('database.database')
             ]);
@@ -320,7 +320,7 @@ MIGRATION;
                             $this->w->db->startTransaction();
                             try {
                                 // Set migration class
-                                $migration_class = (new $migration['class_name'](1))->setWeb($this->w);
+                                $migration_class = (new $migration['class_name'](1, formatDate(time(), 'YmdHis')))->setWeb($this->w);
                                 $migration_class->setAdapter($mysql_adapter);
 
                                 if ($continuingrunall == true) {
@@ -356,11 +356,8 @@ MIGRATION;
                                         }
                                         if ($runMigrations > 0) {
                                             $msg = "<table style width='100%'><tr><td><center>" . $runMigrations . ' migration' . ($runMigrations == 1 ? ' has' : 's have') . ' run. <br>';
-
                                             $msg .= ($buffer != "" ? "<h5><strong>Post Migration Output:</strong></h5>" . $buffer . "</center></td>" : "<center>There was no post migration output</center>");
-
                                             $msg .= ($installedBuffer != "" ? " <td><strong>Migrations that were run and installed:</strong> <br>" . $installedBuffer . "<br>" : "");
-
                                             $msg .= ($uninstalledBuffer != "" ? "<strong>Migrations yet to run:</strong> <br>" . $uninstalledBuffer . "<br></td></tr></table>" : "");
                                         }
                                         $this->w->msg($msg, $messageurl);
@@ -501,7 +498,7 @@ MIGRATION;
                             LogService::getInstance($this->w)->setLogger("MIGRATION")->info("Rolling back migration: " . $migration['id']);
 
                             // Run migration UP
-                            $migration_class = new $migration['classname'](1);
+                            $migration_class = new $migration['classname'](1, intval(formatDate(time(), "YmdHis")));
                             $migration_class->setWeb($this->w);
                             $migration_class->setAdapter($mysql_adapter);
                             $migration_class->down();
@@ -554,7 +551,7 @@ MIGRATION;
 
         $directory = SYSTEM_MODULE_DIRECTORY . DS . "admin" . DS . MIGRATION_DIRECTORY;
 
-        $mysql_adapter = new \Phinx\Db\Adapter\MysqlAdapter([
+        $mysql_adapter = new MysqlAdapter([
             'connection' => $this->w->db,
             'name' => Config::get('database.database')
         ]);
@@ -563,13 +560,13 @@ MIGRATION;
         foreach ($filenames as $migration => $filename) {
             if (file_exists(ROOT_PATH . DS . $directory . DS . $filename)) {
                 include_once ROOT_PATH . DS . $directory . DS . $filename;
-
+                
                 // Class name must match filename after timestamp and hyphen
                 if (class_exists($migration)) {
                     LogService::getInstance($this->w)->setLogger("MIGRATION")->info("Running migration: " . $migration);
-
+                    
                     // Run migration UP
-                    $migration_class = new $migration(1);
+                    $migration_class = new $migration(1, intval(formatDate(time(), "YmdHis")));
                     $migration_class->setAdapter($mysql_adapter);
                     $migration_class->up();
 

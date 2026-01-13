@@ -2,7 +2,8 @@
 
 // clicking the 'More Info' button for a task group gives all details specific to this group
 // including group attributes and group membership
-function viewmembergroup_GET(Web $w) {
+function viewmembergroup_GET(Web $w)
+{
     $p = $w->pathMatch("id");
 
     // tab: Members
@@ -16,9 +17,9 @@ function viewmembergroup_GET(Web $w) {
     }
 
     // put the group title into the page heading
-    TaskService::getInstance($w)->navigation($w, "Task Group - " . StringSanitiser::sanitise($taskgroup->title));
+    TaskService::getInstance($w)->navigation($w, "Task Group - ".StringSanitiser::sanitise($taskgroup->title));
 
-    History::add("Task Group: " . StringSanitiser::sanitise($taskgroup->title), null, $taskgroup);
+    History::add("Task Group: ".StringSanitiser::sanitise($taskgroup->title), null, $taskgroup);
 
     // set columns headings for display of members
     $line[] = ["Member", "Role", ""];
@@ -27,9 +28,9 @@ function viewmembergroup_GET(Web $w) {
     if ($member_group) {
         foreach ($member_group as $member) {
             $line[] = [TaskService::getInstance($w)->getUserById($member->user_id), $member->role,
-                HtmlBootstrap5::box(WEBROOT . "/task-group/viewmember/" . $member->id, " Edit ", true, null, null, null, null, null, "bg-primary text-light") .
-                "&nbsp;&nbsp;" .
-                HtmlBootstrap5::box(WEBROOT . "/task-group/deletegroupmember/" . $member->id, " Delete ", true,  null, null, null, null, null, "bg-danger text-light")
+                HtmlBootstrap5::box(href: WEBROOT."/task-group/viewmember/".$member->id, title: " Edit ", button: true, class: "bg-primary text-light").
+                "&nbsp;&nbsp;".
+                HtmlBootstrap5::box(href: WEBROOT."/task-group/deletegroupmember/".$member->id, title: " Delete ", button: true, class: "bg-danger text-light")
             ];
         }
     } else {
@@ -39,6 +40,5 @@ function viewmembergroup_GET(Web $w) {
 
     // display list of group members
     $w->ctx("viewmembers", HtmlBootstrap5::table($line, null, "tablesorter", true));
-
     $w->ctx("taskgroup", $taskgroup);
 }

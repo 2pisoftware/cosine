@@ -1,6 +1,7 @@
 <?php
 
-function ajaxStart_POST(Web $w) {
+function ajaxStart_POST(Web $w)
+{
     $w->setLayout(null);
 
     if (TimelogService::getInstance($w)->hasActiveLog()) {
@@ -23,7 +24,7 @@ function ajaxStart_POST(Web $w) {
     $start_time = null;
     if (!empty($_POST['start_time'])) {
         $start_string = $_POST['start_time'];
-        $time_object = new DateTime(date('d-m-Y',time()) . ' ' . $start_string);
+        $time_object = new DateTime(date('d-m-Y', time()) . ' ' . $start_string);
         $start_time = $time_object->getTimestamp();
     }
     

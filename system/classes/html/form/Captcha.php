@@ -3,11 +3,12 @@
 /**
  * A custom Html\Form element to create a captcha field. Validation is
  * the responsibility of the action receiving the form submission.
- * 
+ *
  * @author Adam Buckley <adam@2pisoftware.com>
  */
-class Captcha extends \Html\Form\FormElement {
-	
+class Captcha extends \Html\Form\FormElement
+{
+    
     use \Html\GlobalAttributes;
     
     public $sitekey = '';
@@ -17,24 +18,26 @@ class Captcha extends \Html\Form\FormElement {
 
     /**
      * Sets the sitekey parameter
-     *  
+     *
      * @param String $sitekey
      * @return this
      */
-    public function setSiteKey($sitekey) {
+    public function setSiteKey($sitekey)
+    {
         $this->sitekey = $sitekey;
         return $this;
     }
 
     /**
      * Sets the type of captcha to use.
-     * 
+     *
      * Currently only supports Googles Recaptcha
      *
      * @param String $type
      * @return this
      */
-    public function setType($type) {
+    public function setType($type)
+    {
         $type = strtolower($type);
         if (in_array($type, $_available_types)) {
             $this->_type = $type;
@@ -48,12 +51,12 @@ class Captcha extends \Html\Form\FormElement {
      *
      * @return string
      */
-    public function __toString() {
-        switch($this->_type) {
+    public function __toString()
+    {
+        switch ($this->_type) {
             case 'recaptcha':
             default:
                 return '<div class="g-recaptcha" data-sitekey="' . $this->sitekey . '"></div>';
         }
     }
-
 }

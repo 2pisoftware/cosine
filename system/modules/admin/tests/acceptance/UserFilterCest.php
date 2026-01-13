@@ -107,6 +107,5 @@ class UserFilterCest
         $I->fillField('//*[@id="admin/user__filter-email"]', "Honda");
         $I->click("Filter");
         $I->dontSee($this->firstname2 . "@" . $this->lastname2 . ".com");
-
     }
 }

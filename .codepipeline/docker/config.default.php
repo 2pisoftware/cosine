@@ -77,6 +77,8 @@ Config::set('system.allow_action', [
     "auth/login",
     "auth/forgotpassword",
     "auth/resetpassword",
+    "auth-webauthn/ajax_init_login",
+    "auth-webauthn/ajax_login",
     //"admin/datamigration"
 ]);
 

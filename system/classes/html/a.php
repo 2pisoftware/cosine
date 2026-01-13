@@ -4,7 +4,7 @@ namespace Html;
 
 /**
  * \Html\a class for generation and tight control of "a" links within cmfive
- * 
+ *
  * @author Adam Buckley <adam.buckley90@gmail.com>
  */
 class a
@@ -48,7 +48,7 @@ class a
 
     /**
      * Returns built string of input field
-     * 
+     *
      * @return string string representation
      */
     public function __toString()
@@ -157,7 +157,7 @@ class a
 
     /**
      * Class is a reserved word so we have to use setClass
-     * 
+     *
      * @param string $class
      * @return $this
      */

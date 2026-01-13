@@ -4,7 +4,6 @@ function ajaxGetExtraDetails_ALL(Web $w)
 {
     $w->setLayout(null);
     $p = $w->pathMatch("task_id", "task_type");
-    
     if (empty($p['task_id']) || empty($p['task_type'])) {
         $w->out("[]");
         return;

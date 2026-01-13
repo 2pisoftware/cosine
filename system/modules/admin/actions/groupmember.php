@@ -13,10 +13,10 @@ function groupmember_GET(Web $w)
 
     $select = [0 => [], 1 => []];
     foreach ($users as $user) {
-        // We do not list ourselves as an option 
+        // We do not list ourselves as an option
         if ($user->id != $option["group_id"]) {
             $name = $user->is_group == 1 ? strtoupper($user->login) : $user->getContact()->getFullName();
-            $select[!empty($user->is_group)][$name] = array($name, $user->id);
+            $select[!empty($user->is_group)][$name] = [$name, $user->id];
         }
     }
     // Sort ignoring case
@@ -25,7 +25,7 @@ function groupmember_GET(Web $w)
 
     $template['New Member'] = [[["Select Member: ", "select", "member_id", null, $select[0] + $select[1]]]];
     if (AuthService::getInstance($w)->user()->is_admin) {
-        $template['New Member'][0][] = array("Owner", "checkbox", "is_owner");
+        $template['New Member'][0][] = ["Owner", "checkbox", "is_owner"];
     }
 
     $validation = ['member_id' => ['required']];
@@ -41,7 +41,7 @@ function groupmember_POST(Web $w)
     $member_id = Request::int('member_id');
     $group_id = $p['group_id'];
     $is_owner = Request::bool('is_owner');
-    $exceptions = array();
+    $exceptions = [];
     // store all parent groups in session
     $groupUsers = AuthService::getInstance($w)->getUser($group_id)->isInGroups();
     if ($groupUsers) {

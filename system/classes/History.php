@@ -22,7 +22,7 @@ class History
      * This function adds a history value to the SESSION
      * @param string $name
      */
-    public static function add($name, Web $w = null, $object = null)
+    public static function add($name, Web|null $w = null, $object = null)
     {
         // Sanitise the string
         if (!empty($name)) {

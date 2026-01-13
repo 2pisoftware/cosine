@@ -1,111 +1,14 @@
 <?php
 
-use \Laminas\Mail\Message as LaminasMailMessage;
-
-//
-// The purpose of this class is to expose protocol
-//
-class ZendMailStorageImap extends \Laminas\Mail\Storage\Imap
-{
-    public $protocol;
-
-    public function __construct($params)
-    {
-        if (is_array($params)) {
-            $params = (object) $params;
-        }
-
-        $this->has['flags'] = true;
-
-        if ($params instanceof \Laminas\Mail\Protocol\Imap) {
-            $this->protocol = $params;
-            try {
-                $this->selectFolder('INBOX');
-            } catch (\Exception $e) {
-                throw new \Laminas\Mail\Exception\RuntimeException('cannot select INBOX, is this a valid transport?', 0, $e);
-            }
-            return;
-        }
-
-        if (!isset($params->user)) {
-            throw new \Laminas\Mail\Exception\InvalidArgumentException('need at least user in params');
-        }
-
-        $host     = isset($params->host)     ? $params->host     : 'localhost';
-        $password = isset($params->password) ? $params->password : '';
-        $port     = isset($params->port)     ? $params->port     : null;
-        $ssl      = isset($params->ssl)      ? $params->ssl      : false;
-        $options  = isset($params->options)  ? $params->options  : null;
-
-        $this->protocol = new ZendMailProtocolImap();
-        $this->protocol->connect($host, $port, $ssl, $options);
-        if (!$this->protocol->login($params->user, $password)) {
-            throw new \Laminas\Mail\Exception\RuntimeException('cannot login, user or password wrong');
-        }
-        $this->selectFolder(isset($params->folder) ? $params->folder : 'INBOX');
-    }
-}
-
-use Laminas\Stdlib\ErrorHandler;
-
-class ZendMailProtocolImap extends \Laminas\Mail\Protocol\Imap
-{
-
-    public function connect($host, $port = null, $ssl = false, $options = [])
-    {
-        $isTls = false;
-
-        if ($ssl) {
-            $ssl = strtolower($ssl);
-        }
-
-        switch ($ssl) {
-            case 'ssl':
-                $host = 'ssl://' . $host;
-                if (!$port) {
-                    $port = 993;
-                }
-                break;
-            case 'tls':
-                $isTls = true;
-                // break intentionally omitted
-            default:
-                if (!$port) {
-                    $port = 143;
-                }
-        }
-
-        ErrorHandler::start();
-
-        // Use stream_context_create instead of fsockopen as it allows us to specify SSL stream options
-        $stream = stream_context_create();
-        if ($ssl !== false && !is_null($options) && is_array($options) && array_key_exists('ssl', $options)) {
-            stream_context_set_option($stream, $options);
-        }
-
-        $this->socket = stream_socket_client($host . ':' . $port, $errno, $errstr, self::TIMEOUT_CONNECTION, STREAM_CLIENT_CONNECT, $stream);
-
-        $error = ErrorHandler::stop();
-        if (!$this->socket) {
-            throw new \Laminas\Mail\Exception\RuntimeException(sprintf(
-                'cannot connect to host %s',
-                ($error ? sprintf('; error = %s (errno = %d )', $error->getMessage(), $error->getCode()) : '')
-            ), 0, $error);
-        }
-
-        if (!$this->assumedNextLine('* OK')) {
-            throw new \Laminas\Mail\Exception\RuntimeException('host doesn\'t allow connection');
-        }
-
-        if ($isTls) {
-            $result = $this->requestAndResponse('STARTTLS');
-            $result = $result && stream_socket_enable_crypto($this->socket, true, STREAM_CRYPTO_METHOD_TLS_CLIENT);
-            if (!$result) {
-                throw new \Laminas\Mail\Exception\RuntimeException('cannot enable TLS');
-            }
-        }
-    }
-}
+use Ddeboer\Imap\Server as ImapServer;
+use Ddeboer\Imap\Message as ImapMessage;
+use Ddeboer\Imap\Search\Flag\Unseen;
+use Ddeboer\Imap\Search\Email\To;
+use Ddeboer\Imap\Search\Email\From;
+use Ddeboer\Imap\Search\Email\Cc;
+use Ddeboer\Imap\Search\Text\Subject;
+use Ddeboer\Imap\Search\Text\Body;
+use Ddeboer\Imap\SearchExpression;
 
 class EmailChannelOption extends DbObject
 {
@@ -135,7 +38,7 @@ class EmailChannelOption extends DbObject
     public function __construct(Web $w)
     {
         parent::__construct($w);
-        $this->setPassword(hash("md5", $w->moduleConf("channels", "__password")));
+        // $this->setPassword(hash("md5", $w->moduleConf("channels", "__password")));
     }
 
     public function delete($force = false)
@@ -165,186 +68,107 @@ class EmailChannelOption extends DbObject
     public function read()
     {
         // Setup filter array
-        $filter_arr = [];
+        $search = new SearchExpression();
+        // $search = new LogicalAnd([]);
 
         if (!empty($this->to_filter)) {
-            $filter_arr[] = "TO " . $this->to_filter;
+            $search->addCondition(new To($this->to_filter));
         }
 
         if (!empty($this->from_filter)) {
-            $filter_arr[] = "FROM " . $this->from_filter;
+            $search->addCondition(new From($this->from_filter));
         }
 
         if (!empty($this->cc_filter)) {
-            $filter_arr[] = "CC " . $this->cc_filter;
+            $search->addCondition(new Cc($this->cc_filter));
         }
 
         if (!empty($this->subject_filter)) {
-            $filter_arr[] = "SUBJECT " . $this->subject_filter;
+            $search->addCondition(new Subject($this->subject_filter));
         }
 
         if (!empty($this->body_filter)) {
-            $filter_arr[] = "BODY " . $this->body_filter;
+            $search->addCondition(new Body($this->body_filter));
         }
 
-        $filter_arr[] = "UNSEEN";
+        $search->addCondition(new Unseen());
 
         // Connect and fetch emails
         LogService::getInstance($this->w)->setLogger('EmailChannel')->info("Connecting to mail server");
-        list($connected, $mail) = $this->connectToMail();
+        list($connected, $mailbox) = $this->connectToMail();
 
-        if ($connected) {
-            LogService::getInstance($this->w)->setLogger('EmailChannel')->info("Getting messages with filter: " . json_encode($filter_arr));
-            $results = $mail->protocol->search($filter_arr);
+        if ($connected && $mailbox) {
+            LogService::getInstance($this->w)->setLogger('EmailChannel')->info("Getting messages with filters");
+            $messages = $mailbox->getMessages($search);
 
-            if (!empty($results)) {
-                LogService::getInstance($this->w)->setLogger('EmailChannel')->info("Found " . count($results) . " messages, looping through");
+            if (count($messages) > 0) {
+                LogService::getInstance($this->w)->setLogger('EmailChannel')->info("Found " . count($messages) . " messages, looping through");
 
-                foreach ($results as $index => $messagenum) {
-                    $i = $index + 1;
-                    LogService::getInstance($this->w)->setLogger('EmailChannel')->debug("Reading message {$i}");
-                    $message = $mail->getMessage($messagenum);
-
-                    /**create a regular zend_mail_message to use toString()
-                     * this is required because the storage mail class doesn't support this method
-                     */
-                    $zend_message = new LaminasMailMessage();
-                    $zend_message->setHeaders($message->getHeaders());
-                    $zend_message->setBody($message->getContent());
-
-                    $rawmessage = "";
-                    try {
-                        $rawmessage = $zend_message->toString();
-                    } catch (Throwable $t) {
-                        $rawmessage = $message->getContent();
-                    }
+                foreach ($messages as $i => $message) {
+                    LogService::getInstance($this->w)->setLogger('EmailChannel')->debug("Reading message " . ($i + 1));
 
                     $email = new EmailStructure();
-                    $email->to = $message->to;
+                    $email->to = $message->getTo();
 
-                    $email->message_id = $message->getHeader('Message-Id')->getFieldValue();
+                    $email->message_id = $message->getId();
 
-                    // get the from address, only expecting one
-                    foreach ($zend_message->getFrom() as $address) {
-                        $email->from = $address->getName();
-                        $email->from_email_address = $address->getEmail();
-                        break;
+                    $from = $message->getFrom();
+                    if ($from) {
+                        $email->from = $from->getName();
+                        $email->from_email_address = $from->getAddress();
                     }
 
-                    $email->subject = $zend_message->getSubject();
+                    $email->subject = $message->getSubject();
 
-                    // Create  ChannelMessages
+                    // Create ChannelMessages
                     $channel_message = new ChannelMessage($this->w);
                     $channel_message->channel_id = $this->channel_id;
                     $channel_message->message_type = "email";
                     $channel_message->is_processed = 0;
                     $channel_message->insert();
 
-                    if ($message->isMultipart()) {
-                        foreach (new RecursiveIteratorIterator($message) as $part) {
-                            try {
-                                $contentType = strtok($part->contentType, ';');
-                                $transferEncoding = '';
+                    $email->body = [];
 
-                                if ($part->getHeaders()->has('ContentTransferEncoding')) {
-                                    $transferEncoding = $part->getHeader("Content-Transfer-Encoding")->getFieldValue("transferEncoding");
-                                }
+                    foreach ($message->getParts() as $part) {
+                        try {
+                            $contentType = strtok($part->getSubtype(), ';');
 
-                                switch ($contentType) {
-                                    case "text/plain":
-                                        $email->body["plain"] = trim($part->__toString());
-
-                                        if ($transferEncoding == "base64") {
-                                            $email->body['plain'] = base64_decode($email->body['plain']);
-                                        } elseif ($transferEncoding == "quoted-printable") {
-                                            $email->body['plain'] = quoted_printable_decode($email->body['plain']);
-                                        }
-                                        break;
-                                    case "text/html":
-                                        $email->body["html"] = trim($part->__toString());
-
-                                        if ($transferEncoding == "base64") {
-                                            $email->body['html'] = base64_decode($email->body['html']);
-                                        } elseif ($transferEncoding == "quoted-printable") {
-                                            $email->body['html'] = quoted_printable_decode($email->body['html']);
-                                        }
-                                        break;
-                                    default:
-                                        // Is probably an attachment so just save it
-                                        $content_type_header = $part->getHeader("Content-Type");
-
-                                        // Name is stored under "parameters" in an array
-                                        $nameArray = $content_type_header->getParameters();
-                                        $name = '';
-
-                                        if (empty($nameArray) || !is_array($nameArray) || !array_key_exists('name', $nameArray)) {
-                                            $content_dispositon = $part->getHeader('Content-Disposition');
-                                            $content_dispositon_array = explode(';', $content_dispositon->getFieldValue('filename'));
-
-                                            if (!empty($content_dispositon_array)) {
-                                                foreach ($content_dispositon_array as $cda) {
-                                                    $arr = explode('=', $cda);
-                                                    if (trim($arr[0]) === 'filename') {
-                                                        $name = trim($arr[1]);
-                                                    }
-                                                }
-                                            }
-
-                                            // adding check for long file names which are cut from content_disposition
-                                            if (empty($name)) {
-                                                $top_lines = trim($part->getTopLines());
-
-                                                $name = $top_lines;
-                                            }
-                                        } else {
-                                            $name = $nameArray['name'];
-                                        }
-
-                                        if (empty($name)) {
-                                            $name = "attachment_" . substr(uniqid('', true), -6);
-                                        }
-
-                                        // Try and trim quotes off the name
-                                        $name = trim($name, '"');
-                                        $name = trim($name, "'");
-
-                                        FileService::getInstance($this->w)->saveFileContent(
-                                            $channel_message,
-                                            ($transferEncoding == "base64" ? base64_decode(trim($part->__toString())) : trim($part->__toString())),
-                                            $name,
-                                            "channel_email_attachment",
-                                            $contentType
-                                        );
-                                }
-                            } catch (\Exception $e) {
-                                LogService::getInstance($this->w)->setLogger('EmailChannel')->error("Zend_Mail_Exception {$e}");
+                            switch ($contentType) {
+                                case "plain":
+                                    $body = $part->getDecodedContent();
+                                    $email->body["plain"] = trim($body);
+                                    break;
+                                case "html":
+                                    $body = $part->getDecodedContent();
+                                    $email->body["html"] = trim($body);
+                                    break;
+                                default:
+                                    // Attachment
+                                    $parameters = $part->getParameters();
+                                    
+                                    $name = $parameters->get("filename");
+                                    if (empty($name)) {
+                                        $name = "attachment_" . substr(uniqid('', true), -6);
+                                    }
+                                    $name = trim($name, '"\'');
+                                    FileService::getInstance($this->w)->saveFileContent(
+                                        $channel_message,
+                                        $part->getDecodedContent(),
+                                        $name,
+                                        "channel_email_attachment",
+                                        $part->getType() . "/" . $part->getSubtype(),
+                                    );
                             }
-                        }
-                    } else {
-                        $contentType = strtok($message->contentType, ';');
-                        $transferEncoding = '';
-
-                        if ($message->getHeaders()->has('ContentTransferEncoding')) {
-                            $transferEncoding = $message->getHeader("Content-Transfer-Encoding")->getFieldValue("transferEncoding");
-                        }
-
-                        switch ($contentType) {
-                            case "text/plain":
-                            default:
-                                $email->body["plain"] = trim($message->__toString());
-
-                                if ($transferEncoding == "base64") {
-                                    $email->body['plain'] = base64_decode($email->body['plain']);
-                                } elseif ($transferEncoding == "quoted-printable") {
-                                    $email->body['plain'] = quoted_printable_decode($email->body['plain']);
-                                } else {
-                                    $email->body['plain'] = $message->getContent();
-                                }
-                                break;
+                        } catch (\Exception $e) {
+                            LogService::getInstance($this->w)->setLogger('EmailChannel')->error("Imap_Exception {$e}");
                         }
                     }
+
+                    // Save raw message
+                    $rawmessage = $message->getRawMessage();
                     FileService::getInstance($this->w)->saveFileContent($channel_message, serialize($email), "email.txt", "channel_email_raw", "text/plain", 'serialized EmailStructure object | NOT SENT TO CLIENT');
                     FileService::getInstance($this->w)->saveFileContent($channel_message, $rawmessage, "rawemail.txt", "channel_email_raw", "text/plain", "raw email message | NOT SENT TO CLIENT");
+                    $message->markAsSeen();
                 }
             } else {
                 LogService::getInstance($this->w)->setLogger('EmailChannel')->info("No new messages found");
@@ -359,50 +183,53 @@ class EmailChannelOption extends DbObject
         }
 
         try {
-            // Open email connection
-            $options = null;
+            $encryption = false;
 
-            if (!is_null($this->verify_peer)) {
-                $options = [
-                    'ssl' => ['verify_peer' => $this->verify_peer ? true : false]
-                ];
-
-                if (!is_null($this->allow_self_signed)) {
-                    $options['ssl']['allow_self_signed'] = $this->allow_self_signed ? true : false;
-                }
+            if ($this->use_auth == 1) {
+                $encryption = 'ssl';
             }
 
-            $mail = new ZendMailStorageImap(
-                [
-                    'host' => $this->server,
-                    'user' => $this->s_username,
-                    'port' => $this->port,
-                    'password' => $this->s_password,
-                    'ssl' => ($this->use_auth == 1 ? "SSL" : false),
-                    'options' => $options
-                ]
+            // SSL context options
+            $contextOptions = [];
+            if (!is_null($this->verify_peer)) {
+                $contextOptions['verify_peer'] = $this->verify_peer ? true : false;
+            }
+            if (!is_null($this->allow_self_signed)) {
+                $contextOptions['allow_self_signed'] = $this->allow_self_signed ? true : false;
+            }
+
+            $server = new ImapServer(
+                $this->server,
+                $this->port,
+                $encryption,
+                $contextOptions ? ['ssl' => $contextOptions] : []
             );
-            return [true, $mail];
-        } catch (Exception $e) {
+
+            $connection = $server->authenticate($this->s_username, $this->s_password);
+            $folder = $this->folder ?: 'INBOX';
+            $mailbox = $connection->getMailbox($folder);
+
+            return [true, $mailbox];
+        } catch (\Exception $e) {
             LogService::getInstance($this->w)->setLogger('EmailChannel')->error("Error connecting to mail server: " . $e->getMessage());
             return [false, $e->getMessage()];
         }
     }
 
+    #[Deprecated(
+        reason: "This method is deprecated as it is unused and will be removed in future versions.",
+        version: "7.0.0",
+    )]
     public function getFolderList($shouldDecrypt = true)
     {
-        $mail = $this->connectToMail($shouldDecrypt);
+        [$connected, $connection] = $this->connectToMail($shouldDecrypt);
         $folders = [];
 
-        if (!empty($mail)) {
-            if ($mail) {
-                foreach ($mail->getFolders() as $mailfolder) {
-                    foreach ($mailfolder as $folder) {
-                        $folders[] = $folder->__toString();
-                    }
-                }
-            }
-        }
+        // if ($connected && $connection) {
+        //     foreach ($connection->getMailboxes() as $mailfolder) {
+        //         $folders[] = $mailfolder->getName();
+        //     }
+        // }
 
         return $folders;
     }

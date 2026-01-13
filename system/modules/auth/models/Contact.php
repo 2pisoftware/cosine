@@ -119,7 +119,7 @@ class Contact extends DbObject
         return "contact/view/" . $this->id;
     }
 
-    public function canList(User $user = null)
+    public function canList(User|null $user = null)
     {
         if (null === $user) {
             return false;
@@ -132,7 +132,7 @@ class Contact extends DbObject
         return true;
     }
 
-    public function canView(User $user = null)
+    public function canView(User|null $user = null)
     {
         if (null === $user) {
             $user = AuthService::getInstance($this->w)->user();
@@ -151,7 +151,7 @@ class Contact extends DbObject
 
         return true;
     }
-    public function canEdit(User $user = null)
+    public function canEdit(User|null $user = null)
     {
         if (null === $user) {
             return false;
@@ -160,7 +160,7 @@ class Contact extends DbObject
         return ($user->hasRole("contact_editor") || $this->private_to_user_id == $user->id);
     }
 
-    public function canDelete(User $user = null)
+    public function canDelete(User|null $user = null)
     {
         if (null === $user) {
             return false;

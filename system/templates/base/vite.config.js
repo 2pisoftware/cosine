@@ -17,23 +17,23 @@ scriptPath = scriptPath.split('system')[0];
 console.log("scriptPath", scriptPath);
 
 const _x = [
-    resolve(__dirname, 'src/js/app.ts'),
-    resolve(__dirname, 'src/scss/app.scss'),
-    ...glob.sync(resolve(__dirname, scriptPath, 'system/modules/**/assets/ts/*.ts')),
-    ...glob.sync(resolve(__dirname, scriptPath, 'system/modules/**/assets/scss/*.scss')),
-    ...glob.sync(resolve(__dirname, scriptPath, 'modules/**/assets/ts/*.ts')),
-    ...glob.sync(resolve(__dirname, scriptPath, 'modules/**/assets/scss/*.scss')),
+    resolve(__dirname, 'src/js/app.ts').replace(/\\/g, "/"),
+    resolve(__dirname, 'src/scss/app.scss').replace(/\\/g, "/"),
+    ...glob.sync(resolve(__dirname, scriptPath, 'system/modules/**/assets/ts/*.ts').replace(/\\/g, "/")),
+    ...glob.sync(resolve(__dirname, scriptPath, 'system/modules/**/assets/scss/*.scss').replace(/\\/g, "/")),
+    ...glob.sync(resolve(__dirname, scriptPath, 'modules/**/assets/ts/*.ts').replace(/\\/g, "/")),
+    ...glob.sync(resolve(__dirname, scriptPath, 'modules/**/assets/scss/*.scss').replace(/\\/g, "/")),
 ];
 
 let _fileMapObj = {};
 _x.forEach((file) => {
-    let name = file.split('/').pop().split('.').shift();
-    const ext = file.split('.').pop();
+    let name = file.replace(/\\/g, "/").split('/').pop().split('.').shift();
+    const ext = file.replace(/\\/g, "/").split('.').pop();
 
     if (_fileMapObj.hasOwnProperty(`${name}`)) {
         name = `${name}.${ext}`;
     }
-    _fileMapObj[`${name}`] = file;
+    _fileMapObj[`${name}`] = file.replace(/\\/g, "/");
 });
 
 console.log("fileMap", _fileMapObj);
@@ -43,11 +43,11 @@ export default defineConfig({
         viteStaticCopy({
             targets: [
               {
-                src: resolve(__dirname, scriptPath, 'system/templates/base/node_modules/bootstrap-icons/font/fonts/bootstrap-icons.woff'),
+                src: resolve(__dirname, scriptPath, 'system/templates/base/node_modules/bootstrap-icons/font/fonts/bootstrap-icons.woff').replace(/\\/g, "/"),
                 dest: 'fonts' 
               },
               {
-                src: resolve(__dirname, scriptPath, 'system/templates/base/node_modules/bootstrap-icons/font/fonts/bootstrap-icons.woff2'),
+                src: resolve(__dirname, scriptPath, 'system/templates/base/node_modules/bootstrap-icons/font/fonts/bootstrap-icons.woff2').replace(/\\/g, "/"),
                 dest: 'fonts' 
               }
             ]
@@ -86,8 +86,8 @@ export default defineConfig({
     },
     resolve: {
         alias: {
-            '~': resolve(__dirname, scriptPath + 'system/templates/base/node_modules'),
-            '@': resolve(__dirname, scriptPath + 'system/templates/base/src'),
+            '~': resolve(__dirname, scriptPath + 'system/templates/base/node_modules').replace(/\\/g, "/"),
+            '@': resolve(__dirname, scriptPath + 'system/templates/base/src').replace(/\\/g, "/"),
             'vue': 'vue/dist/vue.esm-bundler.js',
         },
     }

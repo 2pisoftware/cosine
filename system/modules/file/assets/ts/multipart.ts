@@ -6,6 +6,7 @@ const beginMultipartUpload = async (file: File, filename: string = file.name, en
         body: JSON.stringify({
             filename,
             mime: file.type,
+            size: file.size,
         })
     });
 

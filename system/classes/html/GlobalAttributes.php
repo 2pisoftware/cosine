@@ -1,11 +1,11 @@
 <?php namespace Html;
 
+use \AllowDynamicProperties;
+
 /**
  * Trait implmentation for HTML attribtues that are consistent across all elements.
  * Names and descriptions are courtesy of the Mozilla Developer Network
  * <https://developer.mozilla.org/en-US/docs/Web/HTML/Global_attributes>
- *
- * @author Adam Buckley <adam@2pisoftware.com>
  */
 trait GlobalAttributes
 {

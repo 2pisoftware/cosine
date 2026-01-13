@@ -13,12 +13,12 @@ class SessionManager extends DbService
         parent::__construct($w);
 
         session_set_save_handler(
-            array($this, "open"),
-            array($this, "close"),
-            array($this, "read"),
-            array($this, "write"),
-            array($this, "destroy"),
-            array($this, "gc")
+            [$this, "open"],
+            [$this, "close"],
+            [$this, "read"],
+            [$this, "write"],
+            [$this, "destroy"],
+            [$this, "gc"]
         );
 
         register_shutdown_function('session_write_close');
@@ -44,17 +44,17 @@ class SessionManager extends DbService
         }
 
         // It doesnt exist, create it
-        $this->_db->insert($this->tableName, array('session_id' => $id, "expires" => time()))->execute();
+        $this->_db->insert($this->tableName, ['session_id' => $id, "expires" => time()])->execute();
         return '';
     }
 
     function write($id, $data)
     {
-        $db_data = array(
+        $db_data = [
             'session_id' => $id,
             'session_data' => $data,
             'expires' => time()
-        );
+        ];
 
         // Check is session id is already in db
         $rs = $this->_db->get($this->tableName)->where("session_id", $id)->fetchAll();

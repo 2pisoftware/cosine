@@ -15,8 +15,7 @@ function addmembers_GET(Web &$w)
     $currentReportMembers = ReportService::getInstance($w)->getReportMembers($p["id"]);
     $currentMembers = [];
 
-    for ($i = 0; $i <= count($currentReportMembers) - 1; $i++)
-    {
+    for ($i = 0; $i <= count($currentReportMembers) - 1; $i++) {
         $currentMembers[] = AuthService::getInstance($w)->getUser($currentReportMembers[$i]->user_id);
     }
 

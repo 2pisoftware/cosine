@@ -41,6 +41,7 @@ function task_timelog_type_options_for_Task(Web $w, $object)
         "id" => "time_type",
         "label" => "Task time",
         "required" => $required,
+        "class" => "form-control"
     ]))->setOptions($time_types, true)->setSelectedOption($object->time_type)];
 }
 
@@ -329,6 +330,10 @@ function task_core_dbobject_after_update_TaskGroup(Web $w, $object)
     $members = $object->getMembers();
     foreach ($members as $member) {
         $user = AuthService::getInstance($w)->getUser($member->user_id);
+        if (empty($user->id)) {
+            continue;
+        }
+
         $tasks = $object->getTasks();
         foreach ($tasks as $task) {
             //Check if user is subscribed to the task & can no longer view it
@@ -338,6 +343,4 @@ function task_core_dbobject_after_update_TaskGroup(Web $w, $object)
             }
         }
     }
-
-
 }
