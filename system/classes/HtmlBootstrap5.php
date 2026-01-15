@@ -1022,7 +1022,8 @@ HTML;
      */
     public static function alertBox($msg, $type = "alert-info", $include_close = true): string
     {
-        if ($type !== "alert-info" && $type !== "alert-warning" && $type !== "alert-danger" && $type !== "alert-success" && $type !== "alert-secondary") {
+        $allowed_types = ["alert-info", "alert-warning", "alert-danger", "alert-success", "alert-secondary"];
+        if (!in_array($type, $allowed_types) {
             $type = "alert-info";
         }
 
