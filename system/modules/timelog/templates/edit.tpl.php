@@ -11,7 +11,7 @@ use Html\Form\Select;
 
 ?>
 <h1><?php echo !empty($timelog->id) ? "Update" : "Create" ?> Timelog</h1>
-<form action="/timelog/edit/<?php echo ($timelog->id ?? '').($redirect ? "?redirect={$redirect}" : '') ?>"
+<form action="/timelog/edit/<?php echo ($timelog->id ?? '') . ($redirect ? "?redirect={$redirect}" : '') ?>"
     method="POST" name="timelog_edit_form" target="_self" id="timelog_edit_form">
     <div class="mb-3">
         <label for="user_id" class="form-label m-0">
@@ -74,7 +74,6 @@ use Html\Form\Select;
                 "value" => $timelog->object_id ?: $tracking_id,
                 "required" => "required",
                 "source" => $w->localUrl("/timelog/ajaxSearch?index={$timelog->object_class}"),
-                "options" => !empty($usable_class) ? TimelogService::getInstance($w)->getObjects($usable_class, $where) : '',
                 "maxItems" => 1,
             ]);
             ?>
@@ -242,8 +241,7 @@ use Html\Form\Select;
             hours_worked.setAttribute("disabled", "disabled");
             minutes_worked.setAttribute("disabled", "disabled");
             time_end.removeAttribute("disabled");
-        }
-        else {
+        } else {
             hours_worked.removeAttribute("disabled");
             minutes_worked.removeAttribute("disabled");
             time_end.setAttribute("disabled", "disabled");
