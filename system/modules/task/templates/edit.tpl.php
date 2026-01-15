@@ -1,4 +1,4 @@
-<?php if (!empty($task->id)) : ?>
+<?php if (!empty($task->id)): ?>
     <div class="row-fluid clearfix panel">
         <h3>Task [<?php echo $task->id; ?>]: <?php echo StringSanitiser::sanitise($task->title); ?></h3>
         <div>
@@ -8,7 +8,7 @@
     </div>
 <?php endif; ?>
 
-<?php if (!empty($taskbanners)) : ?>
+<?php if (!empty($taskbanners)): ?>
     <?php echo $taskbanners; ?>
 <?php endif; ?>
 
@@ -16,8 +16,8 @@
     <div class="tab-head">
         <a href="#details">Task Details</a>
 
-        <?php if (!empty($task->id)) : ?>
-            <?php if (AuthService::getInstance($w)->user()->hasRole('timelog_user')) : ?>
+        <?php if (!empty($task->id)): ?>
+            <?php if (AuthService::getInstance($w)->user()->hasRole('timelog_user')): ?>
                 <a href="#timelog">
                     Time Log
                     <span class="badge rounded-pill bg-secondary text-light ms-1"><?php echo $timelog_count; ?></span>
@@ -60,7 +60,7 @@
 
                 echo $task->canDelete(AuthService::getInstance($w)->user())
                     ? HtmlBootstrap5::b(
-                        $w->localUrl('/task/delete/' . $task->id),
+                        $w->localUrl('/task/delete/'.$task->id),
                         "Delete",
                         "Are you sure you want to delete this task?",
                         null,
@@ -70,7 +70,7 @@
                     : '';
 
                 echo HtmlBootstrap5::b(
-                    $w->localURL('task/duplicatetask/' . $task->id),
+                    $w->localURL('task/duplicatetask/'.$task->id),
                     "Duplicate Task",
                     null,
                     null,
@@ -79,7 +79,7 @@
                 );
 
                 echo HtmlBootstrap5::b(
-                    $w->localURL('/task/edit/?gid=' . $task->task_group_id),
+                    $w->localURL('/task/edit/?gid='.$task->task_group_id),
                     "New Task",
                     null,
                     null,
@@ -91,7 +91,7 @@
                 $task_group = TaskService::getInstance($w)->getTaskGroup($task->task_group_id);
                 if (!empty($task_group) && $task_group->getCanICreate()) {
                     echo HtmlBootstrap5::box(
-                        "/task-group/moveTaskgroup/" . $task->id,
+                        "/task-group/moveTaskgroup/".$task->id,
                         "Move to Taskgroup",
                         true,
                         false,
@@ -109,40 +109,40 @@
                     echo implode('', $buttons);
                 }
 
-                echo "<span class='ms-1'>" . $w->partial('listTags', ['object' => $task], 'tag') . "</span>";
+                echo "<span class='ms-1'>".$w->partial('listTags', ['object' => $task], 'tag')."</span>";
             }
             ?>
 
             <div class="row mt-2">
-                <div class="small-12 large-9 position-relative">
+                <div class="col-12 col-xl-8 relative">
                     <?php echo $form; ?>
                 </div>
 
-                <div class="small-12 large-3 right">
-                    <?php if (!empty($task->id)) : ?>
+                <div class="col-12 col-xl-4">
+                    <?php if (!empty($task->id)): ?>
                         <div class="row panel" id="task_subscribers">
                             <div class="col p-0">
                                 <div class="d-flex align-items-center justify-content-between border-bottom pb-2 mb-2">
                                     <p class="fs-4 m-0">Subscribers</p>
                                     <?php
                                     echo HtmlBootstrap5::box(
-                                        href: '/task-subscriber/add/' . $task->id,
+                                        href: '/task-subscriber/add/'.$task->id,
                                         title: 'Add',
                                         button: true,
-                                        class: 'bg-secondary'
+                                        class: 'btn btn-secondary'
                                     )
-                                    ?>
+                                        ?>
                                 </div>
                             </div>
 
-                            <?php if (!empty($subscribers)) : ?>
+                            <?php if (!empty($subscribers)): ?>
                                 <table class="table table-striped shadow-none m-0">
                                     <tbody style="border-color:transparent;">
-                                        <?php foreach ($subscribers as $subscriber) : ?>
+                                        <?php foreach ($subscribers as $subscriber): ?>
                                             <?php $subscriber_user = $subscriber->getUser(); ?>
-                                            <?php if (!empty($subscriber_user)) : ?>
+                                            <?php if (!empty($subscriber_user)): ?>
                                                 <tr>
-                                                    <td class="align-middle">
+                                                    <td class="align-middle py-2">
                                                         <div>
                                                             <?php echo $subscriber_user->getFullName() ?>
                                                         </div>
@@ -153,10 +153,10 @@
 
                                                     <td class="align-middle text-end">
                                                         <?php echo HtmlBootstrap5::b(
-                                                            href: '/task-subscriber/delete/' . $subscriber->id,
+                                                            href: '/task-subscriber/delete/'.$subscriber->id,
                                                             title: '×',
                                                             confirm: 'Are you sure you want to remove this subscriber?',
-                                                            class: 'bg-warning btn-sm d-inline text-dark'
+                                                            class: 'btn btn-warning btn-sm',
                                                         ); ?>
                                                     </td>
                                                 </tr>
@@ -181,14 +181,14 @@
                                 }
                             }
 
-                            if (!empty($additional_details_flattened)) : ?>
+                            if (!empty($additional_details_flattened)): ?>
                                 <div class="row-fluid clearfix panel">
                                     <table class="small-12 columns">
                                         <tbody>
                                             <tr>
                                                 <td class="section" colspan="2">Additional Details</td>
                                             </tr>
-                                            <?php foreach ($additional_details_flattened as $additional_detail) : ?>
+                                            <?php foreach ($additional_details_flattened as $additional_detail): ?>
                                                 <tr>
                                                     <td><?php echo $additional_detail[0]; ?></td>
                                                     <td style="text-align: right"><?php echo $additional_detail[1]; ?></td>
@@ -225,8 +225,8 @@
             </div>
         </div>
 
-        <?php if (!empty($task->id)) : ?>
-            <?php if (AuthService::getInstance($w)->user()->hasRole('timelog_user')) : ?>
+        <?php if (!empty($task->id)): ?>
+            <?php if (AuthService::getInstance($w)->user()->hasRole('timelog_user')): ?>
                 <div id="timelog">
                     <?php echo $w->partial("listtimelog", ["object_class" => "Task", "object_id" => $task->id, "redirect" => "task/edit/{$task->id}#timelog"], "timelog"); ?>
                 </div>
@@ -243,7 +243,7 @@
             </div>
 
             <?php
-            $tab_content = $w->callHook('core_template', 'tab_content', ['object' => $task, 'redirect_url' => '/task/edit/' . $task->id]);
+            $tab_content = $w->callHook('core_template', 'tab_content', ['object' => $task, 'redirect_url' => '/task/edit/'.$task->id]);
             if (!empty($tab_content)) {
                 echo implode('', $tab_content);
             }
@@ -305,8 +305,8 @@
 
         const json = await fetch(
             `/task/ajaxGetFieldForm/${type}/${group}/${task_id}`, {
-                signal: fieldsControllers.signal
-            }
+            signal: fieldsControllers.signal
+        }
         ).then(x => x.json());
 
         if (!json.current) return;
@@ -333,8 +333,8 @@
 
         const json = await fetch(
             `/task/taskAjaxSelectbyTaskGroup/${value}${task_id ? `/${task_id}` : ""}`, {
-                signal: detailsController.signal
-            }
+            signal: detailsController.signal
+        }
         ).then(x => x.json());
 
         const type = document.getElementById("task_type");

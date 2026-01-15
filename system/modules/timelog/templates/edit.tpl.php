@@ -11,13 +11,8 @@ use Html\Form\Select;
 
 ?>
 <h1><?php echo !empty($timelog->id) ? "Update" : "Create" ?> Timelog</h1>
-<form
-    action="/timelog/edit/<?php echo ($timelog->id ?? '') . ($redirect ? "?redirect={$redirect}" : '') ?>"
-    method="POST"
-    name="timelog_edit_form"
-    target="_self"
-    id="timelog_edit_form"
->
+<form action="/timelog/edit/<?php echo ($timelog->id ?? '').($redirect ? "?redirect={$redirect}" : '') ?>"
+    method="POST" name="timelog_edit_form" target="_self" id="timelog_edit_form">
     <div class="mb-3">
         <label for="user_id" class="form-label m-0">
             Assigned user
@@ -53,7 +48,7 @@ use Html\Form\Select;
                 "options" => $select_indexes,
                 "selected_option" => $timelog->object_class
                     ?: $tracking_class
-                    ?: (empty($select_indexes ? null : $select_indexes[0][1]))
+                    ?: (count($select_indexes) === 1 ? $select_indexes[0][1] : null)
             ]);
             ?>
         </div> <!-- module select -->
@@ -99,11 +94,11 @@ use Html\Form\Select;
                 "value" => $timelog->getDateStart(),
                 "required" => true
             ])
-            ?>
+                ?>
         </div> <!-- date_start -->
 
         <div class="col">
-        <label for="date_start" class="form-label">
+            <label for="date_start" class="form-label">
                 Time started
                 <small>Required</small>
             </label>
@@ -112,28 +107,28 @@ use Html\Form\Select;
                 "id|name" => "time_start",
                 "class" => "form-control",
                 "value" => $timelog->getTimeStart(),
-                "pattern"        => "^(0?[0-9]|1[0-9]|2[0-3]):[0-5][0-9](\s+)?(AM|PM|am|pm)?$",
-                "placeholder"    => "12hr format: 11:30pm or 24hr format: 23:30",
+                "pattern" => "^(0?[0-9]|1[0-9]|2[0-3]):[0-5][0-9](\s+)?(AM|PM|am|pm)?$",
+                "placeholder" => "12hr format: 11:30pm or 24hr format: 23:30",
                 "required" => true
             ])
-            ?>
+                ?>
         </div> <!-- time start -->
     </div> <!-- start value row -->
 
-    <?php if (!$timelog->isRunning()) : ?>
+    <?php if (!$timelog->isRunning()): ?>
         <div class="mb-3 row">
             <div class="col">
                 <span class="form-check d-inline ps-0">
                     <?php
-                        echo new Radio([
-                            "id" => "select_end_method_time",
-                            "name" => "select_end_method",
-                            "class" => "",
-                            "select" => "form-check-input",
-                            "value" => "time",
-                            "checked" => "true",
-                            "tabindex" => -1
-                        ]);
+                    echo new Radio([
+                        "id" => "select_end_method_time",
+                        "name" => "select_end_method",
+                        "class" => "",
+                        "select" => "form-check-input",
+                        "value" => "time",
+                        "checked" => "true",
+                        "tabindex" => -1
+                    ]);
                     ?>
                 </span>
 
@@ -150,21 +145,21 @@ use Html\Form\Select;
                         "placeholder" => "12hr format: 11:30pm or 24hr format: 23:30",
                         "required" => "true"
                     ])
-                    ?>
+                        ?>
                 </span>
             </div> <!-- time_end -->
 
             <div class="col">
                 <span class="form-check d-inline ps-0">
                     <?php
-                        echo new Radio([
-                            "id" => "select_end_method_hours",
-                            "name" => "select_end_method",
-                            "class" => "",
-                            "select" => "form-check-input",
-                            "value" => "hours",
-                            "tabindex" => -1
-                        ]);
+                    echo new Radio([
+                        "id" => "select_end_method_hours",
+                        "name" => "select_end_method",
+                        "class" => "",
+                        "select" => "form-check-input",
+                        "value" => "hours",
+                        "tabindex" => -1
+                    ]);
                     ?>
                 </span>
 
@@ -195,7 +190,7 @@ use Html\Form\Select;
                             "placeholder" => "Mins: 0-59",
                             "disabled" => "true"
                         ])
-                        ?>
+                            ?>
                     </div>
                 </span>
             </div> <!-- hours/minutes -->
@@ -211,17 +206,17 @@ use Html\Form\Select;
                     "value" => !empty($timelog->id) ? $timelog->getComment()->comment : null,
                     "rows" => 8,
                 ])
-                ?>
+                    ?>
             </div>
         </div>
     <?php endif; ?> <!-- timelog isrunning -->
 
-    <?php if (!empty($form)) : ?>
-        <?php foreach ($form as $form_heading => $form_array) : ?>
+    <?php if (!empty($form)): ?>
+        <?php foreach ($form as $form_heading => $form_array): ?>
             <div class="mb-3 row">
                 <h2><?php echo $form_heading ?></h2>
-                <?php foreach ($form_array as $form_element_key => $form_elements) : ?>
-                    <?php foreach ($form_elements as $form_element) : ?>
+                <?php foreach ($form_array as $form_element_key => $form_elements): ?>
+                    <?php foreach ($form_elements as $form_element): ?>
                         <div class="col">
                             <label for="<?php echo $form_element->id ?>"><?php echo $form_element->label ?></label>
                             <?php echo $form_element ?>

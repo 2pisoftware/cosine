@@ -12,6 +12,7 @@ use Symfony\Component\Mime\Part\DataPart;
 
 function edit_GET($w)
 {
+    $w->ctx('layout-size', 'large');
     $p = $w->pathMatch("id");
     /** @var Task $task */
     $task = (!empty($p["id"]) ? TaskService::getInstance($w)->getTask($p["id"]) : new Task($w));
@@ -170,7 +171,7 @@ function edit_GET($w)
     $createdDate = '';
     if (!empty($task->id)) {
         $creator = $task->_modifiable->getCreator();
-        $createdDate = formatDate($task->_modifiable->getCreatedDate()) . (!empty($creator) ? ' by <strong>' . @$creator->getFullName() . '</strong>' : '');
+        $createdDate = formatDate($task->_modifiable->getCreatedDate()).(!empty($creator) ? ' by <strong>'.@$creator->getFullName().'</strong>' : '');
     }
     $w->ctx('createdDate', $createdDate);
 
@@ -233,7 +234,7 @@ function edit_GET($w)
             ]
         ];
 
-        $w->ctx("tasknotify", HtmlBootstrap5::multiColForm($form, $w->localUrl("/task/updateusertasknotify/" . $task->id), "POST"));
+        $w->ctx("tasknotify", HtmlBootstrap5::multiColForm($form, $w->localUrl("/task/updateusertasknotify/".$task->id), "POST"));
     }
 
     ///////////////////
@@ -248,11 +249,21 @@ function edit_GET($w)
     $taskbanners = "";
     foreach ($banners ?? [] as $banner) {
         if (isset($banner["message"])) {
-            $taskbanners .= "<div data-alert class='alert-box "
-                . ($banner["style"] ?? "secondary") . "'>"
-                . $banner["message"]
-                . ((isset($banner["dismiss"]) && $banner["dismiss"]) ? "<a href='#' class='close'>&times;</a>" : "")
-                . "</div>";
+            // Map old Foundation style values to Bootstrap 5 alert types
+            $styleMap = [
+                'alert' => 'alert-danger',
+                'warning' => 'alert-warning',
+                'success' => 'alert-success',
+                'info' => 'alert-info',
+                'secondary' => 'alert-secondary',
+            ];
+            $style = $banner["style"] ?? "secondary";
+            $alertType = $styleMap[$style] ?? 'alert-info';
+            $taskbanners .= HtmlBootstrap5::alertBox(
+                $banner["message"],
+                $alertType,
+                $banner["dismiss"] ?? true
+            );
         }
     }
     $w->ctx("taskbanners", $taskbanners);
@@ -328,10 +339,10 @@ function edit_POST($w)
         // TODO: This should be in the MailService
 
         $gcalUrl = "http://www.google.com/calendar/event?action=TEMPLATE"
-            . "&text={$task->title}"
-            . "&dates=" . date("Ymd", strtotime(str_replace('/', '-', $task->dt_due))) . "/" . date("Ymd", strtotime(str_replace('/', '-', $task->dt_due)))
-            . "&details=" . htmlentities($task->description)
-            . "&trp=false";
+            ."&text={$task->title}"
+            ."&dates=".date("Ymd", strtotime(str_replace('/', '-', $task->dt_due)))."/".date("Ymd", strtotime(str_replace('/', '-', $task->dt_due)))
+            ."&details=".htmlentities($task->description)
+            ."&trp=false";
 
         $taskLink = $task->toLink(user: $user);
 
@@ -345,7 +356,7 @@ function edit_POST($w)
             View the Task at $taskLink
         HEREDOC;
 
-        file_put_contents(FILE_ROOT . "invite.ics", $ical);
+        file_put_contents(FILE_ROOT."invite.ics", $ical);
 
         $email = (new Email())
             ->to($contact->email)
@@ -361,6 +372,6 @@ function edit_POST($w)
         $mailer = new Mailer($transport);
         $mailer->send($email);
 
-        unlink(FILE_ROOT . "invite.ics");
+        unlink(FILE_ROOT."invite.ics");
     }
 }
