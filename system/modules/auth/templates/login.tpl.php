@@ -51,7 +51,7 @@
             </div>
         </div>
 
-        <?php if (Config::get("auth.login.allow_passkey")): ?>
+        <?php if (Config::get("auth.login.allow_passkey")) : ?>
             <div class="row mt-3 pt-3 border-top">
                 <div class="col">
                     <button type="button" class="btn btn-primary w-100 h-auto" id="passkey_login">

@@ -1,4 +1,4 @@
-<?php if (!empty($task->id)): ?>
+<?php if (!empty($task->id)) : ?>
     <div class="row-fluid clearfix panel">
         <h3>Task [<?php echo $task->id; ?>]: <?php echo StringSanitiser::sanitise($task->title); ?></h3>
         <div>
@@ -8,7 +8,7 @@
     </div>
 <?php endif; ?>
 
-<?php if (!empty($taskbanners)): ?>
+<?php if (!empty($taskbanners)) : ?>
     <?php echo $taskbanners; ?>
 <?php endif; ?>
 
@@ -16,8 +16,8 @@
     <div class="tab-head">
         <a href="#details">Task Details</a>
 
-        <?php if (!empty($task->id)): ?>
-            <?php if (AuthService::getInstance($w)->user()->hasRole('timelog_user')): ?>
+        <?php if (!empty($task->id)) : ?>
+            <?php if (AuthService::getInstance($w)->user()->hasRole('timelog_user')) : ?>
                 <a href="#timelog">
                     Time Log
                     <span class="badge rounded-pill bg-secondary text-light ms-1"><?php echo $timelog_count; ?></span>
@@ -119,7 +119,7 @@
                 </div>
 
                 <div class="col-12 col-xl-4">
-                    <?php if (!empty($task->id)): ?>
+                    <?php if (!empty($task->id)) : ?>
                         <div class="row panel" id="task_subscribers">
                             <div class="col p-0">
                                 <div class="d-flex align-items-center justify-content-between border-bottom pb-2 mb-2">
@@ -131,16 +131,16 @@
                                         button: true,
                                         class: 'btn btn-secondary'
                                     )
-                                        ?>
+                                    ?>
                                 </div>
                             </div>
 
-                            <?php if (!empty($subscribers)): ?>
+                            <?php if (!empty($subscribers)) : ?>
                                 <table class="table table-striped shadow-none m-0">
                                     <tbody style="border-color:transparent;">
-                                        <?php foreach ($subscribers as $subscriber): ?>
+                                        <?php foreach ($subscribers as $subscriber) : ?>
                                             <?php $subscriber_user = $subscriber->getUser(); ?>
-                                            <?php if (!empty($subscriber_user)): ?>
+                                            <?php if (!empty($subscriber_user)) : ?>
                                                 <tr>
                                                     <td class="align-middle py-2">
                                                         <div>
@@ -181,14 +181,14 @@
                                 }
                             }
 
-                            if (!empty($additional_details_flattened)): ?>
+                            if (!empty($additional_details_flattened)) : ?>
                                 <div class="row-fluid clearfix panel">
                                     <table class="small-12 columns">
                                         <tbody>
                                             <tr>
                                                 <td class="section" colspan="2">Additional Details</td>
                                             </tr>
-                                            <?php foreach ($additional_details_flattened as $additional_detail): ?>
+                                            <?php foreach ($additional_details_flattened as $additional_detail) : ?>
                                                 <tr>
                                                     <td><?php echo $additional_detail[0]; ?></td>
                                                     <td style="text-align: right"><?php echo $additional_detail[1]; ?></td>
@@ -225,8 +225,8 @@
             </div>
         </div>
 
-        <?php if (!empty($task->id)): ?>
-            <?php if (AuthService::getInstance($w)->user()->hasRole('timelog_user')): ?>
+        <?php if (!empty($task->id)) : ?>
+            <?php if (AuthService::getInstance($w)->user()->hasRole('timelog_user')) : ?>
                 <div id="timelog">
                     <?php echo $w->partial("listtimelog", ["object_class" => "Task", "object_id" => $task->id, "redirect" => "task/edit/{$task->id}#timelog"], "timelog"); ?>
                 </div>

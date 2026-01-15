@@ -94,7 +94,7 @@ use Html\Form\Select;
                 "value" => $timelog->getDateStart(),
                 "required" => true
             ])
-                ?>
+            ?>
         </div> <!-- date_start -->
 
         <div class="col">
@@ -111,11 +111,11 @@ use Html\Form\Select;
                 "placeholder" => "12hr format: 11:30pm or 24hr format: 23:30",
                 "required" => true
             ])
-                ?>
+            ?>
         </div> <!-- time start -->
     </div> <!-- start value row -->
 
-    <?php if (!$timelog->isRunning()): ?>
+    <?php if (!$timelog->isRunning()) : ?>
         <div class="mb-3 row">
             <div class="col">
                 <span class="form-check d-inline ps-0">
@@ -145,7 +145,7 @@ use Html\Form\Select;
                         "placeholder" => "12hr format: 11:30pm or 24hr format: 23:30",
                         "required" => "true"
                     ])
-                        ?>
+                    ?>
                 </span>
             </div> <!-- time_end -->
 
@@ -190,7 +190,7 @@ use Html\Form\Select;
                             "placeholder" => "Mins: 0-59",
                             "disabled" => "true"
                         ])
-                            ?>
+                        ?>
                     </div>
                 </span>
             </div> <!-- hours/minutes -->
@@ -206,17 +206,17 @@ use Html\Form\Select;
                     "value" => !empty($timelog->id) ? $timelog->getComment()->comment : null,
                     "rows" => 8,
                 ])
-                    ?>
+                ?>
             </div>
         </div>
     <?php endif; ?> <!-- timelog isrunning -->
 
-    <?php if (!empty($form)): ?>
-        <?php foreach ($form as $form_heading => $form_array): ?>
+    <?php if (!empty($form)) : ?>
+        <?php foreach ($form as $form_heading => $form_array) : ?>
             <div class="mb-3 row">
                 <h2><?php echo $form_heading ?></h2>
-                <?php foreach ($form_array as $form_element_key => $form_elements): ?>
-                    <?php foreach ($form_elements as $form_element): ?>
+                <?php foreach ($form_array as $form_element_key => $form_elements) : ?>
+                    <?php foreach ($form_elements as $form_element) : ?>
                         <div class="col">
                             <label for="<?php echo $form_element->id ?>"><?php echo $form_element->label ?></label>
                             <?php echo $form_element ?>
