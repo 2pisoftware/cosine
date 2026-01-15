@@ -109,11 +109,11 @@ HTML;
                 switch (get_class($field)) {
                     case 'Html\Form\Select':
                     case 'Html\Cmfive\SelectWithOther':
-                        $field->setClass($field->class.' form-select');
+                        $field->setClass($field->class . ' form-select');
                         break;
                     case 'Html\Form\InputField\Checkbox':
                     case 'Html\Form\InputField\Radio':
-                        $field->setClass($field->class.' form-check-control');
+                        $field->setClass($field->class . ' form-check-control');
                         // $label_class = 'form-check-label';
                         break;
                     case 'Html\Form\InputField\Text':
@@ -121,17 +121,17 @@ HTML;
                     case 'Html\Form\InputField\File':
                     case 'Html\Form\InputField\Number':
                     default:
-                        $field->setClass($field->class.' form-control');
+                        $field->setClass($field->class . ' form-control');
                         break;
                 }
                 if ((property_exists($field, "type") && $field->type !== "hidden") || !property_exists($field, "type")) {
-                    $buffer .= '<div class="col"><label class="'.$label_class.'"'
-                        .(property_exists($field, 'id') && !empty($field->id) ? ' for="'.$field->id.'"' : '')
-                        .'>'
-                        .$field->label
-                        .(property_exists($field, "required") && $field->required ? " <small>Required</small>" : "")
-                        ."</label>"
-                        .$field->__toString().'</div>';
+                    $buffer .= '<div class="col"><label class="' . $label_class . '"'
+                        . (property_exists($field, 'id') && !empty($field->id) ? ' for="' . $field->id . '"' : '')
+                        . '>'
+                        . $field->label
+                        . (property_exists($field, "required") && $field->required ? " <small>Required</small>" : "")
+                        . "</label>"
+                        . $field->__toString() . '</div>';
                 } else {
                     $buffer .= $field->__toString();
                 }
@@ -164,7 +164,7 @@ HTML;
                 case "password":
                     $size = !empty($field[4]) ? $field[4] : '';
                     $required = !empty($field[5]) ? $field[5] : '';
-                    $buffer .= '<input'.$readonly.' style="width:100%;" type="'.$type.'" name="'.$name.'" value="'.$value.'" size="'.$size.'" id="'.$name.'"  '.$required.'/>';
+                    $buffer .= '<input' . $readonly . ' style="width:100%;" type="' . $type . '" name="' . $name . '" value="' . $value . '" size="' . $size . '" id="' . $name . '"  ' . $required . '/>';
                     break;
                 case "autocomplete":
                     $options = !empty($field[4]) ? $field[4] : '';
@@ -195,8 +195,8 @@ HTML;
                     if (isset($field[6])) {
                         $custom_class = $field[6];
                     }
-                    $buffer .= '<textarea'.$readonly.' style="width:100%; height:auto; " name="'.$name.'" rows="'.$r.'" cols="'.$c.'" '.
-                        (!empty($custom_class) ? ($custom_class === true ? "class='ckeditor'" : "class='$custom_class' ") : '').' id="'.$name.'">'.$value.'</textarea>';
+                    $buffer .= '<textarea' . $readonly . ' style="width:100%; height:auto; " name="' . $name . '" rows="' . $r . '" cols="' . $c . '" ' .
+                        (!empty($custom_class) ? ($custom_class === true ? "class='ckeditor'" : "class='$custom_class' ") : '') . ' id="' . $name . '">' . $value . '</textarea>';
                     break;
                 case "select":
                     $items = !empty($field[4]) ? $field[4] : '';
@@ -225,14 +225,14 @@ HTML;
                     $group = !empty($field[4]) ? $field[4] : '';
                     $defaultValue = !empty($field[5]) ? $field[5] : '';
                     $class = !empty($field[6]) ? $field[6] : '';
-                    $buffer .= HtmlBootstrap5::radio($name, $group, $value, $defaultValue, $class)."&nbsp;".htmlentities($title);
+                    $buffer .= HtmlBootstrap5::radio($name, $group, $value, $defaultValue, $class) . "&nbsp;" . htmlentities($title);
                     break;
                 case "hidden":
-                    $buffer .= '<input type="hidden" name="'.$name.'" value="'.htmlspecialchars($value).'" id="'.$name.'"/>';
+                    $buffer .= '<input type="hidden" name="' . $name . '" value="' . htmlspecialchars($value) . '" id="' . $name . '"/>';
                     break;
                 case "file":
                     $size = !empty($field[4]) ? $field[4] : '';
-                    $buffer .= '<input style="width:100%;"  type="'.$type.'" name="'.$name.'" size="'.$size.'" id="'.$name.'"/>';
+                    $buffer .= '<input style="width:100%;"  type="' . $type . '" name="' . $name . '" size="' . $size . '" id="' . $name . '"/>';
                     break;
                 case "multifile":
                     $buffer .= HtmlBootstrap5::multiFileUpload($name);
@@ -325,11 +325,11 @@ HTML;
                         switch (get_class($field)) {
                             case 'Html\Form\Select':
                             case 'Html\Cmfive\SelectWithOther':
-                                $field->setClass($field->class.' form-select');
+                                $field->setClass($field->class . ' form-select');
                                 break;
                             case 'Html\Form\InputField\Checkbox':
                             case 'Html\Form\InputField\Radio':
-                                $field->setClass($field->class.' form-check-control');
+                                $field->setClass($field->class . ' form-check-control');
                                 // $label_class = 'form-check-label';
                                 break;
                             case 'Html\Form\InputField\Text':
@@ -337,17 +337,17 @@ HTML;
                             case 'Html\Form\InputField\File':
                             case 'Html\Form\InputField\Number':
                             default:
-                                $field->setClass($field->class.' form-control');
+                                $field->setClass($field->class . ' form-control');
                                 break;
                         }
                         if ((property_exists($field, "type") && $field->type !== "hidden") || !property_exists($field, "type")) {
-                            $buffer .= '<div class="col"><label class="'.$label_class.'"'
-                                .(property_exists($field, 'id') && !empty($field->id) ? ' for="'.$field->id.'"' : '')
-                                .'>'
-                                .$field->label
-                                .(property_exists($field, "required") && $field->required ? " <small>Required</small>" : "")
-                                ."</label>"
-                                .$field->__toString().'</div>';
+                            $buffer .= '<div class="col"><label class="' . $label_class . '"'
+                                . (property_exists($field, 'id') && !empty($field->id) ? ' for="' . $field->id . '"' : '')
+                                . '>'
+                                . $field->label
+                                . (property_exists($field, "required") && $field->required ? " <small>Required</small>" : "")
+                                . "</label>"
+                                . $field->__toString() . '</div>';
                         } else {
                             $buffer .= $field->__toString();
                         }
@@ -376,7 +376,7 @@ HTML;
                     if (!empty($title) && $type !== "hidden") {
                         $buffer .= "<div class='col'><label class='form-label'>$title</div>";
                         if (!empty($tooltip)) {
-                            $buffer .= " <span data-tooltip aria-haspopup='true' class='has-tip fi-info' title='".$tooltip."'></span>";
+                            $buffer .= " <span data-tooltip aria-haspopup='true' class='has-tip fi-info' title='" . $tooltip . "'></span>";
                         }
                     }
                     // $buffer .= ($type !== "hidden" ? "<div>" : "");
@@ -393,8 +393,8 @@ HTML;
                         case "email":
                         case "tel":
                             $size = !empty($field[4]) ? $field[4] : null;
-                            $buffer .= '<input'.$readonly.' class="form-control" type="'.$type.'" name="'.$name.'" value="'.(empty($value) ? '' : $value).
-                                '" size="'.$size.'" id="'.$name.'" '.$required." />";
+                            $buffer .= '<input' . $readonly . ' class="form-control" type="' . $type . '" name="' . $name . '" value="' . (empty($value) ? '' : $value) .
+                                '" size="' . $size . '" id="' . $name . '" ' . $required . " />";
                             break;
                         case "autocomplete":
                             $options = !empty($field[4]) ? $field[4] : null;
@@ -424,16 +424,16 @@ HTML;
                             if (isset($field[6])) {
                                 $custom_class = $field[6];
                             }
-                            $buffer .= '<textarea'.$readonly.' class="form-control" style="width:100%; height: auto; " name="'.$name.'" rows="'.$r.'" cols="'.$c.
-                                '" '.(!empty($custom_class) ? ($custom_class === true ? "class='ckeditor'" : "class='$custom_class' ") : '').' id="'.$name
-                                .'" '.$required.'>'.$value.'</textarea>';
+                            $buffer .= '<textarea' . $readonly . ' class="form-control" style="width:100%; height: auto; " name="' . $name . '" rows="' . $r . '" cols="' . $c .
+                                '" ' . (!empty($custom_class) ? ($custom_class === true ? "class='ckeditor'" : "class='$custom_class' ") : '') . ' id="' . $name
+                                . '" ' . $required . '>' . $value . '</textarea>';
                             break;
                         case "select":
                             $items = !empty($field[4]) ? $field[4] : null;
 
                             $default = !empty($field[5]) ? ($field[5] == "null" ? null : $field[5]) : "-- Select --";
                             $sl_class = !empty($field[6]) ? $field[6] : "form-select";
-                            $buffer .= HtmlBootstrap5::select($name, $items, $value, $sl_class, "width: 100%;", $default, ($readonly ? ' disabled="disabled" ' : null).' '.$required);
+                            $buffer .= HtmlBootstrap5::select($name, $items, $value, $sl_class, "width: 100%;", $default, ($readonly ? ' disabled="disabled" ' : null) . ' ' . $required);
                             break;
                         case "multiSelect":
                             $items = !empty($field[4]) ? $field[4] : null;
@@ -452,14 +452,14 @@ HTML;
                             $group = !empty($field[4]) ? $field[4] : null;
                             $defaultValue = !empty($field[5]) ? $field[5] : null;
                             $rd_class = !empty($field[6]) ? $field[6] : null;
-                            $buffer .= HtmlBootstrap5::radio($name, $group, $value, $defaultValue, $rd_class)."&nbsp;".htmlentities($title);
+                            $buffer .= HtmlBootstrap5::radio($name, $group, $value, $defaultValue, $rd_class) . "&nbsp;" . htmlentities($title);
                             break;
                         case "hidden":
-                            $buffer .= '<input type="hidden" name="'.$name.'" value="'.(empty($value) ? '' : htmlspecialchars($value)).'" id="'.$name.'"/>';
+                            $buffer .= '<input type="hidden" name="' . $name . '" value="' . (empty($value) ? '' : htmlspecialchars($value)) . '" id="' . $name . '"/>';
                             break;
                         case "file":
                             $size = !empty($row[4]) ? $row[4] : null;
-                            $buffer .= '<input style="width:100%;"  type="'.$type.'" name="'.$name.'" size="'.$size.'" id="'.$name.'"/>';
+                            $buffer .= '<input style="width:100%;"  type="' . $type . '" name="' . $name . '" size="' . $size . '" id="' . $name . '"/>';
                             break;
                         case "multifile":
                             $buffer .= HtmlBootstrap5::multiFileUpload($name);
@@ -515,7 +515,7 @@ HTML;
                 if (!is_array($h)) {
                     $buffer .= "<th>{$h}</th>";
                 } else {
-                    $buffer .= "<th ".($h[1] === true ? "class='show-for-medium-up'" : "").">{$h[0]}</th>";
+                    $buffer .= "<th " . ($h[1] === true ? "class='show-for-medium-up'" : "") . ">{$h[0]}</th>";
                 }
             }
         } else {
@@ -530,13 +530,13 @@ HTML;
         $buffer .= "<tbody>";
         foreach ($data as $key => $row) {
             // add a data-id attribute to each table row
-            $rowId = ' data-id="'.$key.'" ';
-            $buffer .= "<tr ".$rowId.">";
+            $rowId = ' data-id="' . $key . '" ';
+            $buffer .= "<tr " . $rowId . ">";
             foreach ($row as $column) {
                 if (!is_array($column)) {
                     $buffer .= "<td>{$column}</td>";
                 } else {
-                    $buffer .= "<td class='".($column[1] === true ? "show-for-medium-up" : (is_scalar($column[1]) ? $column[1] : ''))."'>{$column[0]}</td>";
+                    $buffer .= "<td class='" . ($column[1] === true ? "show-for-medium-up" : (is_scalar($column[1]) ? $column[1] : '')) . "'>{$column[0]}</td>";
                 }
             }
             $buffer .= "</tr>";
@@ -554,9 +554,9 @@ HTML;
                 foreach ($row as $index => $column) {
                     $buffer .= '<li class="list-group-item">';
                     if (!empty($header) && is_array($header) && array_key_exists($index, $header)) {
-                        $buffer .= "<strong class='me-3'>".(is_array($header[$index]) ? $header[$index][0] : $header[$index])."</strong>";
+                        $buffer .= "<strong class='me-3'>" . (is_array($header[$index]) ? $header[$index][0] : $header[$index]) . "</strong>";
                     }
-                    $buffer .= "<span>".(is_array($column) ? $column[0] : $column)."</span></li>";
+                    $buffer .= "<span>" . (is_array($column) ? $column[0] : $column) . "</span></li>";
                 }
                 $buffer .= "</ul></div>";
             }
@@ -582,7 +582,7 @@ HTML;
         // Set up shell layout
         $buffer = "<div class='row'><div class='col'>";
         foreach ($data as $section => $rows) {
-            $buffer .= "<div class='item ".toSlug($section)."'><div class='panel flat'><h4>{$section}</h4><table class='table'>";
+            $buffer .= "<div class='item " . toSlug($section) . "'><div class='panel flat'><h4>{$section}</h4><table class='table'>";
             foreach ($rows as $row) {
                 foreach ($row as $field) {
                     $title = !empty($field[0]) ? $field[0] : null;
@@ -596,12 +596,12 @@ HTML;
                     }
 
                     // Add title field
-                    $buffer .= "<tr class='".toSlug($title)."' >";
+                    $buffer .= "<tr class='" . toSlug($title) . "' >";
                     if (!empty($title)) {
                         $buffer .= "<td width='20%'><strong>{$title}</strong></td>";
                     }
 
-                    $buffer .= "<td type_".toSlug($type)."'>{$value}</td></tr>";
+                    $buffer .= "<td type_" . toSlug($type) . "'>{$value}</td></tr>";
                 }
             }
             $buffer .= "</table></div></div>";
@@ -650,8 +650,8 @@ HTML;
         // Build URL for pagination
         $url_parsed = parse_url($base_url);
         $url_string = $url_parsed['path'];
-        $url_string .= (empty($url_parsed['query']) ? "?" : '?'.$url_parsed['query'].'&').$sort_query_param.'='.$sort.'&'.$sort_direction_param.'='.$sort_direction;
-        $url_string .= (!empty($url_parsed['fragment']) ? '#'.$url_parsed['fragment'] : '');
+        $url_string .= (empty($url_parsed['query']) ? "?" : '?' . $url_parsed['query'] . '&') . $sort_query_param . '=' . $sort . '&' . $sort_direction_param . '=' . $sort_direction;
+        $url_string .= (!empty($url_parsed['fragment']) ? '#' . $url_parsed['fragment'] : '');
 
         // Generate the table
         $num_results = $total_results;
@@ -669,22 +669,22 @@ HTML;
         $count_items = count($data);
         $starting_item = (($page - 1) * $page_size) + 1;
         $buffer = '<div class="paginated-table-container"><div class="row">'
-            .'<div class="col-md-6 col-sm-12" style="margin-top: 5px;">Showing '.$starting_item.' - '.($starting_item + $count_items - 1).' of '.$total_results.'</div>'
-            .'<div class="col-md-6 col-sm-12">';
+            . '<div class="col-md-6 col-sm-12" style="margin-top: 5px;">Showing ' . $starting_item . ' - ' . ($starting_item + $count_items - 1) . ' of ' . $total_results . '</div>'
+            . '<div class="col-md-6 col-sm-12">';
         if ($num_results > 0) {
             $buffer .= '<div class="float-md-end d-flex gap-2 align-items-center">Page: <select class="form-select mb-4 mb-md-0" onchange="location = this.value;">';
             // Build URL for dropdown pagination
             $dropdown_url_string = $url_parsed['path'];
-            $dropdown_url_string .= (empty($url_parsed['query']) ? "?" : '?'.$url_parsed['query'].'&').$sort_query_param.'='.$sort.'&'.$sort_direction_param.'='.$sort_direction;
+            $dropdown_url_string .= (empty($url_parsed['query']) ? "?" : '?' . $url_parsed['query'] . '&') . $sort_query_param . '=' . $sort . '&' . $sort_direction_param . '=' . $sort_direction;
 
             for ($i = 1; $i <= $num_results; $i++) {
-                $buffer .= '<option'.($i == $page ? ' selected="selected"' : '').' value="'.$dropdown_url_string.'&'.$page_query_param.'='.$i.(!empty($url_parsed['fragment']) ? '#'.$url_parsed['fragment'] : '').'">'.$i.'</option>';
+                $buffer .= '<option' . ($i == $page ? ' selected="selected"' : '') . ' value="' . $dropdown_url_string . '&' . $page_query_param . '=' . $i . (!empty($url_parsed['fragment']) ? '#' . $url_parsed['fragment'] : '') . '">' . $i . '</option>';
             }
             $buffer .= '</select></div>';
         }
         $buffer .= "</div></div>"
-            ."<div class='row table-responsive d-none d-md-block'><div class='col'>"
-            ."<table>";
+            . "<div class='row table-responsive d-none d-md-block'><div class='col'>"
+            . "<table>";
         if (!empty($header) && is_array($header)) {
             // Print table header
             $buffer .= "<thead><tr>";
@@ -696,14 +696,14 @@ HTML;
                     $sort_direction_asc_query = "{$sort_query_param}={$title[0]}&{$sort_direction_param}=asc";
                     $sort_direction_desc_query = "{$sort_query_param}={$title[0]}&{$sort_direction_param}=desc";
 
-                    $sort_asc_string = $url_parsed['path'].(empty($url_parsed['query']) ? '?' : '?'.$url_parsed['query'].'&').$sort_direction_asc_query.(!empty($url_parsed['fragment']) ? '#'.$url_parsed['fragment'] : '');
-                    $sort_desc_string = $url_parsed['path'].(empty($url_parsed['query']) ? '?' : '?'.$url_parsed['query'].'&').$sort_direction_desc_query.(!empty($url_parsed['fragment']) ? '#'.$url_parsed['fragment'] : '');
+                    $sort_asc_string = $url_parsed['path'] . (empty($url_parsed['query']) ? '?' : '?' . $url_parsed['query'] . '&') . $sort_direction_asc_query . (!empty($url_parsed['fragment']) ? '#' . $url_parsed['fragment'] : '');
+                    $sort_desc_string = $url_parsed['path'] . (empty($url_parsed['query']) ? '?' : '?' . $url_parsed['query'] . '&') . $sort_direction_desc_query . (!empty($url_parsed['fragment']) ? '#' . $url_parsed['fragment'] : '');
                 }
-                $buffer .= '<th'.(is_array($title) && $title[0] === $sort ? ' class="sorted_column"' : '').'>'.(is_array($title) ? '<a href="'.($title[0] === $sort && $sort_direction === 'asc' ? $sort_desc_string : $sort_asc_string).'">'.$title[1].'</a>' : $title)
-                    .(is_array($title) ? '<div class="float-end">'
-                        .($title[0] !== $sort || ($title[0] === $sort && $sort_direction !== 'asc') ? '<a class="sort-ascending" href="'.$sort_asc_string.'"><i class="bi bi-chevron-up"></i></a>' : '')
-                        .($title[0] !== $sort || ($title[0] === $sort && $sort_direction !== 'desc') ? '<a class="sort-descending" href="'.$sort_desc_string.'"><i class="bi bi-chevron-down"></i></a>' : '')
-                        .'</div></th>' : '');
+                $buffer .= '<th' . (is_array($title) && $title[0] === $sort ? ' class="sorted_column"' : '') . '>' . (is_array($title) ? '<a href="' . ($title[0] === $sort && $sort_direction === 'asc' ? $sort_desc_string : $sort_asc_string) . '">' . $title[1] . '</a>' : $title)
+                    . (is_array($title) ? '<div class="float-end">'
+                        . ($title[0] !== $sort || ($title[0] === $sort && $sort_direction !== 'asc') ? '<a class="sort-ascending" href="' . $sort_asc_string . '"><i class="bi bi-chevron-up"></i></a>' : '')
+                        . ($title[0] !== $sort || ($title[0] === $sort && $sort_direction !== 'desc') ? '<a class="sort-descending" href="' . $sort_desc_string . '"><i class="bi bi-chevron-down"></i></a>' : '')
+                        . '</div></th>' : '');
             }
             $buffer .= "</tr></thead>";
         }
@@ -712,10 +712,10 @@ HTML;
         if (!empty($data) && is_array($data)) {
             $buffer .= "<tbody>";
             foreach ($data as $key => $row) {
-                $buffer .= '<tr data-id="'.$key.'">';
+                $buffer .= '<tr data-id="' . $key . '">';
                 foreach ($row as $column) {
                     if (is_array($column)) {
-                        $buffer .= '<td class="'.$column[1].'">'.$column[0].'</td>';
+                        $buffer .= '<td class="' . $column[1] . '">' . $column[0] . '</td>';
                     } else {
                         $buffer .= "<td>{$column}</td>";
                     }
@@ -732,7 +732,7 @@ HTML;
                 foreach ($row as $index => $column) {
                     $buffer .= '<li class="list-group-item">';
                     if (array_key_exists($index, $header)) {
-                        $buffer .= "<strong class='me-3'>".(is_array($header[$index]) ? $header[$index][1] : $header[$index])."</strong>";
+                        $buffer .= "<strong class='me-3'>" . (is_array($header[$index]) ? $header[$index][1] : $header[$index]) . "</strong>";
                     }
                     $buffer .= "<span>{$column}</span></li>";
                 }
@@ -740,7 +740,7 @@ HTML;
             }
         }
         $buffer .= '</div>';
-        $buffer .= '<div class="pagination-centered">'.self::pagination($page, $num_results, $page_size, $total_results, $url_string, $page_query_param, $pagesize_query_param, $total_results_query_param).'</div></div>';
+        $buffer .= '<div class="pagination-centered">' . self::pagination($page, $num_results, $page_size, $total_results, $url_string, $page_query_param, $pagesize_query_param, $total_results_query_param) . '</div></div>';
         return $buffer;
     }
 
@@ -777,7 +777,7 @@ HTML;
         // Set up vars
         $hidden = "";
         $buffer .= "<fieldset>";
-        $buffer .= "<legend>".$legend."</legend>";
+        $buffer .= "<legend>" . $legend . "</legend>";
         $buffer .= "<ul id='filter-grid' class='small-block-grid-1 medium-block-grid-3 large-block-grid-4'>";
 
         $should_autosubmit = false;
@@ -792,22 +792,22 @@ HTML;
                 switch (get_class($row)) {
                     case 'Html\Form\Select':
                     case 'Html\Cmfive\SelectWithOther':
-                        $row->setClass($row->class.' form-select form-select-sm');
+                        $row->setClass($row->class . ' form-select form-select-sm');
                         break;
                     case 'Html\Form\Checkbox':
                     case 'Html\Form\Radio':
-                        $row->setClass($row->class.' form-check-control');
+                        $row->setClass($row->class . ' form-check-control');
                         break;
                     case 'Html\Form\InputField\Text':
                     case 'Html\Form\InputField\Date':
                     case 'Html\Form\InputField\File':
                     case 'Html\Form\InputField\Number':
                     default:
-                        $row->setClass($row->class.' form-control form-control-sm');
+                        $row->setClass($row->class . ' form-control form-control-sm');
                         break;
                 }
                 if ((property_exists($row, "type") && $row->type !== "hidden") || !property_exists($row, "type")) {
-                    $buffer .= '<li><label class="col">'.$row->label.'<div>'.$row->__toString().'</div></label></li>';
+                    $buffer .= '<li><label class="col">' . $row->label . '<div>' . $row->__toString() . '</div></label></li>';
                 } else {
                     $buffer .= $row->__toString();
                 }
@@ -838,7 +838,7 @@ HTML;
             }
 
             // span entry fields that have no title
-            $buffer .= "<div class='col'>".(!empty($title) ? "<label>{$title}" : '');
+            $buffer .= "<div class='col'>" . (!empty($title) ? "<label>{$title}" : '');
 
             $size = !empty($row[4]) ? $row[4] : null;
 
@@ -846,7 +846,7 @@ HTML;
             switch ($type) {
                 case "text":
                 case "password":
-                    $buffer .= '<input'.$readonly.' style="width:100%;"  type="'.$type.'" name="'.$name.'" value="'.(empty($value) ? '' : htmlspecialchars($value)).'" size="'.(!empty($row[4]) ? $row[4] : null).'" id="'.$name.'"/>';
+                    $buffer .= '<input' . $readonly . ' style="width:100%;"  type="' . $type . '" name="' . $name . '" value="' . (empty($value) ? '' : htmlspecialchars($value)) . '" size="' . (!empty($row[4]) ? $row[4] : null) . '" id="' . $name . '"/>';
                     break;
                 case "autocomplete":
                     $minlength = !empty($row[5]) ? $row[5] : null;
@@ -868,7 +868,7 @@ HTML;
                     // Columns is the size variable
                     $cols = $size;
                     $rows = !empty($row[5]) ? $row[5] : null;
-                    $buffer .= '<textarea name="'.$name.'" rows="'.$rows.'" cols="'.$cols.'" id="'.$name.'">'.$value.'</textarea>';
+                    $buffer .= '<textarea name="' . $name . '" rows="' . $rows . '" cols="' . $cols . '" id="' . $name . '">' . $value . '</textarea>';
                     break;
                 case "section":
                     $buffer .= htmlentities($title);
@@ -900,13 +900,13 @@ HTML;
                     $group = !empty($field[4]) ? $field[4] : null;
                     $defaultValue = !empty($field[5]) ? $field[5] : null;
                     $class = !empty($field[6]) ? $field[6] : null;
-                    $buffer .= HtmlBootstrap5::radio($name, $group, $value, $defaultValue, $class)."&nbsp;".htmlentities($title);
+                    $buffer .= HtmlBootstrap5::radio($name, $group, $value, $defaultValue, $class) . "&nbsp;" . htmlentities($title);
                     break;
                 case "hidden":
-                    $hidden .= "<input type=\"hidden\" name=\"".$name."\" value=\"".(empty($value) ? '' : htmlspecialchars($value))."\"/>\n";
+                    $hidden .= "<input type=\"hidden\" name=\"" . $name . "\" value=\"" . (empty($value) ? '' : htmlspecialchars($value)) . "\"/>\n";
                     break;
                 case "file":
-                    $buffer .= "<input style=\"width:100%;\" type=\"".$type."\" name=\"".$name."\" size=\"".$size."\" id=\"".$name."\"/>";
+                    $buffer .= "<input style=\"width:100%;\" type=\"" . $type . "\" name=\"" . $name . "\" size=\"" . $size . "\" id=\"" . $name . "\"/>";
                     break;
             }
 
@@ -915,8 +915,8 @@ HTML;
 
         // This is only true when the filter has one element and its a select field
         if ($should_autosubmit) {
-            $selector = $id ? "form#".$id." select" : "form select";
-            $buffer .= "<script>document.querySelectorAll('".$selector."').forEach(function(select) { select.addEventListener('change', function() { this.form.submit(); }); });</script>";
+            $selector = $id ? "form#" . $id . " select" : "form select";
+            $buffer .= "<script>document.querySelectorAll('" . $selector . "').forEach(function(select) { select.addEventListener('change', function() { this.form.submit(); }); });</script>";
         }
 
         // Filter button (optional... though optional is pointless)
@@ -937,7 +937,7 @@ HTML;
 
         $buffer .= "</ul>"; // </div>
         $buffer .= "\n</fieldset>\n";
-        $buffer .= $hidden."</form>\n";
+        $buffer .= $hidden . "</form>\n";
 
         return $buffer;
     }
@@ -950,11 +950,11 @@ HTML;
             $ret = $parsed_url["path"];
 
             if (!empty($parsed_url["fragment"])) {
-                $ret .= "#".$parsed_url["fragment"];
+                $ret .= "#" . $parsed_url["fragment"];
             }
 
             if (!empty($parsed_url["query"])) {
-                $ret .= "?".$parsed_url["query"]."&";
+                $ret .= "?" . $parsed_url["query"] . "&";
             } else {
                 $ret .= "?";
             }
@@ -1023,7 +1023,7 @@ HTML;
     public static function alertBox($msg, $type = "alert-info", $include_close = true): string
     {
         $allowed_types = ["alert-info", "alert-warning", "alert-danger", "alert-success", "alert-secondary"];
-        if (!in_array($type, $allowed_types) {
+        if (!in_array($type, $allowed_types)) {
             $type = "alert-info";
         }
 
@@ -1036,11 +1036,11 @@ HTML;
     public static function dataCard(string $header, array $data)
     {
         $buffer = '<div class="row panel flex-fill"><div class="col-sm-12">';
-        $buffer .= '<h4>'.$header.'</h4>';
+        $buffer .= '<h4>' . $header . '</h4>';
         foreach ($data as $row_header => $row_data) {
-            $buffer .= '<p><strong>'.$row_header.'</strong><br/>'.$row_data.'</p>';
+            $buffer .= '<p><strong>' . $row_header . '</strong><br/>' . $row_data . '</p>';
         }
-        return $buffer.'</div></div>';
+        return $buffer . '</div></div>';
     }
 
 
@@ -1076,7 +1076,7 @@ HTML;
     {
         return (new \Html\Form\Html5Autocomplete([
             "id|name" => "title",
-            "class" => "form-control ".$class,
+            "class" => "form-control " . $class,
             "label" => "Title",
             "maxItems" => 1,
             "value" => $value,
