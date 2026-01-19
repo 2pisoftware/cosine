@@ -764,7 +764,7 @@ HTML;
     {
         // This will pretty much be a redesigned HtmlBootstrap5::form layout
         if (empty($data)) {
-            return;
+            return '';
         }
 
         $form = new \Html\FormBootstrap5();
@@ -1022,11 +1022,15 @@ HTML;
      */
     public static function alertBox($msg, $type = "alert-info", $include_close = true): string
     {
-        if ($type !== "alert-info" && $type !== "alert-warning" && $type !== "alert-danger" && $type !== "alert-success") {
+        $allowed_types = ["alert-info", "alert-warning", "alert-danger", "alert-success", "alert-secondary"];
+        if (!in_array($type, $allowed_types)) {
             $type = "alert-info";
         }
 
-        return "<div data-alert class='alert alert-box {$type}'>{$msg}" . (!!$include_close ? "<a href='#' class='close'>&times;</a>" : '') . "</div>";
+        $dismissClass = $include_close ? " alert-dismissible fade show" : "";
+        $closeButton = $include_close ? '<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>' : "";
+
+        return "<div class='alert {$type}{$dismissClass}' role='alert'>{$msg}{$closeButton}</div>";
     }
 
     public static function dataCard(string $header, array $data)

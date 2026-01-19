@@ -177,7 +177,7 @@ class TaskService extends DbService
     {
         if ($date && strpos($date, "/") > -1) {
             list($d, $m, $y) = preg_split("/\/|-|\./", $date);
-            return $y . "-" . $m . "-" . $d;
+            return $y."-".$m."-".$d;
         }
         return $date;
     }
@@ -189,7 +189,7 @@ class TaskService extends DbService
             $hours = intval($seconds / 3600);
             $mins = intval(intval($seconds / 60) % 60);
             $mins = str_pad($mins, 2, "0", STR_PAD_LEFT);
-            return $hours . ":" . $mins;
+            return $hours.":".$mins;
         }
     }
 
@@ -224,8 +224,8 @@ class TaskService extends DbService
                         // foreach URL create a marker to replace the URL.
                         // create array, key: marker + value: marked-up URL.
                         // use RAND to improve uniqueness of marker in the text so no accidental string substitutions
-                        $marker = "URLMARKER" . rand(100, 999);
-                        $newurl = "<a href=\"" . $u . "\" target=\"_blank\">" . $u . "</a>";
+                        $marker = "URLMARKER".rand(100, 999);
+                        $newurl = "<a href=\"".$u."\" target=\"_blank\">".$u."</a>";
                         $mark[$marker] = $newurl;
                         $text = str_replace($u, $marker, $text);
                     }
@@ -296,7 +296,7 @@ class TaskService extends DbService
     public function getTaskObjectGeneric($class, $type)
     {
         $this->_loadTaskFiles();
-        $class = startsWith($class, $type) ? $class : $type . $class;
+        $class = startsWith($class, $type) ? $class : $type.$class;
         if (class_exists($class)) {
             return new $class($this->w);
         }
@@ -371,14 +371,14 @@ class TaskService extends DbService
 
     public function sendCreationNotificationForTask($task)
     {
-        $subject = $task->getHumanReadableAttributeName(TASK_NOTIFICATION_TASK_CREATION) . "[" . $task->id . "]: " . $task->title;
+        $subject = $task->getHumanReadableAttributeName(TASK_NOTIFICATION_TASK_CREATION)."[".$task->id."]: ".$task->title;
         $users_to_notify = TaskService::getInstance($this->w)->getNotifyUsersForTask($task, TASK_NOTIFICATION_TASK_CREATION);
 
         NotificationService::getInstance($this->w)->sendToAllWithCallback($subject, "task", "notification_email", AuthService::getInstance($this->w)->user(), $users_to_notify, function ($user, $existing_template_data) use ($task) {
             $template_data = $existing_template_data;
             $template_data['status'] = "[{$task->id}] New task created";
             $template_data['footer'] = $task->description;
-            $template_data['action_url'] = $this->w->localUrl('/task/edit/' . $task->id);
+            $template_data['action_url'] = $this->w->localUrl('/task/edit/'.$task->id);
             $template_data['logo_url'] = Config::get('main.application_logo');
 
             $template_data['fields'] = [
@@ -408,7 +408,7 @@ class TaskService extends DbService
 
             if (!empty($task->assignee_id)) {
                 if ($user->id == $task->assignee_id) {
-                    $template_data['fields']["Assigned to"] = "You (" . $task->getAssignee()->getFullName() . ")";
+                    $template_data['fields']["Assigned to"] = "You (".$task->getAssignee()->getFullName().")";
                 } else {
                     $template_data['fields']["Assigned to"] = !empty($task->assignee_id) ? $task->getAssignee()->getFullName() : '';
                 }
@@ -422,14 +422,14 @@ class TaskService extends DbService
 
     public function sendSubscribeNotificationForTask($task, $user)
     {
-        $subject = "Added as subscriber to: [" . $task->id . "] " . $task->title;
+        $subject = "Added as subscriber to: [".$task->id."] ".$task->title;
         $users_to_notify = [$user->id => $user->id];
 
         NotificationService::getInstance($this->w)->sendToAllWithCallback($subject, "task", "notification_email", AuthService::getInstance($this->w)->user(), $users_to_notify, function ($user, $existing_template_data) use ($task) {
             $template_data = $existing_template_data;
             $template_data['status'] = "You've been added as a subscriber to: [{$task->id}]{$task->title}";
             $template_data['footer'] = $task->description;
-            $template_data['action_url'] = $this->w->localUrl('/task/edit/' . $task->id);
+            $template_data['action_url'] = $this->w->localUrl('/task/edit/'.$task->id);
             $template_data['logo_url'] = Config::get('main.application_logo');
 
             $template_data['fields'] = [
@@ -459,7 +459,7 @@ class TaskService extends DbService
 
             if (!empty($task->assignee_id)) {
                 if ($user->id == $task->assignee_id) {
-                    $template_data['fields']["Assigned to"] = "You (" . $task->getAssignee()->getFullName() . ")";
+                    $template_data['fields']["Assigned to"] = "You (".$task->getAssignee()->getFullName().")";
                 } else {
                     $template_data['fields']["Assigned to"] = !empty($task->assignee_id) ? $task->getAssignee()->getFullName() : '';
                 }
@@ -608,7 +608,7 @@ class TaskService extends DbService
         $this->_loadTaskFiles();
         $fieldform = null;
         foreach (get_declared_classes() as $class) {
-            if (startsWith($class, "TaskType_" . $tasktype)) {
+            if (startsWith($class, "TaskType_".$tasktype)) {
                 $tgt = new $class($this->w);
                 $fieldform = $tgt->getFieldFormArray($tg);
             }
@@ -693,7 +693,7 @@ class TaskService extends DbService
     public function getMembersBeAssigned($id)
     {
         $line = [];
-        $where = "task_group_id = " . $id . " and (role = 'MEMBER' or role = 'OWNER') and is_active = 1 and user_id > 0";
+        $where = "task_group_id = ".$id." and (role = 'MEMBER' or role = 'OWNER') and is_active = 1 and user_id > 0";
         $members = $this->getObjects("TaskGroupMember", $where);
 
         if (!empty($members)) {
@@ -735,7 +735,7 @@ class TaskService extends DbService
 
         $handlers = $this->w->modules();
         foreach ($handlers as $model) {
-            $file = $this->w->getModuleDir($model) . $model . ".tasks.php";
+            $file = $this->w->getModuleDir($model).$model.".tasks.php";
             if (file_exists($file)) {
                 require_once $file;
             }
@@ -920,12 +920,12 @@ class TaskService extends DbService
         if (!empty($additional_details)) {
             foreach ($additional_details as $additional_detail) {
                 if (!empty($additional_detail)) {
-                    $message .= "<p>" . $additional_detail . "</p>";
+                    $message .= "<p>".$additional_detail."</p>";
                 }
             }
         }
 
-        return !empty($message) ? "<br/><p>Additional details:</p>" . $message : '';
+        return !empty($message) ? "<br/><p>Additional details:</p>".$message : '';
     }
 
     public function navigation(Web $w, $title = null, $nav = null)
@@ -940,8 +940,10 @@ class TaskService extends DbService
             $w->menuLink("task/index", "Task Dashboard", $nav);
             $w->menuLink("task/edit", "New Task", $nav);
             $w->menuLink("task/tasklist", "Task List", $nav);
-            $w->menuLink("task/notifications", "Notifications", $nav);
-            $w->menuLink("task/taskweek", "Activity", $nav);
+            if (AuthService::getInstance($w)->user()->allowed('/task/notifications')) {
+                $w->menuLink("task/notifications", "Notifications", $nav);
+            }
+
             $w->menuLink("task-group/viewtaskgrouptypes", "Task Groups", $nav);
         }
         $w->ctx("navigation", $nav);
@@ -950,13 +952,18 @@ class TaskService extends DbService
 
     public function navList(): array
     {
-        return [
+        $nav = [
             new MenuLinkStruct("Task Dashboard", "task/index"),
             new MenuLinkStruct("New Task", "task/edit"),
             new MenuLinkStruct("Task List", "task/tasklist"),
-            new MenuLinkStruct("Notifications", "task/notifications"),
-            new MenuLinkStruct("Activity", "task/taskweek"),
-            new MenuLinkStruct("Task Groups", "task-group/viewtaskgrouptypes"),
         ];
+
+        if (AuthService::getInstance($this->w)->user()->allowed('/task/notifications')) {
+            $nav[] = new MenuLinkStruct("Notifications", "task/notifications");
+        }
+
+        $nav[] = new MenuLinkStruct("Task Groups", "task-group/viewtaskgrouptypes");
+
+        return $nav;
     }
 }
