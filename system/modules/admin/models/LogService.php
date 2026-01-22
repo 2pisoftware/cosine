@@ -152,7 +152,7 @@ class LogService
                 // Add the introspection processor if an error (Adds the line/file/class/method from which the log call originated)
                 $this->logger->pushProcessor(new WebProcessor());
             }
-            $this->logger->$name($arguments[0], ["user" => array_key_exists('user_id', $_SESSION) ? $_SESSION['user_id'] : 'unknown']);
+            $this->logger->$name($arguments[0], ["user" => isset($_SESSION) && array_key_exists('user_id', $_SESSION) ? $_SESSION['user_id'] : 'unknown']);
         }
 
         // In the interest of not breaking system logs, we will return the logger back to cmfive
