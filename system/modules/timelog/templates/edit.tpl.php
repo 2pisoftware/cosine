@@ -90,7 +90,7 @@ use Html\Form\Select;
             echo new Date([
                 "id|name" => "date_start",
                 "class" => "form-control",
-                "value" => $timelog->getDateStart(),
+                "value" => $timelog->getDateStart() ?? date("Y-m-d"),
                 "required" => true
             ])
             ?>
