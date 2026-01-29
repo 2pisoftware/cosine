@@ -980,24 +980,38 @@ HTML;
 
         $links = [];
 
-        if ($currentpage > 1) {
-            $links[] = $makeElem(1, false);
-        }
-
-        if ($currentpage > 2) {
-            $links[] = $makeElem($currentpage - 1, false);
-        }
-
-        $links[] = $makeElem($currentpage, true);
-
         $lastPage = ceil($totalresults / $pagesize);
 
-        if ($currentpage < $lastPage - 1) {
-            $links[] = $makeElem($currentpage + 1, false);
-        }
+        if ($lastPage < 5) {
+            // If we have a small number of pages, just render all the buttons
+            for ($i = 0; $i < $lastPage; $i++) {
+                $links[] = $makeElem($i + 1, $i + 1 == $currentpage);
+            }
+        } else {
+            // Otherwise, render only the first, prev, current, next, and last
 
-        if ($currentpage < $lastPage) {
-            $links[] = $makeElem($lastPage, false);
+            // first page link
+            if ($currentpage > 1) {
+                $links[] = $makeElem(1, false);
+            }
+
+            // prev page link
+            if ($currentpage > 2) {
+                $links[] = $makeElem($currentpage - 1, false);
+            }
+
+            // current page link
+            $links[] = $makeElem($currentpage, true);
+
+            // next page link
+            if ($currentpage < $lastPage - 1) {
+                $links[] = $makeElem($currentpage + 1, false);
+            }
+
+            // last page link
+            if ($currentpage < $lastPage) {
+                $links[] = $makeElem($lastPage, false);
+            }
         }
 
         $links_str = implode("", $links);
