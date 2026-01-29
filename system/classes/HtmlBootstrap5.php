@@ -982,7 +982,7 @@ HTML;
 
         $lastPage = ceil($totalresults / $pagesize);
 
-        if ($lastPage < 5) {
+        if ($lastPage <= 5) {
             // If we have a small number of pages, just render all the buttons
             for ($i = 0; $i < $lastPage; $i++) {
                 $links[] = $makeElem($i + 1, $i + 1 == $currentpage);
