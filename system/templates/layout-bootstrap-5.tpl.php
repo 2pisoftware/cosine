@@ -282,7 +282,9 @@ $theme_setting = AuthService::getInstance($w)->getSettingByKey('bs5-theme');
                         <?php
                         $breadcrumbs = History::get();
 
-                        $breadcrumbs = array_slice($breadcrumbs, 0, Config::get("main.breadcrumb.limit", 10));
+                        if (!empty($breadcrumbs)) {
+                            $breadcrumbs = array_slice($breadcrumbs, 0, Config::get("main.breadcrumb.limit", 10));
+                        }
 
                         if (empty($breadcrumbs)) : ?>
                             <li class="breadcrumb-item active align-middle" aria-current="page">Your history will appear
