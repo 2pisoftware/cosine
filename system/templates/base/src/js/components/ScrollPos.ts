@@ -1,9 +1,16 @@
 export class ScrollPosComponent {
+    static SCROLL_POS_KEY = "COSINE_SCROLL_POSITION";
+
     public static bindInteractions = () => {
-        const SCROLL_POS_KEY = "COSINE_SCROLL_POSITION";
-        const savedScrolls: { y: number, url: string }[] | null
-            = tryParseJson(window.localStorage.getItem(SCROLL_POS_KEY)) ?? [];
-        const scroll = savedScrolls.find(x => x.url === window.location.href);
+        const savedScrolls: { y: number, url: string, date: number }[] | null
+            = tryParseJson(
+                window.localStorage.getItem(ScrollPosComponent.SCROLL_POS_KEY)
+            ) ?? [];
+
+        const scroll = savedScrolls.find(
+            x => x.url === window.location.href
+            && x.date + 5 * 60 * 1000 > Date.now()
+        );
 
         if (savedScrolls) {
             if (scroll) {
@@ -13,11 +20,19 @@ export class ScrollPosComponent {
 
         window.addEventListener("beforeunload", () => {
             const toSave = savedScrolls.filter(x => x.url !== window.location.href);
-            toSave.push({ y: window.scrollY, url: window.location.href });
+            
+            toSave.push({
+                y: window.scrollY,
+                url: window.location.href,
+                date: Date.now()
+            });
 
             if (toSave.length > 5) toSave.shift();
 
-            window.localStorage.setItem(SCROLL_POS_KEY, JSON.stringify(toSave));
+            window.localStorage.setItem(
+                ScrollPosComponent.SCROLL_POS_KEY,
+                JSON.stringify(toSave)
+            );
         })
     }
 }
