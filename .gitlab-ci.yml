@@ -19,7 +19,7 @@ test:
     - name: mysql:8.0
       alias: cosine-db
       command: [ "--default-authentication-plugin=mysql_native_password" ]
-  image: $CI_SERVER_FQDN/2pisoftware/cosine/cosine-tests:latest
+  image: $CI_SERVER_FQDN/2pisoftware/cosine/cosine-tests:1.2.4
   variables:
     DOCKER_TLS_CERTDIR: ""
     DOCKER_HOST: tcp://docker:2375
