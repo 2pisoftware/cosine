@@ -10,41 +10,41 @@ include:
       stage: docker
       platforms: linux/amd64,linux/arm64
 
-  # Run Playwright tests
-  - component: $CI_SERVER_FQDN/2pisoftware/pipelines/playwright/test@v1.0.6
-    inputs:
-      image: mcr.microsoft.com/playwright:v1.49.0-jammy
-      directory: ./test/playwright/
-      test_results_dir: ./test/playwright/test-results
-      run_cmd: npm run build && npm run test --reporter=list,junit
-      wait_on: http-get://test-website
-
-# Configure Playwright tests
-playwright-test:
+test:
+  stage: test
   services:
-    # Database
+    - name: docker:28.4.0-dind
+      # explicitly disable tls to avoid docker startup interruption
+      command: ["--tls=false"]
     - name: mysql:8.0
       alias: cosine-db
       command: [ "--default-authentication-plugin=mysql_native_password" ]
-    # Cosine
-    - name: $DOCKER_TAG
-      alias: test-website
+  image: $DOCKER_TAG
   variables:
-    FF_NETWORK_PER_BUILD: 1
-    # CI_DEBUG_SERVICES: "true"
-    TEST_HOST: http://test-website
-    TEST_PORT: 80
-    TIMEOUT: 40_000
-    ENVIRONMENT: development
-    MYSQL_ROOT_PASSWORD: cosine
+    DOCKER_TLS_CERTDIR: ""
+    DOCKER_HOST: tcp://docker:2375
+    DOCKER_DRIVER: overlay2
+    MYSQL_ROOT_PASSWORD: root
     MYSQL_HOST: cosine-db
-    DB_HOST: cosine-db
-    MYSQL_DATABASE: cosine
-    DB_DATABASE: cosine
     MYSQL_USER: cosine
-    DB_USERNAME: root
     MYSQL_PASSWORD: cosine
-    DB_PASSWORD: cosine
+    CONNECTION_URL: mysql://cosine:cosine@cosine-db:3306
+  script:
+    - npm ci
+    - |
+      SQL_CONTAINER_ID=$(docker ps -q -f "label=com.gitlab.gitlab-runner.job.id=$CI_JOB_ID" -f "label=cosine-db")
+      DOCKER_AUTH_CONFIG=$(printf '{"auths": {"%s": {"username": "%s","password": "%s"}}}' "$CI_REGISTRY" "$CI_REGISTRY_USER" "$CI_REGISTRY_PASSWORD")
+      DOCKER_IMAGE=$DOCKER_TAG
+      npx playwright test
   dependencies:
-    - docker-build
-  
+  - docker-build
+  artifacts:
+    when: on_failure
+    paths:
+      - "./test/test-results"
+      - "./test/test-results/junit.xml"
+    exclude:
+      - "./test/test-results/composer_cache.tar"
+    expire_in: 1 day
+    reports:
+      junit: "./test/test-results/junit.xml"
