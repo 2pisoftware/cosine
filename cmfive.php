@@ -270,7 +270,7 @@ function synopsis()
 function stepOneYieldsWeb()
 {
     // so we can find modules & some CM5 functions...
-    $webFind = __DIR__ . "/system/web.php";
+    $webFind = "system/web.php";
     if (is_readable($webFind)  && !is_dir($webFind)) {
         if (!class_exists('Web')) {
             require($webFind);

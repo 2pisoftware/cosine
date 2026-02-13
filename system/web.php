@@ -11,14 +11,14 @@ const ENVIRONMENT_PRODUCTION = "production";
 
 defined("DS") || define("DS", DIRECTORY_SEPARATOR);
 
-define("ROOT_PATH", str_replace("\\", "/", __DIR__ . "/../"));
-define("SYSTEM_PATH", str_replace("\\", "/", __DIR__));
+define("ROOT_PATH", str_replace("\\", "/", getcwd()));
+define("SYSTEM_PATH", str_replace("\\", "/", getcwd() . '/system'));
 
-define("LIBPATH", str_replace("\\", "/", ROOT_PATH . '/lib'));
-define("SYSTEM_LIBPATH", str_replace("\\", "/", SYSTEM_PATH . '/lib'));
+define("LIBPATH", str_replace("\\", "/", getcwd() . '/lib'));
+define("SYSTEM_LIBPATH", str_replace("\\", "/", getcwd() . '/system/lib'));
 define("FILE_ROOT", str_replace("\\", "/", getcwd() . "/uploads/")); // dirname(__FILE__)
-define("MEDIA_ROOT", str_replace("\\", "/", getcwd() . "/../media/"));
-define("ROOT", str_replace("\\", "/", SYSTEM_PATH));
+define("MEDIA_ROOT", str_replace("\\", "/", dirname(__FILE__) . "/../media/"));
+define("ROOT", str_replace("\\", "/", dirname(__FILE__)));
 define("STORAGE_PATH", str_replace("\\", "/", getcwd() . '/storage'));
 define("SESSION_NAME", "CM5-SID");
 
@@ -253,7 +253,7 @@ class Web
         if (strstr($className, "Html") !== false) {
             $filePath = explode('\\', $className);
             $class = array_pop($filePath);
-            $file = SYSTEM_PATH . DS . 'classes' . DS . strtolower(implode("/", $filePath)) . DS . $class . ".php";
+            $file = 'system' . DS . 'classes' . DS . strtolower(implode("/", $filePath)) . DS . $class . ".php";
 
             if (file_exists(str_replace('\\', '/', $file))) {
                 require_once str_replace('\\', '/', $file);
@@ -263,12 +263,13 @@ class Web
             }
         }
 
-        // Last try, recurse in SYSTEM_LIBPATH
+        // Last try, recurse in "/lib"
+        $toplibpath = 'system' . DS . 'lib';
         $namespaceparts = explode('\\', $className);
         $classfile = array_pop($namespaceparts) . '.php';
         $libmatch = false;
 
-        $topdirectory = new \RecursiveDirectoryIterator(SYSTEM_LIBPATH, \FilesystemIterator::FOLLOW_SYMLINKS | \FilesystemIterator::SKIP_DOTS);
+        $topdirectory = new \RecursiveDirectoryIterator($toplibpath, \FilesystemIterator::FOLLOW_SYMLINKS | \FilesystemIterator::SKIP_DOTS);
         $classfilter = new \RecursiveCallbackFilterIterator($topdirectory, function ($current, $key, $iterator) {
             if (!$current->isDir()) { // Only respond to possible class match files.
                 return  $current->getExtension() === "php";
@@ -293,16 +294,16 @@ class Web
 
     private function componentLoader($name)
     {
-        $classes_directory = SYSTEM_PATH . DS . 'classes';
+        $classes_directory = 'system' . DS . 'classes';
         $directory = $classes_directory . DS . 'components';
 
         if (file_exists($directory . DS . $name . '.php')) {
-            require_once $directory . DS . $name . '.php';
+            require_once ROOT_PATH . DS . $directory . DS . $name . '.php';
             return true;
         }
 
         if (file_exists($classes_directory . DS . $name . '.php')) {
-            require_once $classes_directory . DS . $name . '.php';
+            require_once ROOT_PATH . DS . $classes_directory . DS . $name . '.php';
             return true;
         }
 
@@ -550,7 +551,7 @@ class Web
                     $this->ctx('error', "An error occoured, if this message persists please contact your administrator.");
                 });
             }
-
+            
 
             // Set the timezone from Config
             $timezone = Config::get('system.timezone');
@@ -1478,29 +1479,21 @@ class Web
 
         // check for explicit module path first
         $basepath = $this->moduleConf($module, 'path');
+        if (!empty($basepath)) {
+            $path = $basepath . DS . $module . DS;
 
-        if (empty($basepath)) {
-            return null;
-        }
-
-        $path = $basepath . DS . $module . DS;
-
-        if ($path[0] !== "/") {
-            // On Linux, this is a relative path
-            // We assume module paths are relative to ROOT_PATH, not cwd
-
-            $path = ROOT_PATH . $path;
-        }
-
-        // Now that we support injected modules sometimes this function will be called from their perspective
-        // We need to check if this is the case and return the module actually responsible for the injected modules
-        if (!file_exists($path)) {
-            $injected_rule = Config::get($module . '.injected_by');
-            if (!empty($injected_rule)) {
-                return file_exists(Config::get("{$injected_rule}.path") . DS . $injected_rule . DS) ? Config::get("{$injected_rule}.path") . DS . $injected_rule . DS : null;
+            // Now that we support injected modules sometimes this function will be called from their perspective
+            // We need to check if this is the case and return the module actually responsible for the injected modules
+            if (!file_exists($path)) {
+                $injected_rule = Config::get($module . '.injected_by');
+                if (!empty($injected_rule)) {
+                    return file_exists(Config::get("{$injected_rule}.path") . DS . $injected_rule . DS) ? Config::get("{$injected_rule}.path") . DS . $injected_rule . DS : null;
+                }
             }
+            return $path;
         }
-        return $path;
+
+        return null;
     }
 
     public function moduleUrl($module)
@@ -1568,11 +1561,11 @@ class Web
         // set translations to partial module
         // $oldModule = $this->currentModule();
         // if ($oldModule != $module) {
-        // try {
-        //     $this->setTranslationDomain($module);
-        // } catch (Exception $e) {
-        //     LogService::getInstance($this)->setLogger('I18N')->error($e->getMessage());
-        // }
+            // try {
+            //     $this->setTranslationDomain($module);
+            // } catch (Exception $e) {
+            //     LogService::getInstance($this)->setLogger('I18N')->error($e->getMessage());
+            // }
         // }
 
         // save current output buffer

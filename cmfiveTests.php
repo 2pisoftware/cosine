@@ -52,27 +52,17 @@ if (allowRunner()) {
         offerMenuTests();
         $cmdMaker['tests'][] =
             [
-                'request' =>  "unit",
-                'message' => "Launching UnitTest",
-                'function' => "genericRunner",
-                'args' => true,
+                'request' =>  "unit", 'message' => "Launching UnitTest", 'function' => "genericRunner", 'args' => true,
                 'hint' => "moduleName or all"
             ];
         $cmdMaker['tests'][] =
             [
-                'request' =>  "module",
-                'message' => "Launching Tests on Module",
-                'function' => "genericRunner",
-                'args' => true,
+                'request' =>  "module", 'message' => "Launching Tests on Module", 'function' => "genericRunner", 'args' => true,
                 'hint' => "moduleName"
             ];
         $cmdMaker['testDB'][] =
             [
-                'request' =>  "setup",
-                'message' => "Batched TestRunner DB setup",
-                'function' => "genericRunner",
-                'args' => true,
-                'implied' => true
+                'request' =>  "setup", 'message' => "Batched TestRunner DB setup", 'function' => "genericRunner", 'args' => true,  'implied' => true
             ];
     }
 }
@@ -82,24 +72,15 @@ function offerMenuTests()
     global $menuMaker;
     $menuMaker[] =
         [
-            'option' => "Build TestRunner (show info)",
-            'message' => "TestRunner info",
-            'function' => "infoRunner",
-            'param' => null
+            'option' => "Build TestRunner (show info)", 'message' => "TestRunner info", 'function' => "infoRunner", 'param' => null
         ];
     $menuMaker[] =
         [
-            'option' => "Setup empty TestRunner DB and Administrator",
-            'message' => "Batched TestRunner DB setup",
-            'function' => "DBRunner",
-            'param' => null
+            'option' => "Setup empty TestRunner DB and Administrator", 'message' => "Batched TestRunner DB setup", 'function' => "DBRunner", 'param' => null
         ];
     $menuMaker[] =
         [
-            'option' => "Show Composer module dependencies",
-            'message' => "Showing Composer module dependencies:",
-            'function' => "moduleDependencies",
-            'param' => null
+            'option' => "Show Composer module dependencies", 'message' => "Showing Composer module dependencies:", 'function' => "moduleDependencies", 'param' => null
         ];
 
     $found = chaseModules("all");
@@ -115,20 +96,14 @@ function offerMenuTests()
             foreach ($capability as $module => $resources) {
                 $menuMaker[] =
                     [
-                        'option' => "Run " . $module . " tests",
-                        'message' => "Launching TestRunner: " . $module,
-                        'function' => "moduleRunner",
-                        'param' =>  $module
+                        'option' => "Run " . $module . " tests", 'message' => "Launching TestRunner: " . $module, 'function' => "moduleRunner", 'param' =>  $module
                     ];
             }
         }
     }
     $menuMaker[] =
         [
-            'option' => "Run all unit tests",
-            'message' => "Launching UnitTests",
-            'function' => "unitTestRunner",
-            'param' => "all"
+            'option' => "Run all unit tests", 'message' => "Launching UnitTests", 'function' => "unitTestRunner", 'param' => "all"
         ];
 }
 
@@ -227,7 +202,7 @@ function genericRunner($argc, $argv)
 
 function allowRunner()
 {
-    $webFind = __DIR__ . "system/web.php";
+    $webFind = "system/web.php";
     if (chaseWeb($webFind)) {
         if (!class_exists('Web')) {
             // Testrunner leans heavily on config, so always reset it
@@ -257,7 +232,8 @@ function allowRunner()
 function checkTestEnvironment()
 {
 
-    if (Config::get("database.backups.commandPath")
+    if (
+        Config::get("database.backups.commandPath")
         && Config::get("database.backups.backupCommand")
         && Config::get("database.backups.restoreCommand")
     ) {
