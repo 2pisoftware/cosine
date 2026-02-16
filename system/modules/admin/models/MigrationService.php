@@ -331,6 +331,8 @@ MIGRATION;
                                 if (!$ignoremessages) {
                                     if (!empty($migration_class->preText())) {
                                         $pathData = pathinfo($migration_path);
+
+                                        //phpcs:ignore
                                         $messageurl = "/admin-migration/migrationmessage?module=" . $module . "&filename=" . $pathData['filename'] . "&migmodule=" . $_module . "&migfilename=" . $_filename . "&path=" . $migration_path . "&prevpage=" . $prevpage;
 
                                         $batchedMigrations = [];
@@ -560,11 +562,11 @@ MIGRATION;
         foreach ($filenames as $migration => $filename) {
             if (file_exists(ROOT_PATH . DS . $directory . DS . $filename)) {
                 include_once ROOT_PATH . DS . $directory . DS . $filename;
-                
+
                 // Class name must match filename after timestamp and hyphen
                 if (class_exists($migration)) {
                     LogService::getInstance($this->w)->setLogger("MIGRATION")->info("Running migration: " . $migration);
-                    
+
                     // Run migration UP
                     $migration_class = new $migration(1, intval(formatDate(time(), "YmdHis")));
                     $migration_class->setAdapter($mysql_adapter);

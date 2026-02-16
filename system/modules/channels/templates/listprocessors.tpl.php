@@ -1,5 +1,5 @@
 <div class="row">
-    <div class="col">    
+    <div class="col">
         <?php echo HtmlBootstrap5::box("/channels-processor/edit", "Add Processor", true); ?>
     </div>
 </div>
@@ -20,9 +20,19 @@
                 HtmlBootstrap5::dropdownButton(
                     "More",
                     [
-                        HtmlBootstrap5::box(href: "/channels-processor/editsettings/{$p->id}", title: "Settings", button: true, class: "dropdown-item btn btn-sm text-start"),
+                        HtmlBootstrap5::box(
+                            href: "/channels-processor/editsettings/{$p->id}",
+                            title: "Settings",
+                            button: true,
+                            class: "dropdown-item btn btn-sm text-start"
+                        ),
                         '<hr class="dropdown-divider">',
-                        HtmlBootstrap5::box(href: "/channels-processor/delete/{$p->id}", title: "Delete", confirm: "Are you sure you want to delete " . (!empty($p->name) ? StringSanitiser::sanitise($p->name) : "this processor") . "?", class: "dropdown-item btn btn-sm text-start text-danger")
+                        HtmlBootstrap5::box(
+                            href: "/channels-processor/delete/{$p->id}",
+                            title: "Delete",
+                            confirm: "Are you sure you want to delete " . (!empty($p->name) ? StringSanitiser::sanitise($p->name) : "this processor") . "?",
+                            class: "dropdown-item btn btn-sm text-start text-danger"
+                        )
                     ],
                     "btn-info btn btn-sm rounded-0 rounded-end-1"
                 )

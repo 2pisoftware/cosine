@@ -158,7 +158,7 @@ class ExternalFormXMLProcessor extends ProcessorType
 
                 // Try and get a value from XML
                 switch ($field->type) {
-                    case "latlong": {
+                    case "latlong":
                         // Expect the names to start with "lat" and "lon" under the field xpath
                         $latitude = $current_document->xpath('//' . $field->technical_name . '//*[starts-with(name(), "lat")]');
                         $longitude = $current_document->xpath('//' . $field->technical_name . '//*[starts-with(name(), "lon")]');
@@ -177,8 +177,7 @@ class ExternalFormXMLProcessor extends ProcessorType
 
                         $this->createFormValue($form->w, $is_existing_instance, $instance, $field, $xml_value);
                         break;
-                    };
-                    case "attachment":{
+                    case "attachment":
                         $xml_path_attachments = $current_document->xpath('//' . $field->technical_name . '//photo');
                         if (empty($xml_path_attachments)) {
                             $xml_path_attachments = $current_document->xpath('//' . $field->technical_name);
@@ -195,8 +194,8 @@ class ExternalFormXMLProcessor extends ProcessorType
                         }
                         $this->createFormValue($form->w, $is_existing_instance, $instance, $field, $xml_value);
                         break;
-                    };
-                    case "subform":{
+
+                    case "subform":
                         // Subform is a special case because the instances attach to the form value so it needs to exist first
                         $form_value = $this->createFormValue($form->w, $is_existing_instance, $instance, $field, '');
 
@@ -244,8 +243,8 @@ class ExternalFormXMLProcessor extends ProcessorType
                             }
                         }
                         break;
-                    };
-                    case "multivalue":{
+
+                    case "multivalue":
                         $mutlivalue_string = '';
                         $values = $current_document->xpath('//' . $field->technical_name . '/text()');
 
@@ -257,7 +256,6 @@ class ExternalFormXMLProcessor extends ProcessorType
 
                         $this->createFormValue($form->w, $is_existing_instance, $instance, $field, $mutlivalue_string);
                         break;
-                    };
                     default:
                         $this->createFormValue($form->w, $is_existing_instance, $instance, $field, $this->getFirstOf($current_document, $field->technical_name, $current_document));
                 }

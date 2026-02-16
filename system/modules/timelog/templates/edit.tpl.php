@@ -11,13 +11,8 @@ use Html\Form\Select;
 
 ?>
 <h1><?php echo !empty($timelog->id) ? "Update" : "Create" ?> Timelog</h1>
-<form
-    action="/timelog/edit/<?php echo ($timelog->id ?? '') . ($redirect ? "?redirect={$redirect}" : '') ?>"
-    method="POST"
-    name="timelog_edit_form"
-    target="_self"
-    id="timelog_edit_form"
->
+<form action="/timelog/edit/<?php echo ($timelog->id ?? '') . ($redirect ? "?redirect={$redirect}" : '') ?>"
+    method="POST" name="timelog_edit_form" target="_self" id="timelog_edit_form">
     <div class="mb-3">
         <label for="user_id" class="form-label m-0">
             Assigned user
@@ -53,7 +48,7 @@ use Html\Form\Select;
                 "options" => $select_indexes,
                 "selected_option" => $timelog->object_class
                     ?: $tracking_class
-                    ?: (empty($select_indexes ? null : $select_indexes[0][1]))
+                    ?: (count($select_indexes) === 1 ? $select_indexes[0][1] : null)
             ]);
             ?>
         </div> <!-- module select -->
@@ -79,7 +74,6 @@ use Html\Form\Select;
                 "value" => $timelog->object_id ?: $tracking_id,
                 "required" => "required",
                 "source" => $w->localUrl("/timelog/ajaxSearch?index={$timelog->object_class}"),
-                "options" => !empty($usable_class) ? TimelogService::getInstance($w)->getObjects($usable_class, $where) : '',
                 "maxItems" => 1,
             ]);
             ?>
@@ -103,7 +97,7 @@ use Html\Form\Select;
         </div> <!-- date_start -->
 
         <div class="col">
-        <label for="date_start" class="form-label">
+            <label for="date_start" class="form-label">
                 Time started
                 <small>Required</small>
             </label>
@@ -112,8 +106,8 @@ use Html\Form\Select;
                 "id|name" => "time_start",
                 "class" => "form-control",
                 "value" => $timelog->getTimeStart(),
-                "pattern"        => "^(0?[0-9]|1[0-9]|2[0-3]):[0-5][0-9](\s+)?(AM|PM|am|pm)?$",
-                "placeholder"    => "12hr format: 11:30pm or 24hr format: 23:30",
+                "pattern" => "^(0?[0-9]|1[0-9]|2[0-3]):[0-5][0-9](\s+)?(AM|PM|am|pm)?$",
+                "placeholder" => "12hr format: 11:30pm or 24hr format: 23:30",
                 "required" => true
             ])
             ?>
@@ -125,15 +119,15 @@ use Html\Form\Select;
             <div class="col">
                 <span class="form-check d-inline ps-0">
                     <?php
-                        echo new Radio([
-                            "id" => "select_end_method_time",
-                            "name" => "select_end_method",
-                            "class" => "",
-                            "select" => "form-check-input",
-                            "value" => "time",
-                            "checked" => "true",
-                            "tabindex" => -1
-                        ]);
+                    echo new Radio([
+                        "id" => "select_end_method_time",
+                        "name" => "select_end_method",
+                        "class" => "",
+                        "select" => "form-check-input",
+                        "value" => "time",
+                        "checked" => "true",
+                        "tabindex" => -1
+                    ]);
                     ?>
                 </span>
 
@@ -157,14 +151,14 @@ use Html\Form\Select;
             <div class="col">
                 <span class="form-check d-inline ps-0">
                     <?php
-                        echo new Radio([
-                            "id" => "select_end_method_hours",
-                            "name" => "select_end_method",
-                            "class" => "",
-                            "select" => "form-check-input",
-                            "value" => "hours",
-                            "tabindex" => -1
-                        ]);
+                    echo new Radio([
+                        "id" => "select_end_method_hours",
+                        "name" => "select_end_method",
+                        "class" => "",
+                        "select" => "form-check-input",
+                        "value" => "hours",
+                        "tabindex" => -1
+                    ]);
                     ?>
                 </span>
 
@@ -247,8 +241,7 @@ use Html\Form\Select;
             hours_worked.setAttribute("disabled", "disabled");
             minutes_worked.setAttribute("disabled", "disabled");
             time_end.removeAttribute("disabled");
-        }
-        else {
+        } else {
             hours_worked.removeAttribute("disabled");
             minutes_worked.removeAttribute("disabled");
             time_end.setAttribute("disabled", "disabled");

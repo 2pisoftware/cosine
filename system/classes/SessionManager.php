@@ -8,7 +8,7 @@ class SessionManager extends DbService
 {
     private $tableName = 'sessions';
 
-    function __construct(Web $w)
+    public function __construct(Web $w)
     {
         parent::__construct($w);
 
@@ -25,16 +25,16 @@ class SessionManager extends DbService
     }
 
     // Open and close aren't needed to be overloaded (this is handled in DbService)
-    function open($save_path, $session_name)
+    public function open($save_path, $session_name)
     {
         return true;
     }
-    function close()
+    public function close()
     {
         return true;
     }
 
-    function read($id)
+    public function read($id)
     {
         // Get session by id
         $rs = $this->_db->get($this->tableName)->where("session_id", $id)->fetchAll();
@@ -48,7 +48,7 @@ class SessionManager extends DbService
         return '';
     }
 
-    function write($id, $data)
+    public function write($id, $data)
     {
         $db_data = [
             'session_id' => $id,
@@ -69,13 +69,13 @@ class SessionManager extends DbService
         return true;
     }
 
-    function destroy($id)
+    public function destroy($id)
     {
         $this->_db->delete($this->tableName)->where("session_id", $id)->execute();
         return true;
     }
 
-    function gc($lifetime)
+    public function gc($lifetime)
     {
         // Garbage Collection
         $this->_db->delete($this->tableName)->where("expires < ?", (time() - $lifetime))->execute();

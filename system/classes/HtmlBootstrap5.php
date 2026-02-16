@@ -678,6 +678,7 @@ HTML;
             $dropdown_url_string .= (empty($url_parsed['query']) ? "?" : '?' . $url_parsed['query'] . '&') . $sort_query_param . '=' . $sort . '&' . $sort_direction_param . '=' . $sort_direction;
 
             for ($i = 1; $i <= $num_results; $i++) {
+                //phpcs:ignore
                 $buffer .= '<option' . ($i == $page ? ' selected="selected"' : '') . ' value="' . $dropdown_url_string . '&' . $page_query_param . '=' . $i . (!empty($url_parsed['fragment']) ? '#' . $url_parsed['fragment'] : '') . '">' . $i . '</option>';
             }
             $buffer .= '</select></div>';
@@ -699,6 +700,7 @@ HTML;
                     $sort_asc_string = $url_parsed['path'] . (empty($url_parsed['query']) ? '?' : '?' . $url_parsed['query'] . '&') . $sort_direction_asc_query . (!empty($url_parsed['fragment']) ? '#' . $url_parsed['fragment'] : '');
                     $sort_desc_string = $url_parsed['path'] . (empty($url_parsed['query']) ? '?' : '?' . $url_parsed['query'] . '&') . $sort_direction_desc_query . (!empty($url_parsed['fragment']) ? '#' . $url_parsed['fragment'] : '');
                 }
+                //phpcs:ignore
                 $buffer .= '<th' . (is_array($title) && $title[0] === $sort ? ' class="sorted_column"' : '') . '>' . (is_array($title) ? '<a href="' . ($title[0] === $sort && $sort_direction === 'asc' ? $sort_desc_string : $sort_asc_string) . '">' . $title[1] . '</a>' : $title)
                     . (is_array($title) ? '<div class="float-end">'
                         . ($title[0] !== $sort || ($title[0] === $sort && $sort_direction !== 'asc') ? '<a class="sort-ascending" href="' . $sort_asc_string . '"><i class="bi bi-chevron-up"></i></a>' : '')
@@ -764,7 +766,7 @@ HTML;
     {
         // This will pretty much be a redesigned HtmlBootstrap5::form layout
         if (empty($data)) {
-            return;
+            return '';
         }
 
         $form = new \Html\FormBootstrap5();
@@ -846,6 +848,7 @@ HTML;
             switch ($type) {
                 case "text":
                 case "password":
+                    //phpcs:ignore
                     $buffer .= '<input' . $readonly . ' style="width:100%;"  type="' . $type . '" name="' . $name . '" value="' . (empty($value) ? '' : htmlspecialchars($value)) . '" size="' . (!empty($row[4]) ? $row[4] : null) . '" id="' . $name . '"/>';
                     break;
                 case "autocomplete":
@@ -1022,11 +1025,15 @@ HTML;
      */
     public static function alertBox($msg, $type = "alert-info", $include_close = true): string
     {
-        if ($type !== "alert-info" && $type !== "alert-warning" && $type !== "alert-danger" && $type !== "alert-success") {
+        $allowed_types = ["alert-info", "alert-warning", "alert-danger", "alert-success", "alert-secondary"];
+        if (!in_array($type, $allowed_types)) {
             $type = "alert-info";
         }
 
-        return "<div data-alert class='alert alert-box {$type}'>{$msg}" . (!!$include_close ? "<a href='#' class='close'>&times;</a>" : '') . "</div>";
+        $dismissClass = $include_close ? " alert-dismissible fade show" : "";
+        $closeButton = $include_close ? '<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>' : "";
+
+        return "<div class='alert {$type}{$dismissClass}' role='alert'>{$msg}{$closeButton}</div>";
     }
 
     public static function dataCard(string $header, array $data)

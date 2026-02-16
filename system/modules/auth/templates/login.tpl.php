@@ -6,17 +6,13 @@
     ]));
     ?>
 
-    <div
-        id="errors"
-        data-alert
-        class="alert
+    <div id="errors" data-alert class="alert
         alert-warning
         fade
         show
         row
         d-none
-        justify-content-between"
-        role='alert'>
+        justify-content-between" role='alert'>
     </div>
 
     <div id="login_form">
@@ -50,7 +46,8 @@
                 <button type="submit" class="btn btn-primary w-100 h-auto">Login</button>
             </div>
             <div class='col text-center text-sm-end'>
-                <a onclick="window.location.href='/auth/forgotpassword';" class="btn w-auto "><?php echo $passwordHelp; ?></a>
+                <a onclick="window.location.href='/auth/forgotpassword';"
+                    class="btn w-auto "><?php echo $passwordHelp; ?></a>
             </div>
         </div>
 
@@ -154,7 +151,14 @@
         }
 
         if (json.status == 500) {
-            auth_form.reset();
+            // If we're on the MFA form, only clear the MFA code - not the whole form
+            if (!mfa_form.classList.contains("d-none")) {
+                const code_input = document.getElementById("mfa_code");
+                code_input.value = "";
+                code_input.focus();
+            } else {
+                auth_form.reset();
+            }
             errors.innerText = json.message ?? res.statusText;
             errors.classList.remove("d-none");
             errors.classList.add("d-flex");

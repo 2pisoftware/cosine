@@ -1,5 +1,6 @@
 <?php
 
+
 /** @var Web $w */
 $theme_setting = AuthService::getInstance($w)->getSettingByKey('bs5-theme');
 ?>
@@ -17,6 +18,9 @@ $theme_setting = AuthService::getInstance($w)->getSettingByKey('bs5-theme');
     <script>
         var exports = {};
     </script>
+    <script>
+        var exports = {};
+    </script>
     <?php
     CmfiveStyleComponentRegister::registerComponent('app', new CmfiveStyleComponent(Config::get('system.style_override', "/system/templates/base/dist/app.css")));
     CmfiveScriptComponentRegister::registerComponent('app', new CmfiveScriptComponent("/system/templates/base/dist/app.js", ['type' => 'module']));
@@ -31,6 +35,7 @@ $theme_setting = AuthService::getInstance($w)->getSettingByKey('bs5-theme');
     </script>
 </head>
 
+
 <body id="cmfive-body">
     <div id="app">
         <?php if (BannerService::getInstance($w)->getAuthBanner()) : ?>
@@ -41,23 +46,33 @@ $theme_setting = AuthService::getInstance($w)->getSettingByKey('bs5-theme');
         <div id="offscreen-menu" class="d-flex flex-column pb-0">
             <div class="d-flex flex-row justify-content-between offscreen-header pb-3">
                 <div class="d-flex flex-row align-items-center">
-                    <h5 class="fw-bold text-2pi mt-1 mb-1 nav-link px-3 pr-2"><?php echo Config::get('main.application_name'); ?></h5>
+                    <h5 class="fw-bold text-2pi mt-1 mb-1 nav-link px-3 pr-2">
+                        <?php echo Config::get('main.application_name'); ?></h5>
                 </div>
-                <a class="nav-link pt-0 pb-1" data-toggle-menu="close"><i class="bi bi-x" style="font-size: 24px;"></i></a>
+                <a class="nav-link pt-0 pb-1" data-toggle-menu="close"><i class="bi bi-x"
+                        style="font-size: 24px;"></i></a>
             </div>
             <ul class="nav py-2 justify-content-around border-top border-bottom">
-                <li class="nav-item"><a class="nav-link nav-icon" href="/<?php echo AuthService::getInstance($w)->user()->redirect_url; ?>"><i class="bi bi-house-fill"></i></a></li>
+                <li class="nav-item"><a class="nav-link nav-icon"
+                        href="/<?php echo AuthService::getInstance($w)->user()->redirect_url; ?>"><i
+                            class="bi bi-house-fill"></i></a></li>
                 <?php if (Config::get('favorite.active', true) === true && AuthService::getInstance($w)->user()->allowed('/favorite')) : ?>
-                    <li class="nav-item"><a class="nav-link nav-icon" data-modal-target="/favorite"><i class="bi bi-star-fill"></i></a></li>
+                    <li class="nav-item"><a class="nav-link nav-icon" data-modal-target="/favorite"><i
+                                class="bi bi-star-fill"></i></a></li>
                 <?php endif;
                 if (Config::get('system.help_enabled', true) && AuthService::getInstance($w)->user()->allowed('/help')) : ?>
-                    <li class="nav-item"><a class="nav-link nav-icon" data-modal-target="/help/view/<?php echo $w->_module . ($w->_submodule ? "-" . $w->_submodule : "") . "/" . $w->_action; ?>"><i class="bi bi-question-circle-fill"></i></a></li>
+                    <li class="nav-item"><a class="nav-link nav-icon"
+                            data-modal-target="/help/view/<?php echo $w->_module . ($w->_submodule ? "-" . $w->_submodule : "") . "/" . $w->_action; ?>"><i
+                                class="bi bi-question-circle-fill"></i></a></li>
                 <?php endif;
                 if (Config::get('system.search_enabled', true) && AuthService::getInstance($w)->user()->allowed('/search')) : ?>
-                    <li class="nav-item"><a class="nav-link nav-icon" data-modal-target='/search?isbox=1'><i class="bi bi-search"></i></a></li>
+                    <li class="nav-item"><a class="nav-link nav-icon" data-modal-target='/search?isbox=1'><i
+                                class="bi bi-search"></i></a></li>
                 <?php endif; ?>
-                <li class="nav-item"><a class="nav-link nav-icon" href="#" data-toggle-theme><i class="bi bi-palette-fill"></i></a></li>
-                <li class="nav-item"><a class="nav-link nav-icon" href="#" data-toggle-nav-settings><i class="bi bi-gear-fill"></i></a></li>
+                <li class="nav-item"><a class="nav-link nav-icon" href="#" data-toggle-theme><i
+                            class="bi bi-palette-fill"></i></a></li>
+                <li class="nav-item"><a class="nav-link nav-icon" href="#" data-toggle-nav-settings><i
+                            class="bi bi-gear-fill"></i></a></li>
             </ul>
             <div class="accordion" id="accordion_menu">
                 <?php $injectedModules = $w->callHook('core_template', 'topmenu');
@@ -73,16 +88,27 @@ $theme_setting = AuthService::getInstance($w)->getSettingByKey('bs5-theme');
                         Config::set($module, $module_service::serviceConfig());
                     }
 
+
                     // Check if config is set to display on topmenu
                     if (Config::get("{$module}.topmenu") && Config::get("{$module}.active")) :
                         // Check for navigation
                         $array = [];
-                        $menu_link = method_exists($module_service, "menuLink") ? $module_service::getInstance($w)->menuLink() : $w->menuLink($module, is_bool(Config::get("{$module}.topmenu")) ? ucfirst($module) : Config::get("{$module}.topmenu"), $array, null, null, "nav-link");
-                        if ($menu_link !== false) :
+                        $menu_link = method_exists($module_service, "menuLink")
+                            ? $module_service::getInstance($w)->menuLink()
+                            : $w->menuLink(
+                                path: $module,
+                                title: is_bool(Config::get("{$module}.topmenu")) ? ucfirst($module) : Config::get("{$module}.topmenu"),
+                                array: $array,
+                                class: "nav-link"
+                            );
+
+                        if (!empty($menu_link)) :
                             if (method_exists($module . "Service", "navList") || method_exists($module . "Service", "navigation")) : ?>
                                 <div class="accordion-item">
                                     <h2 class="accordion-header" id="accordion_menu_<?php echo $module; ?>_heading">
-                                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#accordion_menu_<?php echo $module; ?>" aria-expanded="true" aria-controls="accordion_menu_<?php echo $module; ?>">
+                                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                                            data-bs-target="#accordion_menu_<?php echo $module; ?>" aria-expanded="true"
+                                            aria-controls="accordion_menu_<?php echo $module; ?>">
                                             <?php echo is_bool(Config::get("{$module}.topmenu")) ? ucfirst($module) : Config::get("{$module}.topmenu"); ?>
                                         </button>
                                     </h2>
@@ -97,7 +123,9 @@ $theme_setting = AuthService::getInstance($w)->getSettingByKey('bs5-theme');
                                         }
                                     }
                                     ?>
-                                    <div id="accordion_menu_<?php echo $module; ?>" class="accordion-collapse collapse" aria-labelledby="accordion_menu_<?php echo $module; ?>_heading" data-bs-parent="#accordion_menu">
+                                    <div id="accordion_menu_<?php echo $module; ?>" class="accordion-collapse collapse"
+                                        aria-labelledby="accordion_menu_<?php echo $module; ?>_heading"
+                                        data-bs-parent="#accordion_menu">
                                         <ul class="nav flex-column">
                                             <?php foreach ($module_navigation as $module_nav) :
                                                 if (is_string($module_nav)) : ?>
@@ -133,7 +161,9 @@ $theme_setting = AuthService::getInstance($w)->getSettingByKey('bs5-theme');
                     </div>
                     <hr class="mt-2 mb-1" />
                     <div class="col text-center">
-                        <p class="fw-lighter m-0 p-0 text-secondary">&#169; <a class="text-secondary" href="<?php echo Config::get('main.company_url'); ?>" target="_blank"><?php echo Config::get('main.company_name'); ?></a></p>
+                        <p class="fw-lighter m-0 p-0 text-secondary">&#169; <a class="text-secondary"
+                                href="<?php echo Config::get('main.company_url'); ?>"
+                                target="_blank"><?php echo Config::get('main.company_name'); ?></a></p>
                     </div>
                 </div>
             </div>
@@ -144,16 +174,23 @@ $theme_setting = AuthService::getInstance($w)->getSettingByKey('bs5-theme');
                 <nav class="<?php echo count($active_modules) <= 9 ? "container-xl" : "container-fluid"; ?> navbar navbar-expand navbar-light bg-light p-0 p-lg-2">
                     <div class="container-fluid justify-content-start">
                         <ul class="navbar-nav me-md-4">
-                            <li class="nav-item"><a class="nav-link nav-icon" data-toggle-menu="open"><i class="bi bi-list"></i></a></li>
-                            <li class="nav-item"><a class="nav-link nav-icon" href="/<?php echo AuthService::getInstance($w)->user()->redirect_url; ?>"><i class="bi bi-house-fill"></i></a></li>
+                            <li class="nav-item"><a class="nav-link nav-icon" data-toggle-menu="open"><i
+                                        class="bi bi-list"></i></a></li>
+                            <li class="nav-item"><a class="nav-link nav-icon"
+                                    href="/<?php echo AuthService::getInstance($w)->user()->redirect_url; ?>"><i
+                                        class="bi bi-house-fill"></i></a></li>
                             <?php if (Config::get('favorite.active', true) === true && AuthService::getInstance($w)->user()->allowed('/favorite')) : ?>
-                                <li class="nav-item"><a class="nav-link nav-icon" data-modal-target="/favorite"><i class="bi bi-star-fill"></i></a></li>
+                                <li class="nav-item"><a class="nav-link nav-icon" data-modal-target="/favorite"><i
+                                            class="bi bi-star-fill"></i></a></li>
                             <?php endif;
                             if (Config::get('system.help_enabled', true) && AuthService::getInstance($w)->user()->allowed('/help')) : ?>
-                                <li class="nav-item"><a class="nav-link nav-icon" data-modal-target="/help/view/<?php echo $w->_module . ($w->_submodule ? "-" . $w->_submodule : "") . "/" . $w->_action; ?>"><i class="bi bi-question-circle-fill"></i></a></li>
+                                <li class="nav-item"><a class="nav-link nav-icon"
+                                        data-modal-target="/help/view/<?php echo $w->_module . ($w->_submodule ? "-" . $w->_submodule : "") . "/" . $w->_action; ?>"><i
+                                            class="bi bi-question-circle-fill"></i></a></li>
                             <?php endif;
                             if (Config::get('system.search_enabled', true) && AuthService::getInstance($w)->user()->allowed('/search')) : ?>
-                                <li class="nav-item"><a class="nav-link nav-icon" data-modal-target='/search?isbox=1'><i class="bi bi-search"></i></a></li>
+                                <li class="nav-item"><a class="nav-link nav-icon" data-modal-target='/search?isbox=1'><i
+                                            class="bi bi-search"></i></a></li>
                             <?php endif; ?>
                         </ul>
                         <ul class="navbar-nav me-auto mb-2 mb-lg-0 d-none d-lg-flex">
@@ -167,6 +204,7 @@ $theme_setting = AuthService::getInstance($w)->getSettingByKey('bs5-theme');
                                 if (method_exists($module_service, "isInInjectedTopLevelModule")) {
                                     return $module_service::isInInjectedTopLevelModule($w) ? 'active' : '';
                                 }
+
 
                                 $ignoreActiveList = Config::get("{$module}.ignore_topmenu_active");
                                 if (!empty($ignoreActiveList) && in_array($w->_module . '-' . $w->_submodule, $ignoreActiveList)) {
@@ -192,11 +230,22 @@ $theme_setting = AuthService::getInstance($w)->getSettingByKey('bs5-theme');
                                     // Check for navigation
 
                                     $array = [];
-                                    $menu_link = method_exists($module_service, "menuLink") ? $module_service::getInstance($w)->menuLink() : $w->menuLink($module, is_bool(Config::get("{$module}.topmenu")) ? ucfirst($module) : Config::get("{$module}.topmenu"), $array, null, null, "nav-link");
-                                    if ($menu_link !== false) :
+                                    $menu_link = method_exists($module_service, "menuLink")
+                                        ? $module_service::getInstance($w)->menuLink()
+                                        : $w->menuLink(
+                                            path: $module,
+                                            title: is_bool(Config::get("{$module}.topmenu")) ? ucfirst($module) : Config::get("{$module}.topmenu"),
+                                            array: $array,
+                                            class: "nav-link"
+                                        );
+
+                                    if (!empty($menu_link)) :
                                         if (method_exists($module . "Service", "navList") || method_exists($module . "Service", "navigation")) : ?>
-                                            <li class="nav-item dropdown <?php echo $printActiveFlag($module, $module_service); ?>" id="topnav_<?php echo $module; ?>">
-                                                <a class="nav-link dropdown-toggle caret-off" href="#" id="topnav_<?php echo $module; ?>_dropdown_link" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                            <li class="nav-item dropdown <?php echo $printActiveFlag($module, $module_service); ?>"
+                                                id="topnav_<?php echo $module; ?>">
+                                                <a class="nav-link dropdown-toggle caret-off" href="#"
+                                                    id="topnav_<?php echo $module; ?>_dropdown_link" role="button"
+                                                    data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                                     <?php echo is_bool(Config::get("{$module}.topmenu")) ? ucfirst($module) : Config::get("{$module}.topmenu"); ?>
                                                 </a>
                                                 <?php // Try and get a badge count for the menu item
@@ -213,7 +262,8 @@ $theme_setting = AuthService::getInstance($w)->getSettingByKey('bs5-theme');
                                                         }
                                                     }
                                                 } ?>
-                                                <div class="dropdown-menu" aria-labelledby="topnav_<?php echo $module; ?>_dropdown_link">
+                                                <div class="dropdown-menu"
+                                                    aria-labelledby="topnav_<?php echo $module; ?>_dropdown_link">
                                                     <?php foreach ($module_navigation as $module_nav) :
                                                         if (is_string($module_nav)) {
                                                             echo $module_nav;
@@ -224,7 +274,8 @@ $theme_setting = AuthService::getInstance($w)->getSettingByKey('bs5-theme');
                                                 </div>
                                             </li>
                                         <?php else : ?>
-                                            <li class="nav-item <?php echo $printActiveFlag($module, $module_service); ?>"><?php echo $menu_link; ?></li>
+                                            <li class="nav-item <?php echo $printActiveFlag($module, $module_service); ?>">
+                                                <?php echo $menu_link; ?></li>
                                         <?php endif; ?>
                                     <?php endif;
                                     Config::disableSandbox();
@@ -241,16 +292,28 @@ $theme_setting = AuthService::getInstance($w)->getSettingByKey('bs5-theme');
                                 }
                             }
                             ?>
+                            <?php
+                            $inject = $w->callHook('core_template', 'menu');
+                            if (!empty($inject)) {
+                                foreach ($inject as $i) {
+                                    echo "<li>{$i}</li>";
+                                }
+                            }
+                            ?>
                         </ul>
                     </div>
                 </nav>
-                <nav aria-label="breadcrumb" class="<?php echo count($active_modules) <= 9 ? "container-xl" : "container-fluid"; ?>" id="breadcrumbs">
+                <nav aria-label="breadcrumb"
+                    class="<?php echo count($active_modules) <= 9 ? "container-xl" : "container-fluid"; ?>"
+                    id="breadcrumbs">
                     <ol class="breadcrumb pt-1">
                         <?php
                         $breadcrumbs = History::get();
 
+
                         if (empty($breadcrumbs)) : ?>
-                            <li class="breadcrumb-item active align-middle" aria-current="page">Your history will appear here</li>
+                            <li class="breadcrumb-item active align-middle" aria-current="page">Your history will appear
+                                here</li>
                         <?php endif;
                         $isFirst = true && $breadcrumbs !== null && ($_SERVER['REQUEST_URI'] === key($breadcrumbs));
                         foreach ($breadcrumbs ?? [] as $path => $value) :
@@ -259,11 +322,13 @@ $theme_setting = AuthService::getInstance($w)->getSettingByKey('bs5-theme');
                             }
                             if ($isFirst) : ?>
                                 <li class="breadcrumb-item active" aria-current="page">
-                                    <span data-bs-toggle="tooltip" data-bs-placement="bottom" title="<?php echo html_entity_decode($value['name']); ?>"><?php echo html_entity_decode($value['name']); ?></span>
+                                    <span data-bs-toggle="tooltip" data-bs-placement="bottom"
+                                        title="<?php echo html_entity_decode($value['name']); ?>"><?php echo html_entity_decode($value['name']); ?></span>
                                 </li>
                             <?php else : ?>
                                 <li class="breadcrumb-item">
-                                    <a href='<?php echo $path; ?>' data-bs-toggle="tooltip" data-bs-placement="bottom" title="<?php echo html_entity_decode($value['name']); ?>"><?php echo html_entity_decode($value['name']); ?></a>
+                                    <a href='<?php echo $path; ?>' data-bs-toggle="tooltip" data-bs-placement="bottom"
+                                        title="<?php echo html_entity_decode($value['name']); ?>"><?php echo html_entity_decode($value['name']); ?></a>
                                 </li>
                             <?php endif;
                             $isFirst = false;
@@ -273,7 +338,8 @@ $theme_setting = AuthService::getInstance($w)->getSettingByKey('bs5-theme');
             </div>
             <div id="menu-overlay" data-toggle-menu="close"></div>
         </div>
-        <div class="<?php echo $w->ctx("layout-size") == "large" ? "container-fluid px-4" : "container-xl"; ?>" id="body-content">
+        <div class="<?php echo $w->ctx("layout-size") == "large" ? "container-fluid px-4" : "container-xl"; ?>"
+            id="body-content">
             <?php
             if (!empty($error)) {
                 echo HtmlBootstrap5::alertBox($error, "alert-warning");
