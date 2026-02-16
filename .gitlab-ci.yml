@@ -31,6 +31,7 @@ test:
     MYSQL_PASSWORD: cosine
     CONNECTION_URL: mysql://cosine:cosine@cosine-db:3306
   script:
+    - cd test
     - npm ci
     - |
       SQL_CONTAINER_ID=$(docker ps -q -f "label=com.gitlab.gitlab-runner.job.id=$CI_JOB_ID" -f "label=cosine-db")
