@@ -71,7 +71,8 @@ use Html\Form\Select;
                 "id|name" => "object_id",
                 "class" => "form-control",
                 "title" => !empty($object) ? $object->getSelectOptionTitle() : null,
-                "value" => $timelog->object_id ?: $tracking_id,
+                "value" => $timelog->object_id ?: [$tracking_id],
+                "options" => !empty($object) ? [$object] : null,
                 "required" => "required",
                 "source" => $w->localUrl("/timelog/ajaxSearch?index={$timelog->object_class}"),
                 "maxItems" => 1,
@@ -90,7 +91,7 @@ use Html\Form\Select;
             echo new Date([
                 "id|name" => "date_start",
                 "class" => "form-control",
-                "value" => $timelog->getDateStart(),
+                "value" => $timelog->getDateStart() ?? date("Y-m-d"),
                 "required" => true
             ])
             ?>
