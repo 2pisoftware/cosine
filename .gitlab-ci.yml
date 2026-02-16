@@ -1,5 +1,6 @@
 stages:
   - docker
+  - lint
   - test
 
 # Include the steps for docker and playwright

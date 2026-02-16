@@ -89,7 +89,15 @@ $theme_setting = AuthService::getInstance($w)->getSettingByKey('bs5-theme');
                     if (Config::get("{$module}.topmenu") && Config::get("{$module}.active")) :
                         // Check for navigation
                         $array = [];
-                        $menu_link = method_exists($module_service, "menuLink") ? $module_service::getInstance($w)->menuLink() : $w->menuLink($module, is_bool(Config::get("{$module}.topmenu")) ? ucfirst($module) : Config::get("{$module}.topmenu"), $array, null, null, "nav-link");
+                        $menu_link = method_exists($module_service, "menuLink")
+                            ? $module_service::getInstance($w)->menuLink()
+                            : $w->menuLink(
+                                path: $module,
+                                title: is_bool(Config::get("{$module}.topmenu")) ? ucfirst($module) : Config::get("{$module}.topmenu"),
+                                array: $array,
+                                class: "nav-link"
+                            );
+
                         if (!empty($menu_link)) :
                             if (method_exists($module . "Service", "navList") || method_exists($module . "Service", "navigation")) : ?>
                                 <div class="accordion-item">
@@ -218,7 +226,15 @@ $theme_setting = AuthService::getInstance($w)->getSettingByKey('bs5-theme');
                                     // Check for navigation
 
                                     $array = [];
-                                    $menu_link = method_exists($module_service, "menuLink") ? $module_service::getInstance($w)->menuLink() : $w->menuLink($module, is_bool(Config::get("{$module}.topmenu")) ? ucfirst($module) : Config::get("{$module}.topmenu"), $array, null, null, "nav-link");
+                                    $menu_link = method_exists($module_service, "menuLink")
+                                        ? $module_service::getInstance($w)->menuLink()
+                                        : $w->menuLink(
+                                            path: $module,
+                                            title: is_bool(Config::get("{$module}.topmenu")) ? ucfirst($module) : Config::get("{$module}.topmenu"),
+                                            array: $array,
+                                            class: "nav-link"
+                                        );
+
                                     if (!empty($menu_link)) :
                                         if (method_exists($module . "Service", "navList") || method_exists($module . "Service", "navigation")) : ?>
                                             <li class="nav-item dropdown <?php echo $printActiveFlag($module, $module_service); ?>"
