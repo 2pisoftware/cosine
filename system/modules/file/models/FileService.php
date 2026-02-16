@@ -336,7 +336,7 @@ class FileService extends DbService
      * @param int|null $page
      * @param int|null $page_size
      *
-     * @return array[Attachment]
+     * @return array<Attachment>
      */
     public function getAttachments($object_or_table, $id = null, ?int $page = null, ?int $page_size = null): array
     {
@@ -466,28 +466,28 @@ class FileService extends DbService
         //         break;
 
         //     default:
-                $this->w->setLayout(null);
-                // per : https://www.php.net/manual/en/function.readfile.php
-                // readfile() will not present any memory issues on its own.
-                // If you encounter an out of memory error ensure that output buffering is off
+        $this->w->setLayout(null);
+        // per : https://www.php.net/manual/en/function.readfile.php
+        // readfile() will not present any memory issues on its own.
+        // If you encounter an out of memory error ensure that output buffering is off
         if (ob_get_level()) {
             ob_end_clean();
         }
-                $this->w->header('Content-Description: File Transfer');
-                $this->w->header('Content-Type: ' . (empty($att->mimetype) ? "application/octet-stream" : $att->mimetype));
-                $this->w->header('Content-Disposition: attachment; filename="' . ($saveAs ?? $att->filename) . '"');
-                $this->w->header('Expires: 0');
-                $this->w->header('Cache-Control: must-revalidate');
-                $this->w->header('Pragma: public');
+        $this->w->header('Content-Description: File Transfer');
+        $this->w->header('Content-Type: ' . (empty($att->mimetype) ? "application/octet-stream" : $att->mimetype));
+        $this->w->header('Content-Disposition: attachment; filename="' . ($saveAs ?? $att->filename) . '"');
+        $this->w->header('Expires: 0');
+        $this->w->header('Cache-Control: must-revalidate');
+        $this->w->header('Pragma: public');
 
-                $filesystem = $att->getFileSystem();
+        $filesystem = $att->getFileSystem();
         try {
             $this->w->header('Content-Length: ' . $filesystem->fileSize($att->filename));
         } catch (Exception $e) {
             LogService::getInstance($this->w)->error('Attachment write out error: ' . $e->getMessage());
         }
-                echo $filesystem->read($att->filename);
-                exit(0);
+        echo $filesystem->read($att->filename);
+        exit(0);
         // }
     }
 
@@ -570,7 +570,7 @@ class FileService extends DbService
             LogService::getInstance($this->w)->setLogger("FILE_SERVICE")->error("Cannot save file, no filesystem returned");
             return null;
         }
-        
+
         if (!empty($filter_types)) {
             if (!$this->fileIsInAllowedMimetypes($_FILES[$request_key]['tmp_name'], $filter_types, true)) {
                 LogService::getInstance($this->w)->error('File upload is of a restricted type');
@@ -633,7 +633,7 @@ class FileService extends DbService
             $this->w->error("Parent object not found.");
             return false;
         }
-        
+
         $rpl_nil = ["..", "'", '"', ",", "\\", "/"];
         $rpl_ws = [" ", "&", "+", "$", "?", "|", "%", "@", "#", "(", ")", "{", "}", "[", "]", ",", ";", ":"];
 
@@ -651,19 +651,19 @@ class FileService extends DbService
                     $att->title = (!empty($titles[$file_index]) ? $titles[$file_index] : '');
                     $att->description = (!empty($descriptions[$file_index]) ? $descriptions[$file_index] : '');
                     $att->type_code = (!empty($type_codes) ? $type_codes[$file_index] : '');
-                    
+
                     $filesystemPath = "attachments/" . $parentObject->getDbTableName() . '/' . date('Y/m/d') . '/' . $parentObject->id . '/';
                     $filesystem = $this->getFilesystem($this->getFilePath($filesystemPath));
                     if (empty($filesystem)) {
                         LogService::getInstance($this->w)->setLogger("FILE_SERVICE")->error("Cannot save file, no filesystem returned");
                         return null;
                     }
-                    
+
                     $file = new FilePolyfill($filename, $filesystem);
-                    
+
                     $att->adapter = $this->getActiveAdapter();
                     $att->fullpath = str_replace(FILE_ROOT, "", $filesystemPath . $filename);
-                    
+
                     $content = file_get_contents($_FILES[$request_key]['tmp_name'][$file_index]);
 
                     if (!empty($filter_types) && !$this->fileIsInAllowedMimetypes($_FILES[$request_key]['tmp_name'][$file_index], $filter_types, true)) {

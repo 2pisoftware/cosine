@@ -2,6 +2,7 @@
 
 use PHPUnit\Framework\TestCase;
 
+//phpcs:ignore Squiz.Classes.ValidClassName.NotPascalCase
 class report_ReportModuleUnit extends TestCase //\Codeception\Test\Unit
 {
     public function testSQLI()
