@@ -267,7 +267,13 @@
                             if (Config::get("{$module}.topmenu") && Config::get("{$module}.active")) :
                                 // Check for navigation
                                 $service_module = ucfirst($module) . "Service";
-                                $menu_link = method_exists($service_module, "menuLink") ? $service_module::getInstance($w)->menuLink() : $w->menuLink($module, is_bool(Config::get("{$module}.topmenu")) ? ucfirst($module) : Config::get("{$module}.topmenu"));
+                                $menu_link = method_exists($service_module, "menuLink")
+                                    ? $service_module::getInstance($w)->menuLink()
+                                    : $w->menuLink(
+                                        $module,
+                                        is_bool(Config::get("{$module}.topmenu")) ? ucfirst($module) : Config::get("{$module}.topmenu")
+                                    );
+
                                 if ($menu_link !== false) :
                                     if (method_exists($module . "Service", "navigation")) : ?>
                                         <li class="has-dropdown <?php echo $w->_module == $module ? 'active' : ''; ?>" id="topnav_<?php echo $module; ?>">
@@ -297,9 +303,20 @@
                         }
 
                         if (Config::get('system.help_enabled', true) && AuthService::getInstance($w)->allowed('/help/view')) : ?>
-                            <li><?php echo Html::box(WEBROOT . "/help/view/" . $w->_module . ($w->_submodule ? "-" . $w->_submodule : "") . "/" . $w->_action, "<span class='fi-q show-for-medium-up'>?</span><span class='show-for-small'>Help</span>", false, true, 750, 500, "isbox", null, null, null, 'cmfive-help-modal'); ?> </li>
-                        <?php endif;
-                    endif; ?>
+                            <li>
+                                <?php echo Html::box(
+                                    href: WEBROOT . "/help/view/" . $w->_module . ($w->_submodule ? "-" . $w->_submodule : "") . "/" . $w->_action,
+                                    title: "<span class='fi-q show-for-medium-up'>?</span><span class='show-for-small'>Help</span>",
+                                    iframe: true,
+                                    width: 750,
+                                    height: 500,
+                                    modal_window_id: 'cmfive-help-modal'
+                                ); ?>
+                            </li>
+                            <?php
+                        endif;
+                    endif;
+                    ?>
                 </ul> <!-- End left nav section -->
             </section>
         </nav>
@@ -348,8 +365,7 @@
             reveal: {
                 animation_speed: <?php echo defaultVal(Config::get('core_template.foundation.reveal.animation_speed'), 150); ?>,
                 animation: '<?php echo defaultVal(Config::get('core_template.foundation.reveal.animation'), 'fade'); ?>',
-                close_on_background_click: <?php echo defaultVal(Config::get('core_template.foundation.reveal.close_on_background_click'), 'true'); // Must be string value in PHP
-                ?>
+                close_on_background_click: <?php echo defaultVal(Config::get('core_template.foundation.reveal.close_on_background_click'), 'true'); ?>
             },
             accordion: {
                 multi_expand: <?php echo defaultVal(Config::get('core_template.foundation.accordion.multi_expand'), 'true'); ?>,

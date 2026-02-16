@@ -1,29 +1,29 @@
 <?php
 class DbTable extends DbService
 {
-    
+
     private $name;
     private $mode; // create, update, delete, drop
     private $fields = [];
-    
-    
-    function exists()
+
+
+    public function exists()
     {
     }
-    
-    function addField($name, $type, $not_null = false, $default = null)
+
+    public function addField($name, $type, $not_null = false, $default = null)
     {
     }
-    
-    function renameField($oldname, $newname)
+
+    public function renameField($oldname, $newname)
     {
     }
-    
-    function dropField($name)
+
+    public function dropField($name)
     {
     }
-    
-    function execute()
+
+    public function execute()
     {
     }
 }

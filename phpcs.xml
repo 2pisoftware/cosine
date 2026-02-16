@@ -1,25 +1,50 @@
 <?xml version="1.0"?>
-<ruleset xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" name="Cmfive_PHPCS" xsi:noNamespaceSchemaLocation="phpcs.xsd">
-	<description>The coding standard for Cmfive.</description>
+<ruleset xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" name="Cmfive_PHPCS"
+    xsi:noNamespaceSchemaLocation="phpcs.xsd">
+    <description>The coding standard for Cmfive.</description>
 
-	<rule ref="PSR2">
+    <rule
+        ref="PSR2">
         <!-- Cmfive requires the use of underscore prefixes to determine
              which properties should be inserted into the DB -->
         <exclude name="PSR2.Classes.PropertyDeclaration" />
     </rule>
 
-	<rule ref="PSR1">
+    <rule ref="PSR1">
         <!-- Cmfive classes aren't using namespaces and requiring such
              would take a very long time to implement -->
-		<exclude name="PSR1.Classes.ClassDeclaration" />
-	</rule>
+        <exclude name="PSR1.Classes.ClassDeclaration" />
+    </rule>
 
-	<rule ref="Generic.Files.LineLength">
-		<properties>
-			<property name="lineLimit" value="250"/>
-			<property name="absoluteLineLimit" value="0"/>
-		</properties>
-	</rule>
+    <rule ref="PSR1.Files.SideEffects.FoundWithSymbols">
+        <exclude-pattern>web.php</exclude-pattern>
+        <exclude-pattern>CmfiveMigration.php</exclude-pattern>
+        <exclude-pattern>datamigration.php</exclude-pattern>
+        <exclude-pattern>config.php</exclude-pattern>
+    </rule>
 
-	<rule ref="Generic.Arrays.DisallowLongArraySyntax"></rule>
+    <rule
+        ref="Generic.Files.LineLength">
+        <properties>
+            <property name="lineLimit" value="250" />
+            <property name="absoluteLineLimit" value="0" />
+        </properties>
+    </rule>
+
+    <rule
+        ref="Generic.Arrays.DisallowLongArraySyntax"></rule>
+
+    <rule
+        ref="Internal.NoCodeFound">
+        <severity>0</severity>
+    </rule>
+
+    <rule
+        ref="Squiz.Classes.ValidClassName.NotCamelCaps">
+        <severity>0</severity>
+    </rule>
+
+    <rule ref="PSR1.Methods.CamelCapsMethodName.NotCamelCaps">
+        <severity>0</severity>
+    </rule>
 </ruleset>

@@ -54,8 +54,28 @@ class CmfiveChannelsModule extends \Codeception\Module
      * @param string $post_read_data
      * @return void
      */
-    public function createEmailChannel($I, $channel_name, $is_active, $do_processing, $email_protocol, $server_url, $username, $password, $port, $use_auth, $verify_peer, $allow_self_signed_certificates, $folder_directory, $to, $from, $cc, $subject, $body, $post_read_action, $post_read_data)
-    {
+    public function createEmailChannel(
+        $I,
+        $channel_name,
+        $is_active,
+        $do_processing,
+        $email_protocol,
+        $server_url,
+        $username,
+        $password,
+        $port,
+        $use_auth,
+        $verify_peer,
+        $allow_self_signed_certificates,
+        $folder_directory,
+        $to,
+        $from,
+        $cc,
+        $subject,
+        $body,
+        $post_read_action,
+        $post_read_data
+    ) {
         $I->click("Add Email Channel");
         $I->waitForElement("//div[contains(@style,'visible')][@id='cmfive-modal']"); //"#channelform"
         $I->waitForElement("//input[@id='name']");
@@ -128,7 +148,7 @@ class CmfiveChannelsModule extends \Codeception\Module
         $I->click("Save");
     }
 
-        /**
+    /**
      * Edits an Email Channel.
      *
      * @param CmfiveUI $I
@@ -153,8 +173,28 @@ class CmfiveChannelsModule extends \Codeception\Module
      * @param string $post_read_data
      * @return void
      */
-    public function editEmailChannel($I, $channel_name, $is_active, $do_processing, $email_protocol, $server_url, $username, $password, $port, $use_auth, $verify_peer, $allow_self_signed_certificates, $folder_directory, $to, $from, $cc, $subject, $body, $post_read_action, $post_read_data)
-    {
+    public function editEmailChannel(
+        $I,
+        $channel_name,
+        $is_active,
+        $do_processing,
+        $email_protocol,
+        $server_url,
+        $username,
+        $password,
+        $port,
+        $use_auth,
+        $verify_peer,
+        $allow_self_signed_certificates,
+        $folder_directory,
+        $to,
+        $from,
+        $cc,
+        $subject,
+        $body,
+        $post_read_action,
+        $post_read_data
+    ) {
         $I->click("Edit");
         // For some reason waitForElement("#channelform")
         // is fine in the createWebChannel function but not here.
@@ -256,8 +296,28 @@ class CmfiveChannelsModule extends \Codeception\Module
      * @param string $post_read_data
      * @return void
      */
-    public function verifyEmailChannel($I, $channel_name, $is_active, $do_processing, $email_protocol, $server_url, $username, $password, $port, $use_auth, $verify_peer, $allow_self_signed_certificates, $folder_directory, $to, $from, $cc, $subject, $body, $post_read_action, $post_read_data)
-    {
+    public function verifyEmailChannel(
+        $I,
+        $channel_name,
+        $is_active,
+        $do_processing,
+        $email_protocol,
+        $server_url,
+        $username,
+        $password,
+        $port,
+        $use_auth,
+        $verify_peer,
+        $allow_self_signed_certificates,
+        $folder_directory,
+        $to,
+        $from,
+        $cc,
+        $subject,
+        $body,
+        $post_read_action,
+        $post_read_data
+    ) {
         $I->click("Edit");
         // $I->waitForElement("#channelform");
         $I->waitForElement("//div[contains(@style,'visible')][@id='cmfive-modal']");

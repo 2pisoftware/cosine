@@ -1,4 +1,6 @@
-<?php namespace Html\Form;
+<?php
+
+namespace Html\Form;
 
 /**
  * A custom Html\Form element to create an autocomplete using jQueryUI
@@ -26,8 +28,18 @@ class Autocomplete extends \Html\Form\FormElement
     public $readonly;
 
     public static $_excludeFromOutput = [
-        'id', 'name', 'required', 'value', 'minlength', 'class', 'style',
-        'options', '_prefix', 'label', 'source', 'title'
+        'id',
+        'name',
+        'required',
+        'value',
+        'minlength',
+        'class',
+        'style',
+        'options',
+        '_prefix',
+        'label',
+        'source',
+        'title'
     ];
 
     /**
@@ -40,7 +52,7 @@ class Autocomplete extends \Html\Form\FormElement
      * @param Mixed $minlength
      * @return \Html\Form\Autocomplete this
      */
-    function setMinlength($minlength)
+    public function setMinlength($minlength)
     {
         $this->minlength = $minlength;
 

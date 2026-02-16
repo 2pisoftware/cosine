@@ -1,4 +1,5 @@
 <?php
+
 /**
 From http://ottopress.com/2012/internationalization-youre-probably-doing-it-wrong/
 
@@ -10,7 +11,7 @@ From http://ottopress.com/2012/internationalization-youre-probably-doing-it-wron
 class TranslationService extends DbService
 {
 
-    function translate($key, $parameters = [])
+    public function translate($key, $parameters = [])
     {
 
         $lang = Config::get('system.language');

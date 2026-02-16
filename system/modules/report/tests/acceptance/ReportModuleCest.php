@@ -22,11 +22,13 @@ class ReportModuleCest
         // $I->amOnPage($path . "?" . $query . "&format=html");
         // $I->See('known');
         // $I->See('precedent');
+
         $I->createTemplate(
             $I,
             'Test Template',
             'Report',
             'Templates',
+            //phpcs:ignore
             "<table width='100%' align='center' class='form-table' cellpadding='1'><tr><td colspan='2' style='border:none;'><img width='400' src='http://2pisoftware.com/wp-content/uploads/2014/02/logo-transparent-742x1901.png' style='width: 400px;' />d><td colspan='2' style='border:none; text-align:right;'>Software<br/>Millowine Ln, Bega, NSW 2550<br/>2pisoftware.com<br/>159945454<br/>42159945454</td>r>able> <br/><br/>	Pedigree is: {% for th in results['headers'] %}{{th}}<br/> {% endfor %}"
         );
 
