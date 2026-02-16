@@ -4,7 +4,7 @@ class BannerService extends DbService
 {
     public function getAuthBanner()
     {
-        $banner = LookupService::getInstance($this->w)->getLookupByTypeAndCodeV2("notification", "auth");
+        $banner = LookupService::getInstance($this->w)->getLookupByTypeAndCodeV2("notification", "authed");
 
         if (empty($banner)) {
             return null;
