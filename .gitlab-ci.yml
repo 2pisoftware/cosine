@@ -32,7 +32,10 @@ test:
     CONNECTION_URL: mysql://cosine:cosine@cosine-db:3306
   script:
     - cd test
-    - npm-auth.sh
+    #- npm-auth.sh can't use this because our dockerfile doesn't have it
+    - REGISTRY_URL="$CI_SERVER_URL/api/v4/projects/${CI_PROJECT_ID}/packages/npm/"
+    - npm config set $SCOPE:registry="$REGISTRY_URL"
+    - npm config set //${CI_SERVER_URL#https://}/api/v4/projects/${CI_PROJECT_ID}/packages/npm/:_authToken="$CI_JOB_TOKEN"
     - npm ci
     - |
       SQL_CONTAINER_ID=$(docker ps -q -f "label=com.gitlab.gitlab-runner.job.id=$CI_JOB_ID" -f "label=cosine-db")
