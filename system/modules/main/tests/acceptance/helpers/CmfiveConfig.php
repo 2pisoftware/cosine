@@ -9,6 +9,7 @@ class CmfiveConfig extends \Codeception\Module
     private $CACHE_PATH = '/../../cache/config.cache';
     private $CONFIG_CLASS_PATH = '/../../system/classes/Config.php';
 
+    //phpcs:ignore PSR2.Methods.MethodDeclaration.Underscore
     public function _before($test)
     {
         $base = $this->getModule('Tests\Support\Helper\CmfiveSite')->getInstallPath();

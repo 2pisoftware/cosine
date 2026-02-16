@@ -243,7 +243,11 @@ class Web
                 }
 
                 require_once str_replace('\\', '/', $info->getPathname());
-                file_put_contents($classdirectory_cache_file, '// ' . implode("\\", $namespace_parts) . " " . $cause . "\n" . '$this->_classdirectory["' . $className . '"]="' . str_replace('\\', '/', $info->getPathname()) . '";' . "\n\n", FILE_APPEND);
+                file_put_contents(
+                    $classdirectory_cache_file,
+                    '// ' . implode("\\", $namespace_parts) . " " . $cause . "\n" . '$this->_classdirectory["' . $className . '"]="' . str_replace('\\', '/', $info->getPathname()) . '";' . "\n\n",
+                    FILE_APPEND
+                );
                 $this->_classdirectory[$className] = str_replace('\\', '/', $info->getPathname());
                 return true;
             }
@@ -316,6 +320,7 @@ class Web
      * eg /site/users/do/2 + site/index.php  => [users,do,2]
      * Thanks to:
      * http://www.phpaddiction.com/tags/axial/url-routing-with-php-part-one/
+     * phpcs:disable PSR2.Methods.MethodDeclaration.Underscore
      */
     public function _getCommandPath($url = null)
     {
@@ -551,7 +556,7 @@ class Web
                     $this->ctx('error', "An error occoured, if this message persists please contact your administrator.");
                 });
             }
-            
+
 
             // Set the timezone from Config
             $timezone = Config::get('system.timezone');
@@ -804,6 +809,7 @@ class Web
                 // send security headers before actions to avoid actions echoing out content
                 // @todo move security header configuration to system config.php
 
+                //phpcs:ignore
                 $this->header("Feature-Policy", "ambient-light-sensor 'none'; autoplay 'none'; accelerometer 'none'; camera 'none'; display-capture 'none'; document-domain 'none'; encrypted-media 'none'; fullscreen 'none'; geolocation 'none'; gyroscope 'none'; magnetometer 'none'; microphone 'none'; midi 'none'; payment 'none'; picture-in-picture 'none'; speaker 'none'; sync-xhr 'self'; usb 'none'; wake-lock 'none'; webauthn 'none'; vr 'none'");
 
                 $this->header("Strict-Transport-Security", "max-age=63072000");
@@ -901,6 +907,7 @@ class Web
      * core_web_after_post_[module]_[submodule]_[action]
      *
      * @param string $type eg. before / after
+     * phpcs:disable PSR2.Methods.MethodDeclaration.Underscore
      */
     public function _callWebHooks($type)
     {
@@ -1561,11 +1568,11 @@ class Web
         // set translations to partial module
         // $oldModule = $this->currentModule();
         // if ($oldModule != $module) {
-            // try {
-            //     $this->setTranslationDomain($module);
-            // } catch (Exception $e) {
-            //     LogService::getInstance($this)->setLogger('I18N')->error($e->getMessage());
-            // }
+        // try {
+        //     $this->setTranslationDomain($module);
+        // } catch (Exception $e) {
+        //     LogService::getInstance($this)->setLogger('I18N')->error($e->getMessage());
+        // }
         // }
 
         // save current output buffer

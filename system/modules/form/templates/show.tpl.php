@@ -42,8 +42,19 @@
                                 <td><?php echo $field->getAdditionalDetails(); ?></td>
                                 <td>
                                     <?php
-                                    echo HtmlBootstrap5::box(href: "/form-field/edit/" . $field->id . "?form_id=" . $form->id, title: "Edit", button: true, class: "btn btn-sm btn-secondary");
-                                    echo HtmlBootstrap5::b(href: "/form-field/delete/" . $field->id, title: "Delete", class: "btn btn-sm btn-danger", confirm: "Are you sure you want to delete this form field? (WARNING: there may be existing data saved to this form field!)");
+                                    echo HtmlBootstrap5::box(
+                                        href: "/form-field/edit/" . $field->id . "?form_id=" . $form->id,
+                                        title: "Edit",
+                                        button: true,
+                                        class: "btn btn-sm btn-secondary"
+                                    );
+
+                                    echo HtmlBootstrap5::b(
+                                        href: "/form-field/delete/" . $field->id,
+                                        title: "Delete",
+                                        class: "btn btn-sm btn-danger",
+                                        confirm: "Are you sure you want to delete this form field? (WARNING: there may be existing data saved to this form field!)"
+                                    );
                                     ?>
                                 </td>
                             </tr>
@@ -64,7 +75,9 @@
 
                         await fetch("/form-field/move/<?php echo $form->id; ?>", {
                             method: "POST",
-                            body: JSON.stringify({ ordering: ordering }),
+                            body: JSON.stringify({
+                                ordering: ordering
+                            }),
                         });
                     };
                 </script>

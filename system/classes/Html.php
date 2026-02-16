@@ -756,7 +756,10 @@ class Html
             }
             $buffer .= "</div>";
         }
+
+        //phpcs:ignore
         $buffer .= "<script>$(function(){try{\$('.ckeditor').each(function(){CKEDITOR.replace(this)})}catch(err){}});</script>";
+        //phpcs:ignore
         $buffer .= "<script>$(function(){try{\$('.codemirror').each(function(){var editor = CodeMirror.fromTextArea($(this), {lineNumbers: true, mode: 'text/html', matchBrackets: true, viewportMargin: Infinity}); editor.refresh()})}catch(err){}});</script>";
 
         // Expermiental
@@ -1128,12 +1131,14 @@ class Html
             . '<div class="small-12 medium-6 small-text-center medium-text-left columns" style="margin-top: 5px;">Showing ' . $starting_item . ' - ' . ($starting_item + $count_items - 1) . ' of ' . $total_results . '</div>'
             . '<div class="small-12 medium-6 columns">';
         if ($num_results > 0) {
+            //phpcs:ignore
             $buffer .= '<div class="row-fluid clearfix"><span class="small-3 medium-6 columns small-text-center medium-text-right" style="margin-top: 5px;">Page:</span><select onchange="location = this.value;" class="small-9 medium-6 columns right">';
             // Build URL for dropdown pagination.
             $dropdown_url_string = $url_parsed['path'];
             $dropdown_url_string .= (empty($url_parsed['query']) ? "?" : '?' . $url_parsed['query'] . '&') . $sort_query_param . '=' . $sort . '&' . $sort_direction_param . '=' . $sort_direction;
 
             for ($i = 1; $i <= $num_results; $i++) {
+                //phpcs:ignore
                 $buffer .= '<option' . ($i == $page ? ' selected="selected"' : '') . ' value="' . $dropdown_url_string . '&' . $page_query_param . '=' . $i . (!empty($url_parsed['fragment']) ? '#' . $url_parsed['fragment'] : '') . '">' . $i . '</option>';
             }
             $buffer .= '</select></div>';
@@ -1208,12 +1213,14 @@ class Html
             . '<div class="small-12 medium-6 small-text-center medium-text-left columns" style="margin-top: 5px;">Showing ' . $starting_item . ' - ' . ($starting_item + $count_items - 1) . ' of ' . $total_results . '</div>'
             . '<div class="small-12 medium-6 columns">';
         if ($num_results > 0) {
+            //phpcs:ignore
             $buffer .= '<div class="row-fluid clearfix"><span class="small-3 medium-6 columns small-text-center medium-text-right" style="margin-top: 5px;">Page:</span><select onchange="location = this.value;" class="small-9 medium-6 columns right">';
             // Build URL for dropdown pagination
             $dropdown_url_string = $url_parsed['path'];
             $dropdown_url_string .= (empty($url_parsed['query']) ? "?" : '?' . $url_parsed['query'] . '&') . $sort_query_param . '=' . $sort . '&' . $sort_direction_param . '=' . $sort_direction;
 
             for ($i = 1; $i <= $num_results; $i++) {
+                //phpcs:ignore
                 $buffer .= '<option' . ($i == $page ? ' selected="selected"' : '') . ' value="' . $dropdown_url_string . '&' . $page_query_param . '=' . $i . (!empty($url_parsed['fragment']) ? '#' . $url_parsed['fragment'] : '') . '">' . $i . '</option>';
             }
             $buffer .= '</select></div>';
@@ -1236,6 +1243,7 @@ class Html
                     $sort_asc_string = $url_parsed['path'] . (empty($url_parsed['query']) ? '?' : '?' . $url_parsed['query'] . '&') . $sort_direction_asc_query . (!empty($url_parsed['fragment']) ? '#' . $url_parsed['fragment'] : '');
                     $sort_desc_string = $url_parsed['path'] . (empty($url_parsed['query']) ? '?' : '?' . $url_parsed['query'] . '&') . $sort_direction_desc_query . (!empty($url_parsed['fragment']) ? '#' . $url_parsed['fragment'] : '');
                 }
+                //phpcs:ignore
                 $buffer .= '<th' . (is_array($title) && $title[0] === $sort ? ' class="sorted_column"' : '') . '>' . (is_array($title) ? '<a href="' . ($title[0] === $sort && $sort_direction === 'asc' ? $sort_desc_string : $sort_asc_string) . '">' . $title[1] . '</a>' : $title)
                     . (is_array($title) ? '<div class="right">'
                         . ($title[0] !== $sort || ($title[0] === $sort && $sort_direction !== 'asc') ? '<a class="sort-ascending" href="' . $sort_asc_string . '"><i class="fi-play sort-icons "></i></a>' : '')
@@ -1537,6 +1545,7 @@ class Html
                                 continue;
                             }
                         }
+                        //phpcs:ignore
                         $buffer .= "<li" . (!$isFirst ? "><a href='" . $path . "'><span data-tooltip aria-haspopup='true' title='" . $value['name'] . "' ><div class='breadcrumb-content'>" . $value['name'] . "</div></span></a>" : " class='current'><span data-tooltip aria-haspopup='true' title='" . $value['name'] . "' ><div class='breadcrumb-content'>" . $value['name'] . "</div></span>") . "</li>";
                         $isFirst = false;
                     }
@@ -1560,6 +1569,7 @@ class Html
      */
     public static function multiFileUpload($name)
     {
+        //phpcs:disable
         $buffer = <<<UPLOAD
             <div id='multiFileUpload_{$name}'>
                 <div id='{$name}_file_0' class='row-fluid clearfix multiFileUploadRow'>
@@ -1589,6 +1599,7 @@ class Html
                 });
             </script>
 UPLOAD;
+        //phpcs:enable
         return $buffer;
     }
 

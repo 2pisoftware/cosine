@@ -8,7 +8,10 @@
 
             with
             <span class="fw-bold">
-                <?php echo HtmlBootstrap5::a($w->localUrl("/task/tasklist?task__creator_id=&task__task-group-id=&task__type=&task__priority=&task__status=&task__is-closed=0&task__dt-from=&task__dt-to=&task__filter-urgent=0&task__assignee-id="), $count_taskgroup_tasks . " task" . ($count_taskgroup_tasks == 1 ? "" : "s")) ?>
+                <?php echo HtmlBootstrap5::a(
+                    href: $w->localUrl("/task/tasklist?task__creator_id=&task__task-group-id=&task__type=&task__priority=&task__status=&task__is-closed=0&task__dt-from=&task__dt-to=&task__filter-urgent=0&task__assignee-id="),
+                    title: $count_taskgroup_tasks . " task" . ($count_taskgroup_tasks == 1 ? "" : "s")
+                ) ?>
             </span>
             overall
         </p>
@@ -43,6 +46,7 @@
 
                 <li class="list-group-item">
                     <?php echo HtmlBootstrap5::a(
+                        //phpcs:ignore
                         $w->localUrl("/task/tasklist?task__is-closed=0&task__filter-urgent=0&task__assignee-id=" . AuthService::getInstance($w)->user()->id . "&task__dt-from=" . formatDate(time(), 'Y-m-d') . "&task__dt-to=" . formatDate((time() + (60 * 60 * 24 * 7)), "Y-m-d")),
                         $count_due_soon . " due"
                     ); ?>
