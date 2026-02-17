@@ -18,9 +18,6 @@ $theme_setting = AuthService::getInstance($w)->getSettingByKey('bs5-theme');
     <script>
         var exports = {};
     </script>
-    <script>
-        var exports = {};
-    </script>
     <?php
     CmfiveStyleComponentRegister::registerComponent('app', new CmfiveStyleComponent(Config::get('system.style_override', "/system/templates/base/dist/app.css")));
     CmfiveScriptComponentRegister::registerComponent('app', new CmfiveScriptComponent("/system/templates/base/dist/app.js", ['type' => 'module']));
