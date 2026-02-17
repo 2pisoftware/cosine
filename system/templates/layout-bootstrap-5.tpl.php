@@ -292,14 +292,6 @@ $theme_setting = AuthService::getInstance($w)->getSettingByKey('bs5-theme');
                                 }
                             }
                             ?>
-                            <?php
-                            $inject = $w->callHook('core_template', 'menu');
-                            if (!empty($inject)) {
-                                foreach ($inject as $i) {
-                                    echo "<li>{$i}</li>";
-                                }
-                            }
-                            ?>
                         </ul>
                     </div>
                 </nav>
