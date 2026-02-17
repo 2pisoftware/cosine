@@ -36,6 +36,7 @@ test:
     - npm config set @2pisoftware:registry="$CI_SERVER_URL/api/v4/groups/${CI_PROJECT_NAMESPACE_ID}/-/packages/npm/"
     - npm config set //${CI_SERVER_URL#https://}/:_authToken="$CI_JOB_TOKEN"
     - npm ci
+    - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" "$CI_REGISTRY"
     - |
       SQL_CONTAINER_ID=$(docker ps -q -f "label=com.gitlab.gitlab-runner.job.id=$CI_JOB_ID" -f "label=cosine-db")
       DOCKER_AUTH_CONFIG=$(printf '{"auths": {"%s": {"username": "%s","password": "%s"}}}' "$CI_REGISTRY" "$CI_REGISTRY_USER" "$CI_REGISTRY_PASSWORD")
