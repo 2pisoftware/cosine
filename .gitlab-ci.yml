@@ -13,6 +13,8 @@ include:
 
 test:
   stage: test
+  tags:
+    - largemem
   services:
     - name: docker:28.4.0-dind
       # explicitly disable tls to avoid docker startup interruption
@@ -38,7 +40,7 @@ test:
     - npm ci
     - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" "$CI_REGISTRY"
     - |
-      SQL_CONTAINER_ID=$(docker ps -q -f "label=com.gitlab.gitlab-runner.job.id=$CI_JOB_ID" -f "label=cosine-db")
+      SQL_CONTAINER_ID=$(docker ps -q -f "label=cosine-db")
       DOCKER_AUTH_CONFIG=$(printf '{"auths": {"%s": {"username": "%s","password": "%s"}}}' "$CI_REGISTRY" "$CI_REGISTRY_USER" "$CI_REGISTRY_PASSWORD")
       DOCKER_IMAGE=$DOCKER_TAG
       npx playwright test
