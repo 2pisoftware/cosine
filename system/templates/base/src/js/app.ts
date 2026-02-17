@@ -6,6 +6,7 @@ import { Modal, Tooltip } from 'bootstrap';
 import { Sortable } from './components/Sortable';
 
 import '../scss/app.scss';
+import { ScrollPosComponent } from './components/ScrollPos';
 
 type window = Window & typeof globalThis & { cmfiveEventBus: Comment, cmfive: { toast: typeof CmfiveToast } };
 
@@ -229,6 +230,8 @@ export class Cmfive {
             m.removeEventListener('click', this.linkClickListener);
             m.addEventListener('click', this.linkClickListener);
         })
+
+        ScrollPosComponent.bindInteractions();
     }
 }
 
