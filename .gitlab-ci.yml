@@ -19,31 +19,33 @@ test:
     - name: docker:28.4.0-dind
       # explicitly disable tls to avoid docker startup interruption
       command: ["--tls=false"]
-    #- name: mysql:8.0
-    #  alias: cosine-db
-    #  command: [ "--default-authentication-plugin=mysql_native_password" ]
+    - name: mysql:8.0
+      alias: cosine-db
+      command: [ "--default-authentication-plugin=mysql_native_password" ]
   image: $CI_REGISTRY/2pisoftware/cosine/cosine-tests:1.2.7
   variables:
     DOCKER_TLS_CERTDIR: ""
     DOCKER_HOST: tcp://docker:2375
     DOCKER_DRIVER: overlay2
-    DOCKER_IMAGE: $DOCKER_TAG
-    #MYSQL_ROOT_PASSWORD: root
-    #MYSQL_HOST: cosine-db
-    #MYSQL_USER: cosine
-    #MYSQL_PASSWORD: cosine
-    #CONNECTION_URL: mysql://cosine:cosine@cosine-db:3306
+    MYSQL_ROOT_PASSWORD: root
+    MYSQL_HOST: cosine-db
+    MYSQL_USER: cosine
+    MYSQL_PASSWORD: cosine
+    CONNECTION_URL: mysql://cosine:cosine@cosine-db:3306
   script:
+    - docker ps --format '{{.ID}} {{.Image}} {{.Labels}}'
+
     - cd test
     #- npm-auth.sh can't use this because our dockerfile doesn't have it
     - npm config set @2pisoftware:registry="$CI_SERVER_URL/api/v4/groups/${CI_PROJECT_NAMESPACE_ID}/-/packages/npm/"
     - npm config set //${CI_SERVER_URL#https://}/:_authToken="$CI_JOB_TOKEN"
     - npm ci
     - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" "$CI_REGISTRY"
-      # SQL_CONTAINER_ID=$(docker ps -q -f "label=cosine-db")
     - |
+      SQL_CONTAINER_ID=$(docker ps -q -f "label=cosine-db")
       DOCKER_AUTH_CONFIG=$(printf '{"auths": {"%s": {"username": "%s","password": "%s"}}}' "$CI_REGISTRY" "$CI_REGISTRY_USER" "$CI_REGISTRY_PASSWORD")
-      npx playwright test
+      DOCKER_IMAGE=$DOCKER_TAG
+      DEBUG=testcontainers* npx playwright test
   dependencies:
   - docker-build
   artifacts:
