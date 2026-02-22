@@ -22,7 +22,9 @@ test:
     - name: mysql:8.0
       alias: cosine-db
       command: [ "--default-authentication-plugin=mysql_native_password" ]
-  image: $CI_REGISTRY/2pisoftware/cosine/cosine-tests:1.2.7
+  before_script:
+    - docker info
+  image: $CI_REGISTRY/2pisoftware/cosine/cosine-tests:1.2.8
   variables:
     DOCKER_TLS_CERTDIR: ""
     DOCKER_HOST: tcp://docker:2375
@@ -33,8 +35,6 @@ test:
     MYSQL_PASSWORD: cosine
     CONNECTION_URL: mysql://cosine:cosine@cosine-db:3306
   script:
-    - docker ps --format '{{.ID}} {{.Image}} {{.Labels}}'
-
     - cd test
     #- npm-auth.sh can't use this because our dockerfile doesn't have it
     - npm config set @2pisoftware:registry="$CI_SERVER_URL/api/v4/groups/${CI_PROJECT_NAMESPACE_ID}/-/packages/npm/"
