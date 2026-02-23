@@ -24,8 +24,8 @@ export default defineConfig({
 
 	reporter: [["junit", { outputFile: "./test-results/junit.xml" }]],
 	use: {
-		trace: "retain-on-failure",
-		screenshot: "only-on-failure",
+		trace: "on",
+		screenshot: "on",
 	},
 
   globalSetup: new URL(import.meta.resolve("@2pisoftware/cosine-tests/dist/global.setup.js")).pathname,

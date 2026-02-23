@@ -95,7 +95,7 @@ test("Edit", async ({ adminPage }) => {
 
 	await adminPage
 		.getByRole("combobox", { name: "Status" })
-		.selectOption(TaskStatus.Assigned);
+		.selectOption(TaskStatus.Live);
 	await adminPage
 		.getByRole("combobox", { name: "Assigned To" })
 		.selectOption("Unassigned");
@@ -103,5 +103,5 @@ test("Edit", async ({ adminPage }) => {
 	await adminPage.getByRole("button", { name: "Save" }).click();
 	await expect(
 		adminPage.getByRole("combobox", { name: "Status Required" }),
-	).toHaveValue(TaskStatus.Assigned);
+	).toHaveValue(TaskStatus.Live);
 });
