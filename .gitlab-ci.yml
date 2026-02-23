@@ -2,6 +2,7 @@ stages:
   - docker
   - lint
   - test
+  - merge_reports
 
 # Include the steps for docker and playwright
 include:
@@ -13,6 +14,7 @@ include:
 
 test:
   stage: test
+  parallel: 2
   tags:
     - largemem
   services:
@@ -45,16 +47,27 @@ test:
       SQL_CONTAINER_ID=$(docker ps -q -f "label=cosine-db")
       DOCKER_AUTH_CONFIG=$(printf '{"auths": {"%s": {"username": "%s","password": "%s"}}}' "$CI_REGISTRY" "$CI_REGISTRY_USER" "$CI_REGISTRY_PASSWORD")
       DOCKER_IMAGE=$DOCKER_TAG
-      npx playwright test
+      npx playwright test --shard=$CI_NODE_INDEX/$CI_NODE_TOTAL
   dependencies:
   - docker-build
   artifacts:
-    when: on_failure
+    when: always
     paths:
+      - "./test/blob-report"
       - "./test/test-results"
-      - "./test/test-results/junit.xml"
     exclude:
       - "./test/test-results/composer_cache.tar"
     expire_in: 1 day
+
+merge_results:
+  stage: merge_reports
+  image: $CI_REGISTRY/2pisoftware/cosine/cosine-tests:1.2.9
+  script:
+    - npx playwright merge-reports --reporter junit ./test/blob-report > junit.xml
+  artifacts:
+    when: always
+    expire_in: 1 day
+    paths:
+      - junit.xml
     reports:
-      junit: "./test/test-results/junit.xml"
+      junit: junit.xml
