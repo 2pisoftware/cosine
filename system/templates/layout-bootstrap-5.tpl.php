@@ -1,10 +1,12 @@
 <?php
 
+
 /** @var Web $w */
 $theme_setting = AuthService::getInstance($w)->getSettingByKey('bs5-theme');
 ?>
 <!DOCTYPE html>
-<html class="theme theme--<?php echo !empty($theme_setting->id) ? $theme_setting->setting_value : 'dark'; ?>"
+<html
+    class="theme theme--<?php echo !empty($theme_setting->id) ? $theme_setting->setting_value : 'dark'; ?>"
     data-bs-theme="<?php echo !empty($theme_setting->id) ? ($theme_setting->setting_value === "dark" ? "dark" : "light") : "dark" ?>">
 
 <head>
@@ -30,14 +32,12 @@ $theme_setting = AuthService::getInstance($w)->getSettingByKey('bs5-theme');
     </script>
 </head>
 
+
 <body id="cmfive-body">
     <div id="app">
-        <?php if (Config::get('system.test_mode') === true) : ?>
+        <?php if (BannerService::getInstance($w)->getAuthBanner()) : ?>
             <div class="alert alert-primary d-flex justify-content-center align-items-center text-center mb-0" role="alert">
-                <i class="bi bi-exclamation-triangle-fill"></i>&nbsp;
-                <div>
-                    <?php echo Config::get('system.test_mode_message'); ?>
-                </div>
+                <?php echo BannerService::getInstance($w)->getAuthBanner(); ?>
             </div>
         <?php endif; ?>
         <div id="offscreen-menu" class="d-flex flex-column pb-0">
@@ -84,6 +84,7 @@ $theme_setting = AuthService::getInstance($w)->getSettingByKey('bs5-theme');
                         Config::promoteSandbox();
                         Config::set($module, $module_service::serviceConfig());
                     }
+
 
                     // Check if config is set to display on topmenu
                     if (Config::get("{$module}.topmenu") && Config::get("{$module}.active")) :
@@ -167,8 +168,7 @@ $theme_setting = AuthService::getInstance($w)->getSettingByKey('bs5-theme');
         <div id="content">
             <div class="container-fluid p-0 py-2 p-lg-2" id="navbar">
                 <?php $active_modules = array_filter($w->modules(), fn($m) => !empty(Config::get("{$m}.topmenu")) && Config::get("{$m}.active") === true); ?>
-                <nav
-                    class="<?php echo count($active_modules) <= 9 ? "container-xl" : "container-fluid"; ?> navbar navbar-expand navbar-light bg-light p-0 p-lg-2">
+                <nav class="<?php echo count($active_modules) <= 9 ? "container-xl" : "container-fluid"; ?> navbar navbar-expand navbar-light bg-light p-0 p-lg-2">
                     <div class="container-fluid justify-content-start">
                         <ul class="navbar-nav me-md-4">
                             <li class="nav-item"><a class="nav-link nav-icon" data-toggle-menu="open"><i
@@ -201,6 +201,7 @@ $theme_setting = AuthService::getInstance($w)->getSettingByKey('bs5-theme');
                                 if (method_exists($module_service, "isInInjectedTopLevelModule")) {
                                     return $module_service::isInInjectedTopLevelModule($w) ? 'active' : '';
                                 }
+
 
                                 $ignoreActiveList = Config::get("{$module}.ignore_topmenu_active");
                                 if (!empty($ignoreActiveList) && in_array($w->_module . '-' . $w->_submodule, $ignoreActiveList)) {
