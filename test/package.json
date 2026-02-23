@@ -10,7 +10,7 @@
         "test": "./pull.sh && npx playwright test"
     },
     "dependencies": {
-        "@2pisoftware/cosine-tests": "^1.2.6",
+        "@2pisoftware/cosine-tests": "^1.2.9",
         "typescript": "^5.9.3"
     },
     "devDependencies": {
