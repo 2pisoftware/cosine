@@ -141,6 +141,18 @@ class InsightService extends DbService
     // export a recordset as CSV
     public function exportcsv($run_data, $title)
     {
+        $zip = new ZipArchive();
+
+        $name = "insight.zip";
+
+        try {
+            unlink($name);
+        } catch (Exception $e) {
+            // ignore
+        }
+
+        $zip->open($name, ZipArchive::CREATE);
+
         // set filename
         $filename = str_replace(" ", "_", $title) . "_" . date("Y.m.d-H.i") . ".csv";
         foreach ($run_data as $table) {
@@ -152,16 +164,22 @@ class InsightService extends DbService
                 }
                 $csv = new ParseCsv\Csv();
                 $csv->output_filename = $filename;
-                // ignore lib wrapper csv->output, to keep control over header re-sends!
 
-                $this->w->out($csv->unparse($table->data, $hds, null, null, null));
-                // can't use this way without commenting out header section, which composer won't like
+                $zip->addFromString(
+                    str_replace(" ", "_", $title) . ".csv",
+                    $csv->unparse($table->data, $hds, null, null, null)
+                );
             }
         }
 
-        $this->w->sendHeader("Content-type", "application/csv");
-        $this->w->sendHeader("Content-Disposition", "attachment; filename=" . $filename);
+        $zip->close();
+
+        header('Content-Type: application/zip');
+        header('Content-disposition: attachment; filename="' . $name . '"');
+        header('Content-Length: ' . filesize($name));
         $this->w->setLayout(null);
+
+        readfile($name);
     }
 
     // export a recordset as PDF
