@@ -1,4 +1,5 @@
 .gitmodules
+.worktrees/
 
 /config.php
 /cache/
