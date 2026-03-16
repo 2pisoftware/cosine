@@ -21,7 +21,11 @@ services:
       retries: 20
 
   cosine:
-    image: cosine:test
+    build:
+      context: .
+      dockerfile: dev.dockerfile
+      args:
+        - BASE_IMAGE=${COSINE_IMAGE-ghcr.io/2pisoftware/cosine:develop}
     container_name: cosine
     environment:
       TZ: Australia/Sydney
