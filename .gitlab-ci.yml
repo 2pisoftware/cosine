@@ -27,6 +27,10 @@ include:
 php-lint:
   allow_failure: true
 
+docker-build:
+  tags:
+    - largemem_x86
+
 # Configure Playwright tests
 playwright-test:
   services:
