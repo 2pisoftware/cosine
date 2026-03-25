@@ -11,11 +11,11 @@ include:
       stage: docker
       platforms: linux/amd64,linux/arm64
 
-  - component: $CI_SERVER_FQDN/2pisoftware/pipelines/php/lint@2.2.0
+  - component: $CI_SERVER_FQDN/2pisoftware/pipelines/php/lint@2.2.1
     inputs:
       ignore: "*.js,*.css,system/lib/*"
 
-  - component: $CI_SERVER_FQDN/2pisoftware/pipelines/php/test@v2.2.0
+  - component: $CI_SERVER_FQDN/2pisoftware/pipelines/php/test@v2.2.1
 
 
 php-lint:
