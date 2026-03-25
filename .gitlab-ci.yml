@@ -15,7 +15,7 @@ include:
     inputs:
       ignore: "*.js,*.css,system/lib/*"
 
-  - component: $CI_SERVER_FQDN/2pisoftware/pipelines/php/test@v2.2.1
+  - component: $CI_SERVER_FQDN/2pisoftware/pipelines/php/test@2.2.1
 
 
 php-lint:
