@@ -287,7 +287,11 @@ class Web
             if ($info->getFilename() == $classfile) {
                 $matchfile = $info->getPathname();
                 require_once str_replace('\\', '/', $matchfile);
-                file_put_contents($classdirectory_cache_file, '// ' . implode("\\", $namespaceparts) . " " . $cause . "\n" . '$this->_classdirectory["' . str_replace("\\", "\\\\", $className) . '"]="' . str_replace('\\', '/', $matchfile) . '";' . "\n\n", FILE_APPEND);
+                file_put_contents(
+                    $classdirectory_cache_file,
+                    '// ' . implode("\\", $namespaceparts) . " " . $cause . "\n" . '$this->_classdirectory["' . str_replace("\\", "\\\\", $className) . '"]="' . str_replace('\\', '/', $matchfile) . '";' . "\n\n",
+                    FILE_APPEND
+                );
                 $this->_classdirectory[$className] = str_replace('\\', '/', $matchfile);
                 $libmatch = true;
             }
