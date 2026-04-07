@@ -15,7 +15,7 @@ services:
       - default
     restart: unless-stopped
     healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      test: [ "CMD", "mysqladmin", "ping", "-h", "localhost" ]
       interval: 10s
       timeout: 5m
       retries: 20
@@ -69,7 +69,7 @@ services:
       - ./.codepipeline/docker/compiler.sh:/compiler.sh
     command: "ash -c /compiler.sh"
     healthcheck:
-      test: 
+      test:
         - "CMD-SHELL"
         - "ps aux | grep 'npm run watch' | grep -v grep"
         - "test -f /var/www/html/system/templates/base/dist/app.css"
@@ -91,11 +91,10 @@ services:
       - default
     restart: unless-stopped
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8025"]
+      test: [ "CMD", "curl", "-f", "http://localhost:8025" ]
       interval: 10s
       timeout: 5m
       retries: 20
-
 
 volumes:
   dbdata:

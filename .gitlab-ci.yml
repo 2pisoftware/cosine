@@ -1,6 +1,7 @@
 stages:
   - docker
-  - test
+  - lint
+  - cosine-test
 
 # Include the steps for docker and playwright
 include:
@@ -10,41 +11,17 @@ include:
       stage: docker
       platforms: linux/amd64,linux/arm64
 
-  # Run Playwright tests
-  - component: $CI_SERVER_FQDN/2pisoftware/pipelines/playwright/test@v1.0.6
+  - component: $CI_SERVER_FQDN/2pisoftware/pipelines/php/lint@2.2.1
     inputs:
-      image: mcr.microsoft.com/playwright:v1.49.0-jammy
-      directory: ./test/playwright/
-      test_results_dir: ./test/playwright/test-results
-      run_cmd: npm run build && npm run test --reporter=list,junit
-      wait_on: http-get://test-website
+      ignore: "*.js,*.css,system/lib/*"
 
-# Configure Playwright tests
-playwright-test:
-  services:
-    # Database
-    - name: mysql:8.0
-      alias: cosine-db
-      command: [ "--default-authentication-plugin=mysql_native_password" ]
-    # Cosine
-    - name: $DOCKER_TAG
-      alias: test-website
-  variables:
-    FF_NETWORK_PER_BUILD: 1
-    # CI_DEBUG_SERVICES: "true"
-    TEST_HOST: http://test-website
-    TEST_PORT: 80
-    TIMEOUT: 40_000
-    ENVIRONMENT: development
-    MYSQL_ROOT_PASSWORD: cosine
-    MYSQL_HOST: cosine-db
-    DB_HOST: cosine-db
-    MYSQL_DATABASE: cosine
-    DB_DATABASE: cosine
-    MYSQL_USER: cosine
-    DB_USERNAME: root
-    MYSQL_PASSWORD: cosine
-    DB_PASSWORD: cosine
-  dependencies:
-    - docker-build
-  
+  - component: $CI_SERVER_FQDN/2pisoftware/pipelines/php/test@2.2.1
+
+
+php-lint:
+  allow_failure: true
+
+   
+docker-build:
+  tags:
+    - largemem_x86

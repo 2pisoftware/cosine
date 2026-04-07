@@ -8,6 +8,7 @@ namespace Html;
  *
  * @author Adam Buckley <adam.buckley90@gmail.com>
  */
+// phpcs:ignore Squiz.Classes.ValidClassName.NotPascalCase
 class button
 {
     use GlobalAttributes;

@@ -135,6 +135,7 @@ class AuthService extends DbService
         }
     }
 
+    //phpcs:ignore PSR2.Methods.MethodDeclaration.Underscore
     public function _web_init()
     {
         $this->_loadRoles();
@@ -429,6 +430,7 @@ class AuthService extends DbService
         return $this->_roles;
     }
 
+    //phpcs:ignore PSR2.Methods.MethodDeclaration.Underscore
     public function _loadRoles()
     {
         // do this only once
