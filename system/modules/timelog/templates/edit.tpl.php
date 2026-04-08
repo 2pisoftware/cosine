@@ -14,24 +14,28 @@ use Html\Form\Select;
 <form action="/timelog/edit/<?php echo ($timelog->id ?? '') . ($redirect ? "?redirect={$redirect}" : '') ?>"
     method="POST" name="timelog_edit_form" target="_self" id="timelog_edit_form">
     <div class="mb-3">
-        <label for="user_id" class="form-label m-0">
-            Assigned user
-            <small>Required</small>
-        </label>
         <?php
-        if (AuthService::getInstance($w)->user()->is_admin && !empty($options)) {
+        if (AuthService::getInstance($w)->user()->is_admin && !empty($options)) :  ?>
+            <label for="user_id" class="form-label m-0">
+                Assigned user
+                <small>Required</small>
+            </label>
+
+            <?php
             echo (new Select([
                 "id|name" => "user_id",
                 "class" => "form-select",
                 "required" => true,
                 "options" => $options
             ]))->setSelectedOption(empty($timelog->id) ? AuthService::getInstance($w)->user()->id : (!empty($timelog->user_id) ? $timelog->user_id : null));
-        } else {
+            ?>
+            <?php
+        else :
             echo new Hidden([
                 "name" => "user_id",
                 "value" => empty($timelog->id) ? AuthService::getInstance($w)->user()->id : $timelog->user_id
             ]);
-        }
+        endif;
         ?>
     </div> <!-- group 1 assigned user -->
 
