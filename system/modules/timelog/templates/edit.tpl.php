@@ -28,8 +28,6 @@ use Html\Form\Select;
                 "required" => true,
                 "options" => $options
             ]))->setSelectedOption(empty($timelog->id) ? AuthService::getInstance($w)->user()->id : (!empty($timelog->user_id) ? $timelog->user_id : null));
-            ?>
-            <?php
         else :
             echo new Hidden([
                 "name" => "user_id",
