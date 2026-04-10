@@ -6,8 +6,8 @@ echo HtmlBootstrap5::box("/insights-export/bindpdf/" . $insight_class_name . "?"
 try {
     foreach ($run_data as $data) {
         echo '<h4>' . $data->title . '</h4>';
-        echo "<div style='overflow: auto;'>";
-        echo HtmlBootstrap5::table($data->data, null, "tablesorter", $data->header);
+        echo "<div style='overflow: auto; padding-bottom: 1rem; margin-bottom: 1rem; border-bottom: 1px solid var(--bs-border-color)'>";
+        echo HtmlBootstrap5::table($data->data, null, "tablesorter shadow-none", $data->header);
         echo "</div>";
     }
 } catch (Error $e) {
