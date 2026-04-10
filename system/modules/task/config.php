@@ -27,7 +27,8 @@ Config::set('task', [
 
 // Set form mapping objects
 Config::append('form.mapping', [
-    'Task', 'TaskGroup'
+    'Task',
+    'TaskGroup'
 ]);
 
 //========= Properties of Task Type Todo ==================
@@ -80,8 +81,8 @@ Config::append('task.TaskGroupType_SoftwareDevelopment', [
         ["Review", false],
         ["Deploy", false],
         ["Live", true], // is closing
-        ["Rejected", true],
-    ], // is closing
+        ["Rejected", true], // is closing
+    ],
     'priorities' => ["Urgent", "Normal", "Nice to have"],
     'urgent-priorities' => ["Urgent"]
 ]);
@@ -99,7 +100,7 @@ Config::set('task.TaskGroupType_CmfiveSupport', [
         ["Done", true], // is closing
         ["Rejected", true]
     ], // is closing
-    'priorities' => ["Critical","Major", "Minor", "Normal"],
+    'priorities' => ["Critical", "Major", "Minor", "Normal"],
     'urgent-priorities' => ["Critical", "Major"]
 ]);
 

@@ -129,8 +129,6 @@ $cmdMaker = [
 
 ];
 
-include "cmfiveTests.php";
-
 if ($argc >= 3) {
     foreach ($cmdMaker as $command => $does) {
         foreach ($does as $doing) {
