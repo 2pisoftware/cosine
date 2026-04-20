@@ -203,7 +203,7 @@ export class Cmfive {
         FavouritesAdaptation.bindFavouriteInteractions();
         InputWithOther.bindOtherInteractions();
         MultiFileUpload.bindInteractions();
-        Autocomplete.bindInteractions();
+        Autocomplete.bindInteractions(target);
         QuillEditor.bindQuillEditor();
         Sortable.bindSortableElements();
         TabAdaptation.bindTabInteractions();
