@@ -293,7 +293,7 @@ $theme_setting = AuthService::getInstance($w)->getSettingByKey('bs5-theme');
                     </div>
                 </nav>
                 <nav aria-label="breadcrumb"
-                    class="<?php echo count($active_modules) <= 9 ? "container-xl" : "container-fluid"; ?>"
+                    class="container-fluid"
                     id="breadcrumbs">
                     <ol class="breadcrumb pt-1">
                         <?php
