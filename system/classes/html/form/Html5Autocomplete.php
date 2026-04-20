@@ -131,7 +131,8 @@ class Html5Autocomplete extends \Html\Form\InputField
                 "optgroupField" => "type",
 
                 "plugins" => $this->plugins,
-
+                "valueField" => "value",
+                "labelField" => "text",
                 // for sending data to the wrapper
                 "cmfive" => [
                     "onItemAdd" => $this->onItemAdd,

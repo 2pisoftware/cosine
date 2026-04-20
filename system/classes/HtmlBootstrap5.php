@@ -1092,7 +1092,7 @@ HTML;
     public static function autocomplete($name, $options, $value = null, $class = null, $style = null, $minLength = 1, $required = null)
     {
         return (new \Html\Form\Html5Autocomplete([
-            "id|name" => "title",
+            "id|name" => $name,
             "class" => "form-control " . $class,
             "label" => "Title",
             "maxItems" => 1,
