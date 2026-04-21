@@ -55,14 +55,7 @@ class FavoriteService extends DbService
 
     public function getFavoriteButton($object)
     {
-        $response = '';
-        $user = AuthService::getInstance($this->w)->user();
-        if (!empty($user)) {
-            $favorite = FavoriteService::getInstance($this->w)->getFavoriteForUserAndObject($user->id, get_class($object), $object->id);
-
-            $response .= '<i data-class="' . get_class($object) . '" data-id="' . $object->id . '" class="fi-star favorite_flag ' . (!empty($favorite) ? 'favorite_on' : '') . '"></i>';
-        }
-        return $response;
+        return $this->getBootstrapButton($object);
     }
 
     public function getBootstrapButton($object)

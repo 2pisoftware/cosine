@@ -270,7 +270,7 @@
     const makeSelectOptions = (select, value, label) => {
         const elem = document.createElement("option");
         elem.value = value;
-        elem.innerText = label;
+        elem.innerHTML = label;
 
         select.appendChild(elem);
     };

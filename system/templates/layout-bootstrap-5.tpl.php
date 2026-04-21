@@ -168,7 +168,7 @@ $theme_setting = AuthService::getInstance($w)->getSettingByKey('bs5-theme');
         <div id="content">
             <div class="container-fluid p-0 py-2 p-lg-2" id="navbar">
                 <?php $active_modules = array_filter($w->modules(), fn($m) => !empty(Config::get("{$m}.topmenu")) && Config::get("{$m}.active") === true); ?>
-                <nav class="<?php echo count($active_modules) <= 9 ? "container-xl" : "container-fluid"; ?> navbar navbar-expand navbar-light bg-light p-0 p-lg-2">
+                <nav class="container-fluid navbar navbar-expand navbar-light bg-light p-0 p-lg-2">
                     <div class="container-fluid justify-content-start">
                         <ul class="navbar-nav me-md-4">
                             <li class="nav-item"><a class="nav-link nav-icon" data-toggle-menu="open"><i
@@ -293,7 +293,7 @@ $theme_setting = AuthService::getInstance($w)->getSettingByKey('bs5-theme');
                     </div>
                 </nav>
                 <nav aria-label="breadcrumb"
-                    class="<?php echo count($active_modules) <= 9 ? "container-xl" : "container-fluid"; ?>"
+                    class="container-fluid"
                     id="breadcrumbs">
                     <ol class="breadcrumb pt-1">
                         <?php
@@ -330,8 +330,7 @@ $theme_setting = AuthService::getInstance($w)->getSettingByKey('bs5-theme');
             </div>
             <div id="menu-overlay" data-toggle-menu="close"></div>
         </div>
-        <div class="<?php echo $w->ctx("layout-size") == "large" ? "container-fluid px-4" : "container-xl"; ?>"
-            id="body-content">
+        <div class="container-fluid px-4" id="body-content">
             <?php
             if (!empty($error)) {
                 echo HtmlBootstrap5::alertBox($error, "alert-warning");

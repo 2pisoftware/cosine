@@ -14,8 +14,10 @@ import TomSelect from 'tom-select';
 export class Autocomplete {
     private static SELECT_TARGET = '.tom-select-target';
 
-    static bindInteractions() {
-        document.querySelectorAll(Autocomplete.SELECT_TARGET)?.forEach(s => {
+    static bindInteractions(target: Document | Element = document) {
+        target.querySelectorAll(Autocomplete.SELECT_TARGET)?.forEach(s => {
+            if ((s as any).tomselect) return;
+
             const config = s.getAttribute('data-config');
             const parsed = config ? JSON.parse(config) : {};
 
