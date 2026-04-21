@@ -1,4 +1,5 @@
 <?php
+
 use Html\Form\Html5Autocomplete;
 use Html\Form\InputField\Hidden;
 use Html\Form\Select;
@@ -33,10 +34,10 @@ echo HtmlBootstrap5::multiColForm([
                 "class" => "form-control",
                 "label" => "Search",
                 "title" => !empty($object) ? $object->getSelectOptionTitle() : null,
-                "value" => !empty($timelog->object_id) ? $timelog->object_id : $tracking_id,
+                "value" => $timelog->object_id ?: [$tracking_id],
                 "required" => "required",
                 "source" => $w->localUrl("/timelog/ajaxSearch?index={$timelog->object_class}"),
-                "options" => !empty($usable_class) ? TimelogService::getInstance($w)->getObjects($usable_class, $where) : '',
+                "options" => !empty($object) ? [$object] : null,
                 "maxItems" => 1,
             ])
         ],
