@@ -68,6 +68,12 @@ $menuMaker = [
         'param' => null
     ],
     [
+        "option" => "Seed database",
+        "message" => "Install all available database seeds",
+        "function" => "seedDatabase",
+        "param" => null,
+    ],
+    [
         'option' => "Generate encryption keys",
         'message' => "Generating encryption keys",
         'function' => "generateEncryptionKeys",
@@ -116,6 +122,12 @@ $cmdMaker = [
             "function" => "cmdSeedUser",
             "args" => true,
             "hint" => "[first] [last] [email] [login] [roles comma separated, defaults `user`]"
+        ],
+        [
+            "request" => "database",
+            "message" => "Install all available database seeds.",
+            "function" => "seedDatabase",
+            "args" => false,
         ]
     ],
     'cmfive' => [
@@ -411,6 +423,45 @@ function installMigrations()
     } catch (Exception $e) {
         echo $e->getMessage();
     }
+}
+
+function seedDatabase()
+{
+    if (!stepOneYieldsWeb()) {
+        return false;
+    }
+
+    $w = new Web();
+    $w->initDB();
+
+    if (Config::get("system.environment") !== "development") {
+        print("disabled in production. set system.environment to development\n");
+        exit(1);
+    }
+
+    $moduleSeeds = MigrationService::getInstance($w)->getSeedMigrations();
+
+    foreach ($moduleSeeds as $module => $seed) {
+        foreach ($seed as $path => $classname) {
+            // "migration seed" objects track whether this seed is installed
+            if (MigrationService::getInstance($w)->migrationSeedExists($classname)) {
+                continue;
+            }
+
+            require_once($path);
+
+            $obj = new $classname($w);
+            $obj->seed();
+
+            $migration_seed = new MigrationSeed($w);
+            $migration_seed->name = $classname;
+            $migration_seed->insert();
+
+            print($classname + "\n");
+        }
+    }
+
+    print("done\n");
 }
 
 function cmdSeedUser($pCount, $parameters)
