@@ -434,6 +434,11 @@ function seedDatabase()
     $w = new Web();
     $w->initDB();
 
+    if (Config::get("system.environment") !== "development") {
+        print("disabled in production. set system.environment to development\n");
+        exit(1);
+    }
+
     $moduleSeeds = MigrationService::getInstance($w)->getSeedMigrations();
 
     foreach ($moduleSeeds as $module => $seed) {
