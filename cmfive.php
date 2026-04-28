@@ -457,7 +457,7 @@ function seedDatabase()
             $migration_seed->name = $classname;
             $migration_seed->insert();
 
-            print($classname + "\n");
+            print($classname . "\n");
         }
     }
 
