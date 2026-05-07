@@ -153,8 +153,8 @@ class InsightService extends DbService
                 $csv = new ParseCsv\Csv();
                 $csv->output_filename = $filename;
                 // ignore lib wrapper csv->output, to keep control over header re-sends!
-
-                $this->w->out($csv->unparse($table->data, $hds, null, null, null));
+                $output_data = array_map(fn ($row) => array_map(fn ($col) => strip_tags($col), $row), $table->data);
+                $this->w->out($csv->unparse(data: $output_data, fields: $hds));
                 // can't use this way without commenting out header section, which composer won't like
             }
         }
