@@ -84,23 +84,21 @@ class CommentService extends DbService
 
     /**
      * An easy way to save a comment against an object
-     * @param <DbObject> $object
-     * @param <String> $message
+     * @param DbObject $object
+     * @param string $message
      */
     public function addComment($object, $message)
     {
         $comment = new Comment($this->w);
         $comment->obj_table = $object->getDbTableName();
         $comment->obj_id = $object->id;
-        $comment->comment = strip_tags($message ?? "");
+        $comment->comment = $message ?? "";
         $comment->is_deleted = 0;
         $comment->insert();
     }
 
     public function renderComment($text)
     {
-        // require_once 'creole/creole.php';
-        // return (new creole())->parse(strip_tags($text));
         return (new \softark\creole\Creole())->parse($text);
     }
 }
