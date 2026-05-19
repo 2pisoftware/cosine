@@ -1,3 +1,25 @@
+<style>
+    .timelog_task_list table {
+        table-layout: fixed;
+    }
+
+    .timelog_task_list th {
+        width: 10rem;
+    }
+
+    .timelog_task_list th:nth-child(3) {
+        width: auto;
+    }
+
+    .timelog_task_list th:nth-child(4) {
+        width: auto;
+    }
+
+    .timelog_task_list th:nth-child(5) {
+        width: 15rem;
+    }
+</style>
+
 <div class='row'>
     <?php if (!empty($time_entries)) : ?>
         <?php foreach ($time_entries as $date => $entry_struct) : ?>
@@ -7,37 +29,40 @@
                     <?php echo TaskService::getInstance($w)->getFormatPeriod($entry_struct['total']); ?>
                 </div>
             </h4>
-            <?php
-            $header = ["From", "To", "Object", "Description", "Actions"];
-            echo HtmlBootstrap5::table(array_map(function ($val) use ($w) {
-                $row = [
-                    formatDate($val->dt_start, "H:i:s"),
-                    formatDate($val->dt_end, "H:i:s"),
-                    class_exists($val->object_class) ? ($val->getLinkedObject() ? get_class(object: $val->getLinkedObject()) . ": " . $val->getLinkedObject()->toLink() : '') : 'Invalid Timelog object',
-                    "<pre class='break-pre text-truncate d-block m-0' style='width: 250px;''>" . strip_tags($val->getComment()->comment ?? '') . "</pre>",
-                ];
 
-                $actions = [];
+            <div class="timelog_task_list">
+                <?php
+                $header = ["From", "To", "Object", "Description", "Actions"];
+                echo HtmlBootstrap5::table(array_map(function ($val) use ($w) {
+                    $row = [
+                        formatDate($val->dt_start, "H:i:s"),
+                        formatDate($val->dt_end, "H:i:s"),
+                        class_exists($val->object_class) ? ($val->getLinkedObject() ? get_class(object: $val->getLinkedObject()) . ": " . $val->getLinkedObject()->toLink() : '') : 'Invalid Timelog object',
+                        "<pre class='break-pre text-truncate d-block m-0''>" . strip_tags($val->getComment()->comment ?? '') . "</pre>",
+                    ];
 
-                if ($val->object_class == "Task") {
-                    $actions[] = HtmlBootstrap5::b('/task/edit/' . $val->object_id . "#timelog", "View", null, null, null, "btn btn-sm btn-primary");
-                }
+                    $actions = [];
 
-                if ($val->canEdit(AuthService::getInstance($w)->user())) {
-                    $actions[] = HtmlBootstrap5::box('/timelog/edit/' . $val->id, 'Edit', true, null, null, null, "isbox", null, "btn btn-sm btn-primary");
-                    $actions[] = HtmlBootstrap5::box('/timelog/move/' . $val->id, 'Move', true, null, null, null, "isbox", null, "btn btn-sm btn-primary");
-                }
+                    if ($val->object_class == "Task") {
+                        $actions[] = HtmlBootstrap5::b('/task/edit/' . $val->object_id . "#timelog", "View", null, null, null, "btn btn-sm btn-primary");
+                    }
 
-                if ($val->canDelete(AuthService::getInstance($w)->user())) {
-                    $confirmation_message = implode("", $w->callHook("timelog", "before_display_timelog", $val));
-                    $actions[] = HtmlBootstrap5::b('/timelog/delete/' . $val->id, 'Delete', empty($confirmation_message) ? 'Are you sure you want to delete this timelog?' : $confirmation_message, null, null, "btn btn-sm btn-danger");
-                }
+                    if ($val->canEdit(AuthService::getInstance($w)->user())) {
+                        $actions[] = HtmlBootstrap5::box('/timelog/edit/' . $val->id, 'Edit', true, null, null, null, "isbox", null, "btn btn-sm btn-primary");
+                        $actions[] = HtmlBootstrap5::box('/timelog/move/' . $val->id, 'Move', true, null, null, null, "isbox", null, "btn btn-sm btn-primary");
+                    }
 
-                $row[] = '<div class="text-nowrap">' . HtmlBootstrap5::buttonGroup(implode("", $actions)) . '</div>';
+                    if ($val->canDelete(AuthService::getInstance($w)->user())) {
+                        $confirmation_message = implode("", $w->callHook("timelog", "before_display_timelog", $val));
+                        $actions[] = HtmlBootstrap5::b('/timelog/delete/' . $val->id, 'Delete', empty($confirmation_message) ? 'Are you sure you want to delete this timelog?' : $confirmation_message, null, null, "btn btn-sm btn-danger");
+                    }
 
-                return $row;
-            }, $entry_struct["entries"]), null, "tablesorter", $header);
-            ?>
+                    $row[] = '<div class="text-nowrap">' . HtmlBootstrap5::buttonGroup(implode("", $actions)) . '</div>';
+
+                    return $row;
+                }, $entry_struct["entries"]), null, "tablesorter", $header);
+                ?>
+            </div>
         <?php endforeach; ?>
     <?php else : ?>
         <h4>No time logs found</h4>
