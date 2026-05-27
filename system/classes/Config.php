@@ -171,9 +171,9 @@ class Config
     }
 
     /**
-     * Append $value onto the config list at $key. If the existing config at
-     * $key isn't a list, it is replaced. Resulting list is deduplicated and
-     * re-indexed.
+     * Append $value onto the config at $key. Associative arrays are merged
+     * (later keys win). List arrays are merged and deduplicated. Scalars are
+     * wrapped in a list.
      *
      * @param string $key config key (e.g. "system.allow_action")
      * @param mixed $value scalar or array of config entries to add
@@ -185,21 +185,33 @@ class Config
 
         if (empty($target_value)) {
             if (is_array($value)) {
-                self::set($key, array_values(array_unique($value, SORT_REGULAR)));
+                if (is_complete_associative_array($value)) {
+                    self::set($key, $value);
+                } else {
+                    self::set($key, array_values(array_unique($value, SORT_REGULAR)));
+                }
             } else {
                 self::set($key, [$value]);
             }
         } else {
             if (is_array($target_value)) {
                 if (is_array($value)) {
-                    self::set($key, array_values(array_unique(array_merge($target_value, $value), SORT_REGULAR)));
+                    if (is_complete_associative_array($value) || is_complete_associative_array($target_value)) {
+                        self::set($key, array_merge($target_value, $value));
+                    } else {
+                        self::set($key, array_values(array_unique(array_merge($target_value, $value), SORT_REGULAR)));
+                    }
                 } else {
                     $target_value[] = $value;
                     self::set($key, array_values(array_unique($target_value, SORT_REGULAR)));
                 }
             } else {
                 if (is_array($value)) {
-                    self::set($key, array_values(array_unique($value, SORT_REGULAR)));
+                    if (is_complete_associative_array($value)) {
+                        self::set($key, $value);
+                    } else {
+                        self::set($key, array_values(array_unique($value, SORT_REGULAR)));
+                    }
                 } else {
                     self::set($key, [$value]);
                 }
