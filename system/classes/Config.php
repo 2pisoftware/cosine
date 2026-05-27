@@ -171,9 +171,9 @@ class Config
     }
 
     /**
-     * Append $value onto the config at $key. Associative arrays are merged
-     * (later keys win). List arrays are merged and deduplicated. Scalars are
-     * wrapped in a list.
+     * Append $value to the config at $key. Associative arrays are merged into
+     * the existing value; list arrays are appended and deduplicated; scalars
+     * are added to a list.
      *
      * @param string $key config key (e.g. "system.allow_action")
      * @param mixed $value scalar or array of config entries to add
