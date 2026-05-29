@@ -269,6 +269,15 @@
 
     const makeSelectOptions = (select, value, label) => {
         const elem = document.createElement("option");
+
+        // due to a bug, `value` is encoded with html entities
+        // unfortunately, fixing the bug means refactoring a few different places
+        // easier to just decode them here
+
+        const txt = document.createElement("textarea");
+        txt.innerHTML = value;
+        value = txt.value;
+
         elem.value = value;
         elem.innerHTML = label;
 
