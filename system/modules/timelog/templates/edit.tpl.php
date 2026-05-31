@@ -76,7 +76,7 @@ use Html\Form\Select;
                 "value" => $timelog->object_id ?: [$tracking_id],
                 "options" => !empty($object) ? [$object] : null,
                 "required" => "required",
-                "source" => $w->localUrl("/timelog/ajaxSearch?index={$timelog->object_class}"),
+                "source" => $w->localUrl("/timelog/ajaxSearch?index={" . !empty($timelog) ? $timelog->object_class : $tracking_class . "}"),
                 "maxItems" => 1,
             ]);
             ?>
