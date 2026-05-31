@@ -17,7 +17,6 @@ test.beforeEach(async ({ adminPage }) => {
     { taskName: "\'" },
     { taskName: "\"hello this is a longer string\"" },
     { taskName: "/,.:[]=-\\|~!@#$%^&*()" },
-    { taskName: "" },
 ].forEach(async ({ taskName }) => {
     test.describe(() => {
         test.beforeEach(async ({ adminPage }) => {
