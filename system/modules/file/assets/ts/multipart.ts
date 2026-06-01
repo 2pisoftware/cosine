@@ -7,6 +7,7 @@ const beginMultipartUpload = async (file: File, filename: string = file.name, en
             filename,
             mime: file.type,
             size: file.size,
+            md5: await getFileMd5(file)
         })
     });
 
@@ -124,6 +125,43 @@ const abortUpload = async (upload_id: string) => {
         method: "DELETE",
     });
 };
+
+const getFileMd5 = (file: File) => {
+    const gen = new spark();
+    const reader = new FileReader();
+
+    const chunkSize = 1024 * 1024 * 2;  // 2mb
+    const chunks = Math.ceil(file.size / chunkSize);
+    let currentChunk = 0;
+
+    const loadNext = () => {
+        const start = currentChunk * chunkSize;
+        const end = start + chunkSize >= file.size ? file.size : start + chunkSize;
+
+        reader.readAsArrayBuffer(file.slice(start, end));
+    }
+
+    const promise = new Promise<string>((resolve, reject) => {
+        reader.addEventListener("load", (e) => {
+            if (!e.target?.result || typeof e.target.result === "string")
+                return reject(new Error("md5 result missing or wrong type?"));
+
+            gen.append(e.target.result);
+            currentChunk++;
+
+            if (currentChunk < chunks) return loadNext();
+
+            resolve(gen.end());
+        });
+
+        reader.addEventListener("error", (e) => reject(e));
+    });
+
+    loadNext();
+
+    return promise;
+}
+
 
 export { abortUpload, beginMultipartUpload, completeUpload, uploadParts };
 
