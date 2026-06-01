@@ -76,7 +76,7 @@ class MyTaskTimeInsight extends InsightBaseClass
                 $row['Date'] = formatDatetime($log->dt_start, "Y-m-d H:i:s");
                 $row['Duration'] = $this->formatDuration($log->getDuration());
                 $row['Type'] = $log->time_type;
-                $row['Description'] = $log->getComment()->comment;
+                $row['Description'] = StringSanitiser::sanitise($log->getComment()->comment);
 
                 if (!is_null($task)) {
                     $row['Task'] = $task->title;
