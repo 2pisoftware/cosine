@@ -171,38 +171,47 @@ class Config
     }
 
     /**
-     * A function to append a value to an array, if target is not an array this function
-     * will overwrite the current targets value so use with caution!
+     * Append $value to the config at $key. Associative arrays are merged into
+     * the existing value; list arrays are appended and deduplicated; scalars
+     * are added to a list.
      *
-     * If value to write is also an array, this function will merge the target with the value
-     *
-     * @param string $key
-     * @param mixed $value
+     * @param string $key config key (e.g. "system.allow_action")
+     * @param mixed $value scalar or array of config entries to add
      * @return null
      */
     public static function append($key, $value)
     {
         $target_value = self::get($key);
 
-        // If target isn't set then set it
         if (empty($target_value)) {
             if (is_array($value)) {
-                self::set($key, $value);
+                if (is_complete_associative_array($value)) {
+                    self::set($key, $value);
+                } else {
+                    self::set($key, array_values(array_unique($value, SORT_REGULAR)));
+                }
             } else {
                 self::set($key, [$value]);
             }
         } else {
             if (is_array($target_value)) {
                 if (is_array($value)) {
-                    self::set($key, array_merge($target_value, $value));
+                    if (is_complete_associative_array($value) || is_complete_associative_array($target_value)) {
+                        self::set($key, array_merge($target_value, $value));
+                    } else {
+                        self::set($key, array_values(array_unique(array_merge($target_value, $value), SORT_REGULAR)));
+                    }
                 } else {
                     $target_value[] = $value;
-                    self::set($key, $target_value);
+                    self::set($key, array_values(array_unique($target_value, SORT_REGULAR)));
                 }
             } else {
-                // Overwrite target value
                 if (is_array($value)) {
-                    self::set($key, $value);
+                    if (is_complete_associative_array($value)) {
+                        self::set($key, $value);
+                    } else {
+                        self::set($key, array_values(array_unique($value, SORT_REGULAR)));
+                    }
                 } else {
                     self::set($key, [$value]);
                 }
@@ -300,27 +309,28 @@ class Config
             return;
         }
 
-        self::merge($source, self::$register);
+        self::merge($source);
     }
 
     /**
-     * Merges two configs together.
+     * Merge config in $source into the existing config. Non-associative arrays
+     * are appended and deduped; associative arrays are merged key-by-key, with
+     * scalar values replaced.
      *
-     * @param array $source
-     * @param array $target
+     * @param array $source decoded config to merge in
+     * @param string $prefix config key prefix carried through recursion
      * @return void
      */
-    private static function merge(array $source, array &$target): void
+    private static function merge(array $source, string $prefix = ''): void
     {
         foreach ($source as $key => $value) {
-            if (array_key_exists($key, $target)) {
-                if (is_array($value)) {
-                    self::merge($source[$key], $target[$key]);
-                } else {
-                    $target[$key] = $value;
-                }
+            $path = $prefix === '' ? (string)$key : $prefix . '.' . $key;
+            if (is_array($value) && is_complete_associative_array($value)) {
+                self::merge($value, $path);
+            } elseif (is_array($value)) {
+                self::append($path, $value);
             } else {
-                $target[$key] = $source[$key];
+                self::set($path, $value);
             }
         }
     }
@@ -361,7 +371,7 @@ class Config
             throw new Exception("Failed to decode config data from $bucket/$key");
         }
 
-        Config::merge($data, self::$register);
+        Config::merge($data);
     }
 
     /**
@@ -393,7 +403,7 @@ class Config
             if (empty($data)) {
                 throw new Exception("Failed to decode config data from parameter store");
             }
-            Config::merge($data, self::$register);
+            Config::merge($data);
             return;
         }
         throw new Exception("No parameter name provided");
@@ -426,7 +436,7 @@ class Config
             if (empty($data)) {
                 throw new Exception("Failed to decode config data from secrets manager");
             }
-            Config::merge($data, self::$register);
+            Config::merge($data);
             return;
         }
         throw new Exception("No secret name provided");

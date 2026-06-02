@@ -111,6 +111,8 @@ export class Cmfive {
             // Appending scripts to the DOM via innerHTML is not meant to execute them for security purposes
             // Unfortunately, various modals however contian script tags we need to execute
             modalContent.querySelectorAll("script").forEach(x => {
+                if (x.type && x.type !== "module" && !x.type.includes("javascript")) return;
+
                 eval(x.innerHTML);
             });
 
@@ -203,7 +205,7 @@ export class Cmfive {
         FavouritesAdaptation.bindFavouriteInteractions();
         InputWithOther.bindOtherInteractions();
         MultiFileUpload.bindInteractions();
-        Autocomplete.bindInteractions();
+        Autocomplete.bindInteractions(target);
         QuillEditor.bindQuillEditor();
         Sortable.bindSortableElements();
         TabAdaptation.bindTabInteractions();

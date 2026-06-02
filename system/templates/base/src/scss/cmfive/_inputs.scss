@@ -6,6 +6,10 @@ select {
     @include theme((background-color: 'white-black'));
 }
 
+select[disabled] {
+    color: color-mix(in srgb, var(--bs-body-color) 50%, transparent) !important;
+}
+
 // tom-select styling
 .ts-control,
 .ts-control input,
