@@ -1,6 +1,7 @@
 <style>
     #task_list table {
         table-layout: fixed;
+        overflow-wrap: break-word;
     }
 
     #task_list th {

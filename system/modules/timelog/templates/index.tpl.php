@@ -1,6 +1,7 @@
 <style>
     .timelog_task_list table {
         table-layout: fixed;
+        overflow-wrap: break-word;
     }
 
     .timelog_task_list th {
