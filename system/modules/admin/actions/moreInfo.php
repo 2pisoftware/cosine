@@ -35,7 +35,7 @@ function moreInfo_GET(Web $w)
             $style = $groupMember->role == "owner" ? "<div class='text-primary'>" : "<div>";
 
             $line = [
-                $style . $groupMember->getUser()->is_group == 1 ? $groupMember->getUser()->login : $groupMember->getUser()->getFullName() . "</div>",
+                $style . ($groupMember->getUser()->is_group == 1 ? $groupMember->getUser()->login : $groupMember->getUser()->getFullName()) . "</div>",
                 $style . $groupMember->role . "</div>"
             ];
 
