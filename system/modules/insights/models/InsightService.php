@@ -139,7 +139,7 @@ class InsightService extends DbService
     }
 
     // export a recordset as CSV
-    public function exportcsv($run_data, $title)
+    public function exportcsv($run_data, string $insightClass)
     {
         $zip = new ZipArchive();
 
@@ -153,8 +153,8 @@ class InsightService extends DbService
 
         $zip->open($name, ZipArchive::CREATE);
 
-        // set filename
-        $filename = str_replace(" ", "_", $title) . "_" . date("Y.m.d-H.i") . ".csv";
+        $csvNamesUsed = [];
+
         foreach ($run_data as $table) {
             if (!empty($table)) {
                 $title = $table->title;
@@ -162,11 +162,23 @@ class InsightService extends DbService
                 foreach ($table->header as $hd) {
                     $hds[$hd] = $hd;
                 }
+
+                $csvName = str_replace(" ", "_", $title);
+
+                $csvNamesUsed[$csvName] = !empty($csvNamesUsed[$csvName]) ? $csvNamesUsed[$csvName] : 0;
+                $csvNamesUsed[$csvName] += 1;
+
+                if ($csvNamesUsed[$csvName] > 1) {
+                    $csvName .= "_" . $csvNamesUsed[$csvName];
+                }
+
+                $csvName .= ".csv";
+
                 $csv = new ParseCsv\Csv();
-                $csv->output_filename = $filename;
+                $csv->output_filename = $csvName;
 
                 $zip->addFromString(
-                    str_replace(" ", "_", $title) . ".csv",
+                    $csvName,
                     $csv->unparse($table->data, $hds, null, null, null)
                 );
             }
@@ -175,7 +187,7 @@ class InsightService extends DbService
         $zip->close();
 
         header('Content-Type: application/zip');
-        header('Content-disposition: attachment; filename="' . $name . '"');
+        header('Content-disposition: attachment; filename="' . str_replace(" ", "_", $insightClass) . "_" . date("Y.m.d-H.i") . ".zip");
         header('Content-Length: ' . filesize($name));
         $this->w->setLayout(null);
 
