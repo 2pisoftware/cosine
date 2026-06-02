@@ -17,17 +17,18 @@
             <div class="row">
                 <div class="col-md-6 mb-3">
                     <label for="q" class="form-label mt-0">Query</label>
-                    <input class="form-control" type="text" name="q" id="q" autofocus />
+                    <input class="form-control" type="text" name="q" id="q" />
                 </div>
                 <div class="col-md-2 mb-3">
                     <label for="idx" class="form-label mt-0">Index</label>
                     <?php
+
                     use Html\Form\Select;
 
                     echo new Select([
-                            "id|name" => "idx",
-                            "class" => "form-select",
-                            "options" => $indexes
+                        "id|name" => "idx",
+                        "class" => "form-select",
+                        "options" => $indexes
                     ]);
                     ?>
                 </div>
@@ -35,9 +36,9 @@
                     <label for="tags" class="form-label mt-0">Tag</label>
                     <?php
                     echo new Select([
-                            "id|name" => "tags",
-                            "class" => "form-select",
-                            "options" => $tags
+                        "id|name" => "tags",
+                        "class" => "form-select",
+                        "options" => $tags
                     ]);
                     ?>
                 </div>
@@ -56,6 +57,9 @@
 </div>
 
 <script>
+    // autofocus the query input
+    document.querySelector("#search_form #q").focus();
+
     const setError = (str) => {
         if (!str) {
             document.querySelector("#search_message").style.display = "none";
