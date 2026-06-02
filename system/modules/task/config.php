@@ -34,7 +34,7 @@ Config::append('form.mapping', [
 //========= Properties of Task Type Todo ==================
 
 Config::append('task.TaskType_Todo', [
-    'time-type' => ["Ordinary Hours", "Overtime", "Weekend"],
+    'time-types' => ["Ordinary Hours", "Overtime", "Weekend"],
 ]);
 
 //========= Properties of Taskgroup Type Todo ============
@@ -59,7 +59,7 @@ Config::append('task.TaskGroupType_TaskTodo', [
 //========= Properties of Task Type Programming Task =================
 
 Config::append('task.TaskType_ProgrammingTicket', [
-    'time-type' => ["Ordinary Hours", "Overtime", "Weekend"],
+    'time-types' => ["Ordinary Hours", "Overtime", "Weekend"],
 ]);
 
 //========= Properties of Taskgroup Type SoftwareDevelopment ==
