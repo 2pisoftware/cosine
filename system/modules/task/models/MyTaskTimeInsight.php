@@ -68,11 +68,15 @@ class MyTaskTimeInsight extends InsightBaseClass
             foreach ($timelogs as $log) {
                 $row = [];
                 $task = TaskService::getInstance($w)->getTask($log->object_id);
+                if (empty($task)) {
+                    continue;
+                }
+
                 $taskgroup = $task->getTaskgroup();
                 $row['Date'] = formatDatetime($log->dt_start, "Y-m-d H:i:s");
                 $row['Duration'] = $this->formatDuration($log->getDuration());
                 $row['Type'] = $log->time_type;
-                $row['Description'] = $log->getComment()->comment;
+                $row['Description'] = StringSanitiser::sanitise($log->getComment()->comment);
 
                 if (!is_null($task)) {
                     $row['Task'] = $task->title;
