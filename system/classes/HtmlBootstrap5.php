@@ -536,7 +536,15 @@ HTML;
                 if (!is_array($column)) {
                     $buffer .= "<td>{$column}</td>";
                 } else {
-                    $buffer .= "<td class='" . ($column[1] === true ? "show-for-medium-up" : (is_scalar($column[1]) ? $column[1] : '')) . "'>{$column[0]}</td>";
+                    $buffer .= "<td class='" . ($column[1] === true ? "show-for-medium-up" : (is_scalar($column[1]) ? $column[1] : '')) . "' ";
+
+                    if (is_array($column[1])) {
+                        if (!empty($column[1]["sort"])) {
+                            $buffer .= "data-sort-order='" . $column[1]["sort"] . "' ";
+                        }
+                    }
+
+                    $buffer .= ">{$column[0]}</td>";
                 }
             }
             $buffer .= "</tr>";
@@ -552,7 +560,20 @@ HTML;
             foreach ($data as $key => $row) {
                 $buffer .= '<div class="card d-block mb-4"><ul class="list-group list-group-flush">';
                 foreach ($row as $index => $column) {
-                    $buffer .= '<li class="list-group-item">';
+                    if (empty($column)) {
+                        continue;
+                    }
+
+                    $buffer .= '<li class="list-group-item" ';
+
+                    if (is_array($column[1])) {
+                        if (!empty($column[1]["sort"])) {
+                            $buffer .= "data-sort-order='" . $column[1]["sort"] . "' ";
+                        }
+                    }
+
+                    $buffer .= ">";
+
                     if (!empty($header) && is_array($header) && array_key_exists($index, $header)) {
                         $buffer .= "<strong class='me-3'>" . (is_array($header[$index]) ? $header[$index][0] : $header[$index]) . "</strong>";
                     }
