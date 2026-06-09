@@ -1,13 +1,13 @@
 import { ArrayBuffer as spark } from "~/spark-md5";
 
-const beginMultipartUpload = async (file: File, filename: string = file.name, endpoint = "/file/ajax_multipart"): Promise<string> => {
+const beginMultipartUpload = async (file: File, filename: string = file.name, endpoint = "/file/ajax_multipart", calculateHash = true): Promise<string> => {
     const res = await fetch(endpoint, {
         method: "POST",
         body: JSON.stringify({
             filename,
             mime: file.type,
             size: file.size,
-            md5: await getFileMd5(file)
+            md5: calculateHash ? await getFileMd5(file) : null,
         })
     });
 

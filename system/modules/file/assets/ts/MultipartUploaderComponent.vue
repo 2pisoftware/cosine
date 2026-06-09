@@ -1,11 +1,12 @@
 <script setup lang="ts">
 import * as s3 from "./multipart.js";
-import { ref, computed, useTemplateRef } from "../../../../templates/base/node_modules/vue";
+import { ref, computed } from "../../../../templates/base/node_modules/vue";
 
 import LocalFilePreview from "./LocalFilePreview.vue";
 
 const props = defineProps<{
     endpoint: string;
+    calculateHash: boolean;
 }>();
 
 const endpoint = computed(() => props.endpoint.length ? props.endpoint : undefined);
@@ -33,7 +34,7 @@ const upload = async (e: SubmitEvent) => {
     for (const file of files.value) {
         let upload_id: string | undefined = undefined;
         try {
-            upload_id = await s3.beginMultipartUpload(file, file.name, endpoint.value);
+            upload_id = await s3.beginMultipartUpload(file, file.name, endpoint.value, props.calculateHash);
 
             progress.value++;
 
