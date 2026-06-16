@@ -2,6 +2,8 @@
 
 namespace Html\Form;
 
+use StringSanitiser;
+
 /**
  * Class representation of an input field - HTML5 only
  *
@@ -86,7 +88,7 @@ class InputField extends \Html\Form\FormElement
                 continue;
             }
 
-            $buffer .= $field . "='" . $value . "' ";
+            $buffer .= $field . "='" . StringSanitiser::sanitise($value) . "' ";
         }
 
         return $buffer . '/>';
@@ -94,7 +96,8 @@ class InputField extends \Html\Form\FormElement
 
     // A static list of labels to exclude from the output string
     public static $_excludeFromOutput = [
-        "label", "_typeList"
+        "label",
+        "_typeList"
     ];
 
     // A static list of all possible values for an Input field
