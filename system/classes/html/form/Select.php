@@ -85,12 +85,8 @@ class Select extends \Html\Form\FormElement
      *
      * @return \Html\Form\Select this
      */
-    public function setOptions($options = [], $omit_default = false)
+    public function setOptions($options = [], $omit_default = false, $alphabetise = false)
     {
-        if (!$omit_default) {
-            array_push($this->options, new Option(['label' => '-- Select --', 'value' => '']));
-        }
-
         if (!is_null($options) && is_array($options) && count($options) > 0) {
             foreach ($options as $option) {
                 // Check for \Html\Form\Option
@@ -114,6 +110,14 @@ class Select extends \Html\Form\FormElement
                     // Doesn't match a required format, is ignored
                 }
             }
+        }
+
+        if ($alphabetise) {
+            usort($this->options, fn($a, $b) => strnatcasecmp($a->label, $b->label));
+        }
+
+        if (!$omit_default) {
+            array_unshift($this->options, new Option(['label' => '-- Select --', 'value' => '']));
         }
 
         return $this;
