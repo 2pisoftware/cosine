@@ -474,6 +474,7 @@ class Html
         return $buffer;
     }
 
+    #[\Deprecated(message: "Use \Html\Form\Date")]
     public static function datePicker($name, $value = null, $size = null, $required = null)
     {
         $firstDay = Config::get('main.datepicker_first_day');
@@ -482,6 +483,7 @@ class Html
         return $buf;
     }
 
+    #[\Deprecated(message: "Use \Html\Form\Datetime")]
     public static function datetimePicker($name, $value = null, $size = null, $required = null)
     {
         $firstDay = Config::get('main.datepicker_first_day');
@@ -490,6 +492,7 @@ class Html
         return $buf;
     }
 
+    #[\Deprecated(message: "Use \Html\Form\Time")]
     public static function timePicker($name, $value = null, $size = null, $required = null)
     {
         $buf = '<input class="date_picker" type="text" name="' . $name . '" value="' . $value . '" size="' . $size . '" id="' . $name . '" ' . $required . ' />';
@@ -808,6 +811,7 @@ class Html
      * @param <type> $value
      * @return <type>
      */
+    #[\Deprecated(message: "Use \Html\Form\Checkbox")]
     public static function checkbox($name, $value, $default_value = '1', $class = null, $required = null)
     {
         $default_value = $default_value === null ? '1' : $default_value;
@@ -824,6 +828,7 @@ class Html
      * @param <type> $value
      * @return <type>
      */
+    #[\Deprecated(message: "Use \Html\Form\Radio")]
     public static function radio($name, $group, $value, $default_value = '1', $class = null, $required = null)
     {
         $default_value = $default_value === null ? '1' : $default_value;
@@ -840,6 +845,7 @@ class Html
      * @param <type> $value
      * @param <type> $class
      */
+    #[\Deprecated(message: "Use \Html\Form\Select")]
     public static function select($name, $items, $value = null, $class = null, $style = null, $allmsg = "-- Select --", $required = null)
     {
         $buf = '<select id="' . $name . '"  name="' . $name . '" class="' . $class . '" style="' . $style . '" ' . $required . '>';
@@ -871,6 +877,7 @@ class Html
      * @param <type> $value: current value of option item;
      * @param <type> $groupvalue: current group value of optgroup item;
      */
+    #[\Deprecated(message: "Use \Html\Form\Select")]
     public static function groupSelect($name, $items, $value = null, $groupvalue = null, $class = null, $style = null, $allmsg = "-- Select --")
     {
         $buf = '<select id="' . $name . '"  name="' . $name . '" class="' . $class . '" style="' . $style . '">';
@@ -911,6 +918,7 @@ class Html
      * @param <type> $allmsg
      * @return <type>
      */
+    #[\Deprecated(message: "Use \Html\Form\Html5Autocomplete")]
     public static function multiSelect($name, $items, $values = null, $class = null, $style = null, $allmsg = null)
     {
         $buf = '<select  multiple="multiple" id="' . $name . '"  name="' . $name . '[]" class="' . $class . '" style="' . $style . '">';
@@ -945,6 +953,7 @@ class Html
      * @param <type> $value
      * @param <type> $class
      */
+    #[\Deprecated(message: "Use \Html\Form\Html5Autocomplete")]
     public static function autocomplete($name, $options, $value = null, $class = null, $style = null, $minLength = 1, $required = null)
     {
         if ($minLength == null) {
@@ -1567,6 +1576,7 @@ class Html
      * @param <String> $name
      * @return <String> buffer
      */
+    #[\Deprecated(message: "Use FileMultipartUploadService and multipart_uploader_ui partial in file module")]
     public static function multiFileUpload($name)
     {
         //phpcs:disable
@@ -1638,6 +1648,7 @@ UPLOAD;
      * @param string $s
      * @return string
      */
+    #[\Deprecated(message: "Use StringSanitiser")]
     public static function sanitise(string $string): string
     {
         return strip_tags($string, "<a><blockquote><em><div><h1><h2><h3><h4><h5><h6><li><ol><p><strong><s><u><ul>");
