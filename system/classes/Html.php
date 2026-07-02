@@ -5,6 +5,7 @@
 // require_once "classes/html/button.php";
 // require_once "classes/html/form.php";
 
+#[\Deprecated("Use HtmlBootstrap5 class instead")]
 class Html
 {
 
