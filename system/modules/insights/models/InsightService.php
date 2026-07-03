@@ -139,10 +139,22 @@ class InsightService extends DbService
     }
 
     // export a recordset as CSV
-    public function exportcsv($run_data, $title)
+    public function exportcsv($run_data, string $insightClass)
     {
-        // set filename
-        $filename = str_replace(" ", "_", $title) . "_" . date("Y.m.d-H.i") . ".csv";
+        $zip = new ZipArchive();
+
+        $name = "insight.zip";
+
+        try {
+            unlink($name);
+        } catch (Exception $e) {
+            // ignore
+        }
+
+        $zip->open($name, ZipArchive::CREATE);
+
+        $csvNamesUsed = [];
+
         foreach ($run_data as $table) {
             if (!empty($table)) {
                 $title = $table->title;
@@ -150,18 +162,36 @@ class InsightService extends DbService
                 foreach ($table->header as $hd) {
                     $hds[$hd] = $hd;
                 }
-                $csv = new ParseCsv\Csv();
-                $csv->output_filename = $filename;
-                // ignore lib wrapper csv->output, to keep control over header re-sends!
 
-                $this->w->out($csv->unparse($table->data, $hds, null, null, null));
-                // can't use this way without commenting out header section, which composer won't like
+                $csvName = str_replace(" ", "_", $title);
+
+                $csvNamesUsed[$csvName] = !empty($csvNamesUsed[$csvName]) ? $csvNamesUsed[$csvName] : 0;
+                $csvNamesUsed[$csvName] += 1;
+
+                if ($csvNamesUsed[$csvName] > 1) {
+                    $csvName .= "_" . $csvNamesUsed[$csvName];
+                }
+
+                $csvName .= ".csv";
+
+                $csv = new ParseCsv\Csv();
+                $csv->output_filename = $csvName;
+
+                $zip->addFromString(
+                    $csvName,
+                    $csv->unparse($table->data, $hds, null, null, null)
+                );
             }
         }
 
-        $this->w->sendHeader("Content-type", "application/csv");
-        $this->w->sendHeader("Content-Disposition", "attachment; filename=" . $filename);
+        $zip->close();
+
+        header('Content-Type: application/zip');
+        header('Content-disposition: attachment; filename="' . str_replace(" ", "_", $insightClass) . "_" . date("Y.m.d-H.i") . ".zip");
+        header('Content-Length: ' . filesize($name));
         $this->w->setLayout(null);
+
+        readfile($name);
     }
 
     // export a recordset as PDF
