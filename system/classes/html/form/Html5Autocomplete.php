@@ -121,9 +121,9 @@ class Html5Autocomplete extends \Html\Form\InputField
                             ["text" => $text, "type" => $type, "value" => $value] = $this->convertOption($val);
 
                             return [
-                                "text" => html_entity_decode($text),
-                                "type" => html_entity_decode($type),
-                                "value" => html_entity_decode($value),
+                                "text" => !empty($text) ? html_entity_decode($text) : null,
+                                "type" => !empty($type) ? html_entity_decode($type) : null,
+                                "value" => !empty($value) ? html_entity_decode($value) : null,
                             ];
                         },
                         $this->options
