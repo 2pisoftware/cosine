@@ -842,24 +842,19 @@ class Html
      */
     public static function select($name, $items, $value = null, $class = null, $style = null, $allmsg = "-- Select --", $required = null)
     {
-        $buf = '<select id="' . $name . '"  name="' . $name . '" class="' . $class . '" style="' . $style . '" ' . $required . '>';
-        $buf .= $allmsg ? "<option value=''>" . $allmsg . "</option>" : '';
-        if (!empty($items) && is_array($items)) {
-            foreach ($items as $item) {
-                if (is_scalar($item)) {
-                    $selected = $value == $item ? ' selected = "true" ' : "";
-                    $buf .= '<option value="' . htmlspecialchars($item) . '"' . $selected . '>' . htmlentities($item) . '</option>';
-                } elseif ($item instanceof DbObject) {
-                    $selected = $value == $item->getSelectOptionValue() ? ' selected = "true" ' : "";
-                    $buf .= '<option value="' . htmlspecialchars($item->getSelectOptionValue() ?? '') . '"' . $selected . '>' . htmlentities($item->getSelectOptionTitle() ?? '') . '</option>';
-                } elseif (is_array($item)) {
-                    $selected = $value == $item[1] ? ' selected = "true" ' : "";
-                    $buf .= '<option value="' . htmlspecialchars($item[1] ?? '') . '"' . $selected . '>' . htmlentities($item[0] ?? '') . '</option>';
-                }
-            }
+        if (empty($items)) {
+            $items = [];
         }
-        $buf .= '</select>';
-        return $buf;
+
+        return new \Html\Form\Select([
+            "id|name" => $name,
+            "class" => $class,
+            "required" => $required,
+            "style" => $style,
+        ])
+            ->setOptions($items, alphabetise: true)
+            ->setSelectedOption($value)
+            ->__toString();
     }
 
     /**

@@ -433,7 +433,17 @@ HTML;
 
                             $default = !empty($field[5]) ? ($field[5] == "null" ? null : $field[5]) : "-- Select --";
                             $sl_class = !empty($field[6]) ? $field[6] : "form-select";
-                            $buffer .= HtmlBootstrap5::select($name, $items, $value, $sl_class, "width: 100%;", $default, ($readonly ? ' disabled="disabled" ' : null) . ' ' . $required);
+
+                            $buffer .= new \Html\Form\Select([
+                                "name|id" => $name,
+                                "class" => $sl_class,
+                                "required" => !empty($required) ? true : null,
+                                "disabled" => !empty($readonly) ? true : null,
+                                "style" => "width: 100%",
+                            ])
+                                ->setOptions($items, alphabetise: true)
+                                ->setSelectedOption($value)
+                                ->__toString();
                             break;
                         case "multiSelect":
                             $items = !empty($field[4]) ? $field[4] : null;
