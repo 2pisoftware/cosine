@@ -3,6 +3,10 @@ stages:
   - lint
   - cosine-test
 
+workflow:
+  auto_cancel:
+    on_new_commit: conservative
+
 # Include the steps for docker and playwright
 include:
   # Build the Docker image
@@ -17,11 +21,14 @@ include:
 
   - component: $CI_SERVER_FQDN/2pisoftware/pipelines/php/test@2.2.1
 
-
 php-lint:
+  interruptible: true
   allow_failure: true
-
    
 docker-build:
+  interruptible: true
   tags:
     - largemem_x86
+
+cosine-test:
+  interruptible: true
