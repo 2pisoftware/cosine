@@ -1,6 +1,11 @@
 import { ArrayBuffer as spark } from "~/spark-md5";
 
-const beginMultipartUpload = async (file: File, filename: string = file.name, endpoint = "/file/ajax_multipart", calculateHash = true): Promise<string> => {
+const beginMultipartUpload = async (
+    file: File,
+    filename: string = file.name,
+    endpoint = "/file/ajax_multipart",
+    calculateHash = true
+): Promise<string> => {
     const res = await fetch(endpoint, {
         method: "POST",
         body: JSON.stringify({
@@ -16,7 +21,13 @@ const beginMultipartUpload = async (file: File, filename: string = file.name, en
     return json.id;
 };
 
-const upload_part = async (data: number[], upload_id: string, part_number: number, signal: AbortSignal) => {
+const upload_part = async (
+    data: number[],
+    upload_id: string,
+    part_number: number,
+    signal: AbortSignal,
+    progress = (sent: number, total: number) => { }
+) => {
     if (signal.aborted) throw new Error("aborted");
 
     const md5 = btoa(spark.hash(data, true));
@@ -36,42 +47,77 @@ const upload_part = async (data: number[], upload_id: string, part_number: numbe
 
     if (!res.ok) throw new Error("failed to get endpoint");
 
-    const up = await fetch(endpoint, {
-        method: "PUT",
-        body: new Uint8Array(data),
-        headers: {
-            "Content-MD5": md5,
-        },
-        signal
-    });
+    const xhr = new XMLHttpRequest();
 
-    const upres = await up.text();
+    await new Promise<void>((resolve, reject) => {
+        xhr.upload.addEventListener("progress", (event) => {
+            if (!event.lengthComputable) return;
 
-    if (!up.ok) throw new Error(upres);
+            progress(event.loaded, event.total);
+        });
+
+        xhr.addEventListener("loadend", () => {
+            if (xhr.readyState !== 4) reject(new Error("Failed upload"));
+
+            if (xhr.status !== 200) reject(new Error(`Failed upload with status ${xhr.status}: ${xhr.responseText}`));
+
+            resolve();
+        })
+
+        signal.addEventListener("abort", () => {
+            xhr.abort();
+            reject("Upload aborted");
+        })
+
+        xhr.open("PUT", endpoint, true);
+        xhr.setRequestHeader("Content-MD5", md5);
+        xhr.send(new Uint8Array(data));
+    })
 };
 
 const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 const ATTEMPT_DELAY_SECONDS = 5;
 
-const uploadParts = async (file: File, upload_id: string) => {
-    const CHUNK_SIZE = 1024 * 1024 * 5;
+const CHUNK_SIZE = 1024 * 1024 * 5;
+
+const uploadParts = async (
+    file: File,
+    upload_id: string,
+    progress = (currentChunk: number) => { }
+) => {
     const MAX_RETRIES = 5;
 
     let i = 1;
     let part: number[] = [];
 
+    let progresses: Map<number, number> = new Map();
+    const notifyProgress = (i: number, done: number) => {
+        progresses.set(i, done);
+        const totalProgress = [...progresses.values()].reduce((prev, curr) => prev + curr);
+        progress(totalProgress);
+    }
+
+
     let promises: Promise<void>[] = [];
 
     const abortController = new AbortController();
 
-    const doPartWithRetry = async (part: number[]) => {
+    const doPartWithRetry = async (part: number[], part_number: number) => {
         if (abortController.signal.aborted) return;
 
         let attempts = 0;
         do {
             try {
                 attempts++;
-                await upload_part(part, upload_id, i, abortController.signal);
+                await upload_part(
+                    part,
+                    upload_id,
+                    part_number,
+                    abortController.signal,
+                    (sent, total) => notifyProgress(part_number, sent / total)
+                );
+
+                notifyProgress(part_number, 1);
                 return;
             }
             catch (e) {
@@ -80,6 +126,8 @@ const uploadParts = async (file: File, upload_id: string) => {
                 // we failed. try again until max retries
             }
         } while (attempts < MAX_RETRIES);
+
+        notifyProgress(part_number, 1);
 
         abortController.abort();
     };
@@ -91,7 +139,7 @@ const uploadParts = async (file: File, upload_id: string) => {
 
         if (part.length > CHUNK_SIZE) {
             const aligned = part.slice(0, CHUNK_SIZE);
-            promises.push(doPartWithRetry(aligned));
+            promises.push(doPartWithRetry(aligned, i));
             i++;
             part = part.slice(CHUNK_SIZE);
 
@@ -102,7 +150,7 @@ const uploadParts = async (file: File, upload_id: string) => {
     }
 
     // and then the remaining section
-    promises.push(doPartWithRetry(part));
+    promises.push(doPartWithRetry(part, i));
 
     await Promise.all(promises);
 
@@ -127,16 +175,16 @@ const abortUpload = async (upload_id: string) => {
 };
 
 const getFileMd5 = (file: File) => {
+    console.time("md5")
     const gen = new spark();
     const reader = new FileReader();
 
-    const chunkSize = 1024 * 1024 * 2;  // 2mb
-    const chunks = Math.ceil(file.size / chunkSize);
+    const chunks = Math.ceil(file.size / CHUNK_SIZE);
     let currentChunk = 0;
 
     const loadNext = () => {
-        const start = currentChunk * chunkSize;
-        const end = start + chunkSize >= file.size ? file.size : start + chunkSize;
+        const start = currentChunk * CHUNK_SIZE;
+        const end = start + CHUNK_SIZE >= file.size ? file.size : start + CHUNK_SIZE;
 
         reader.readAsArrayBuffer(file.slice(start, end));
     }
@@ -151,7 +199,9 @@ const getFileMd5 = (file: File) => {
 
             if (currentChunk < chunks) return loadNext();
 
-            resolve(gen.end());
+            const res = gen.end();
+            console.timeEnd("md5")
+            resolve(res);
         });
 
         reader.addEventListener("error", (e) => reject(e));
@@ -163,5 +213,5 @@ const getFileMd5 = (file: File) => {
 }
 
 
-export { abortUpload, beginMultipartUpload, completeUpload, uploadParts };
+export { abortUpload, beginMultipartUpload, completeUpload, uploadParts, getFileMd5, CHUNK_SIZE };
 
