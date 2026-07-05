@@ -441,7 +441,7 @@ HTML;
                                 "disabled" => !empty($readonly) ? true : null,
                                 "style" => "width: 100%",
                             ])
-                                ->setOptions($items, alphabetise: true)
+                                ->setOptions($items, alphabetise: true, omit_default: empty($default))
                                 ->setSelectedOption($value)
                                 ->__toString();
                             break;
