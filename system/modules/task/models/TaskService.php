@@ -726,6 +726,7 @@ class TaskService extends DbService
 
     // load our task files to make available: titles, descriptions, status, additional form fields, etc.
     // for defined task groups amd task types
+    //phpcs:ignore PSR2.Methods.MethodDeclaration.Underscore
     public function _loadTaskFiles()
     {
         // do this only once
@@ -820,8 +821,20 @@ class TaskService extends DbService
      *
      * @return TaskGroup
      */
-    public function createTaskGroup($type, $title, $description, $default_assignee_id, $can_assign = "OWNER", $can_view = "OWNER", $can_create = "OWNER", $is_active = 1, $is_deleted = 0, $default_task_type = null, $default_priority = null, $is_automatic_subscription = true)
-    {
+    public function createTaskGroup(
+        $type,
+        $title,
+        $description,
+        $default_assignee_id,
+        $can_assign = "OWNER",
+        $can_view = "OWNER",
+        $can_create = "OWNER",
+        $is_active = 1,
+        $is_deleted = 0,
+        $default_task_type = null,
+        $default_priority = null,
+        $is_automatic_subscription = true
+    ) {
         // title should be unique!
         $taskgroup = $this->getTaskGroupByUniqueTitle($title);
         if (null != $taskgroup) {
@@ -940,8 +953,10 @@ class TaskService extends DbService
             $w->menuLink("task/index", "Task Dashboard", $nav);
             $w->menuLink("task/edit", "New Task", $nav);
             $w->menuLink("task/tasklist", "Task List", $nav);
-            $w->menuLink("task/notifications", "Notifications", $nav);
-            $w->menuLink("task/taskweek", "Activity", $nav);
+            if (AuthService::getInstance($w)->user()->allowed('/task/notifications')) {
+                $w->menuLink("task/notifications", "Notifications", $nav);
+            }
+
             $w->menuLink("task-group/viewtaskgrouptypes", "Task Groups", $nav);
         }
         $w->ctx("navigation", $nav);
@@ -950,13 +965,18 @@ class TaskService extends DbService
 
     public function navList(): array
     {
-        return [
+        $nav = [
             new MenuLinkStruct("Task Dashboard", "task/index"),
             new MenuLinkStruct("New Task", "task/edit"),
             new MenuLinkStruct("Task List", "task/tasklist"),
-            new MenuLinkStruct("Notifications", "task/notifications"),
-            new MenuLinkStruct("Activity", "task/taskweek"),
-            new MenuLinkStruct("Task Groups", "task-group/viewtaskgrouptypes"),
         ];
+
+        if (AuthService::getInstance($this->w)->user()->allowed('/task/notifications')) {
+            $nav[] = new MenuLinkStruct("Notifications", "task/notifications");
+        }
+
+        $nav[] = new MenuLinkStruct("Task Groups", "task-group/viewtaskgrouptypes");
+
+        return $nav;
     }
 }

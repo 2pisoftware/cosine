@@ -405,6 +405,7 @@ class Task extends DbObject
             return $this->is_closed;
         }
 
+        // The below code shouldn't be possible to reach, because is_closed is not nullable
         if (!empty($this->getTaskGroup()->id)) {
             $statlist = $this->getTaskGroup()->getStatus();
             if ($statlist) {

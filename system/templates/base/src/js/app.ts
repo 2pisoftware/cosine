@@ -6,6 +6,7 @@ import { Modal, Tooltip } from 'bootstrap';
 import { Sortable } from './components/Sortable';
 
 import '../scss/app.scss';
+import { ScrollPosComponent } from './components/ScrollPos';
 
 type window = Window & typeof globalThis & { cmfiveEventBus: Comment, cmfive: { toast: typeof CmfiveToast } };
 
@@ -110,6 +111,8 @@ export class Cmfive {
             // Appending scripts to the DOM via innerHTML is not meant to execute them for security purposes
             // Unfortunately, various modals however contian script tags we need to execute
             modalContent.querySelectorAll("script").forEach(x => {
+                if (x.type && x.type !== "module" && !x.type.includes("javascript")) return;
+
                 eval(x.innerHTML);
             });
 
@@ -202,7 +205,7 @@ export class Cmfive {
         FavouritesAdaptation.bindFavouriteInteractions();
         InputWithOther.bindOtherInteractions();
         MultiFileUpload.bindInteractions();
-        Autocomplete.bindInteractions();
+        Autocomplete.bindInteractions(target);
         QuillEditor.bindQuillEditor();
         Sortable.bindSortableElements();
         TabAdaptation.bindTabInteractions();
@@ -229,6 +232,8 @@ export class Cmfive {
             m.removeEventListener('click', this.linkClickListener);
             m.addEventListener('click', this.linkClickListener);
         })
+
+        ScrollPosComponent.bindInteractions();
     }
 }
 

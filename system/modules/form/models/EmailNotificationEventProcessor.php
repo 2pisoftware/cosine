@@ -4,8 +4,8 @@
 
 class EmailNotificationEventProcessor extends EventProcessorType
 {
-    
-    function getSettingsForm($current_settings = null)
+
+    public function getSettingsForm($current_settings = null)
     {
         if (!empty($current_settings)) {
             if (is_string($current_settings)) {
@@ -16,8 +16,10 @@ class EmailNotificationEventProcessor extends EventProcessorType
         $template_select_options = TemplateService::getInstance($this->w)->findTemplates('form', 'event');
 
         return ["Settings" => [
-            [["Email To Notify", "text", "email_to_notify", @$current_settings->email_to_notify],
-            ["Template (Optional)", "select", "template_id", @$current_settings->template_id, $template_select_options ]]
+            [
+                ["Email To Notify", "text", "email_to_notify", @$current_settings->email_to_notify],
+                ["Template (Optional)", "select", "template_id", @$current_settings->template_id, $template_select_options]
+            ]
 
         ]];
     }
@@ -28,7 +30,7 @@ class EmailNotificationEventProcessor extends EventProcessorType
         if (empty($form_event->id)) {
             return;
         }
-        
+
         $settings = null;
         if (!empty($form_event->settings)) {
             $settings = json_decode($form_event->settings);
@@ -43,7 +45,7 @@ class EmailNotificationEventProcessor extends EventProcessorType
         if (empty($form)) {
             return;
         }
-        
+
         $subject = '';
         $message = '';
         $tmp_message = '';
@@ -84,13 +86,12 @@ class EmailNotificationEventProcessor extends EventProcessorType
                                 $attachment_names[] = basename($attachment);
                             }
                             $attachments = array_merge($attachments, $att);
-                            
+
                             $message .= implode(', ', $attachment_names);
                             $message .= "</br>";
                         }
-                    }
-                    //need to add functionality for sub forms
-                    elseif (is_array($value)) {
+                    } elseif (is_array($value)) {
+                        //need to add functionality for sub forms
                         $message .= "<b>" . $key . ":</b> <br/>";
                         foreach ($value as $sub_form) {
                             foreach ($sub_form as $sub_key => $sub_value) {
@@ -103,7 +104,7 @@ class EmailNotificationEventProcessor extends EventProcessorType
                 }
             }
         }
-        
+
 
         //check which version of message body to send
         if (!empty($template)) {

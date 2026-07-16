@@ -114,11 +114,11 @@
             ?>
 
             <div class="row mt-2">
-                <div class="small-12 large-9 position-relative">
+                <div class="col-12 col-xl-8 position-relative">
                     <?php echo $form; ?>
                 </div>
 
-                <div class="small-12 large-3 right">
+                <div class="col-12 col-xl-4">
                     <?php if (!empty($task->id)) : ?>
                         <div class="row panel" id="task_subscribers">
                             <div class="col p-0">
@@ -129,7 +129,7 @@
                                         href: '/task-subscriber/add/' . $task->id,
                                         title: 'Add',
                                         button: true,
-                                        class: 'bg-secondary'
+                                        class: 'btn btn-secondary'
                                     )
                                     ?>
                                 </div>
@@ -142,7 +142,7 @@
                                             <?php $subscriber_user = $subscriber->getUser(); ?>
                                             <?php if (!empty($subscriber_user)) : ?>
                                                 <tr>
-                                                    <td class="align-middle">
+                                                    <td class="align-middle py-2">
                                                         <div>
                                                             <?php echo $subscriber_user->getFullName() ?>
                                                         </div>
@@ -156,7 +156,7 @@
                                                             href: '/task-subscriber/delete/' . $subscriber->id,
                                                             title: '×',
                                                             confirm: 'Are you sure you want to remove this subscriber?',
-                                                            class: 'bg-warning btn-sm d-inline text-dark'
+                                                            class: 'btn btn-warning btn-sm',
                                                         ); ?>
                                                     </td>
                                                 </tr>
@@ -269,8 +269,17 @@
 
     const makeSelectOptions = (select, value, label) => {
         const elem = document.createElement("option");
+
+        // due to a bug, `value` is encoded with html entities
+        // unfortunately, fixing the bug means refactoring a few different places
+        // easier to just decode them here
+
+        const txt = document.createElement("textarea");
+        txt.innerHTML = value;
+        value = txt.value;
+
         elem.value = value;
-        elem.innerText = label;
+        elem.innerHTML = label;
 
         select.appendChild(elem);
     };

@@ -264,51 +264,58 @@ function task_comment_send_notification_recipients_task(Web $w, $params)
 
     $subject = (!empty($commenter->id) ? $commenter->getFullName() : 'Someone') . ' has commented on a task that you\'re a part of (' . $task->title . ' [' . $task->id . '])';
 
-    NotificationService::getInstance($w)->sendToAllWithCallback($subject, "task", "notification_email", AuthService::getInstance($w)->getUser($params['commenter_id']), $params['recipients'], function ($user, $existing_template_data) use ($params, $task, $w) {
-        $template_data = $existing_template_data;
-        $template_data['status'] = "[{$task->id}] New comment";
-        $template_data['footer'] = $task->description;
-        $template_data['action_url'] = $w->localUrl('/task/edit/' . $task->id);
-        $template_data['logo_url'] = defaultVal(Config::get('main.application_logo'), '');
+    NotificationService::getInstance($w)->sendToAllWithCallback(
+        $subject,
+        "task",
+        "notification_email",
+        AuthService::getInstance($w)->getUser($params['commenter_id']),
+        $params['recipients'],
+        function ($user, $existing_template_data) use ($params, $task, $w) {
+            $template_data = $existing_template_data;
+            $template_data['status'] = "[{$task->id}] New comment";
+            $template_data['footer'] = $task->description;
+            $template_data['action_url'] = $w->localUrl('/task/edit/' . $task->id);
+            $template_data['logo_url'] = defaultVal(Config::get('main.application_logo'), '');
 
-        $template_data['fields'] = [
-            "Assigned to" => !empty($task->assignee_id) ? $task->getAssignee()->getFullName() : '',
-            "Type" => $task->getTypeTitle(),
-            "Title" => $task->title,
-            "Due" => !empty($task->dt_due) ? date('d-m-Y', !is_numeric($task->dt_due) ? strtotime(str_replace('/', '-', $task->dt_due)) : $task->dt_due) : '',
-            "Status" => $task->status,
-            "Priority" => $task->isUrgent() ? "<b style='color: orange;'>{$task->priority}</b>" : $task->priority,
-        ];
+            $template_data['fields'] = [
+                "Assigned to" => !empty($task->assignee_id) ? $task->getAssignee()->getFullName() : '',
+                "Type" => $task->getTypeTitle(),
+                "Title" => $task->title,
+                "Due" => !empty($task->dt_due) ? date('d-m-Y', !is_numeric($task->dt_due) ? strtotime(str_replace('/', '-', $task->dt_due)) : $task->dt_due) : '',
+                "Status" => $task->status,
+                "Priority" => $task->isUrgent() ? "<b style='color: orange;'>{$task->priority}</b>" : $task->priority,
+            ];
 
-        if ($user->is_external) {
-            $template_data['fields']['Due'] = '';
-            $template_data['fields']['Priority'] = '';
-            $template_data['fields']['Status'] = '';
-        }
-
-        $template_data['can_view_task'] = $user->is_external ? false : true;
-
-        $template_data['footer'] .= $w->partial("displaycomment", ["object" => $params['comment'], "displayOnly" => true, 'redirect' => '/inbox', "is_outgoing" => true], "admin");
-
-        // Get additional details
-        if ($user->is_external == 0) {
-            $additional_details = TaskService::getInstance($w)->getNotificationAdditionalDetails($task);
-            if (!empty($additional_details)) {
-                $template_data['footer'] .= $additional_details;
+            if ($user->is_external) {
+                $template_data['fields']['Due'] = '';
+                $template_data['fields']['Priority'] = '';
+                $template_data['fields']['Status'] = '';
             }
-        }
 
-        if (!empty($task->assignee_id)) {
-            if ($user->id == $task->assignee_id) {
-                $template_data['fields']["Assigned to"] = "You (" . $task->getAssignee()->getFullName() . ")";
+            $template_data['can_view_task'] = $user->is_external ? false : true;
+
+            $template_data['footer'] .= $w->partial("displaycomment", ["object" => $params['comment'], "displayOnly" => true, 'redirect' => '/inbox', "is_outgoing" => true], "admin");
+
+            // Get additional details
+            if ($user->is_external == 0) {
+                $additional_details = TaskService::getInstance($w)->getNotificationAdditionalDetails($task);
+                if (!empty($additional_details)) {
+                    $template_data['footer'] .= $additional_details;
+                }
+            }
+
+            if (!empty($task->assignee_id)) {
+                if ($user->id == $task->assignee_id) {
+                    $template_data['fields']["Assigned to"] = "You (" . $task->getAssignee()->getFullName() . ")";
+                } else {
+                    $template_data['fields']["Assigned to"] = !empty($task->assignee_id) ? $task->getAssignee()->getFullName() : '';
+                }
             } else {
-                $template_data['fields']["Assigned to"] = !empty($task->assignee_id) ? $task->getAssignee()->getFullName() : '';
+                $template_data['fields']["Assigned to"] = "No one";
             }
-        } else {
-            $template_data['fields']["Assigned to"] = "No one";
+            return new NotificationCallback($user, $template_data, FileService::getInstance($w)->getAttachmentsFileList($task, null, ['channel_email_raw']));
         }
-        return new NotificationCallback($user, $template_data, FileService::getInstance($w)->getAttachmentsFileList($task, null, ['channel_email_raw']));
-    });
+    );
 }
 
 // if taskgroup has been made inactive, then deactivate all attached tasks

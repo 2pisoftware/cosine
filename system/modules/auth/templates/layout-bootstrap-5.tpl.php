@@ -38,6 +38,12 @@
 </head>
 
 <body id="cmfive-body" class='d-flex justify-content-center align-items-center container '>
+    <?php if (BannerService::getInstance($w)->getLoginBanner()) : ?>
+        <div class="position-absolute top-0 w-100 border-0 alert alert-primary d-flex justify-content-center align-items-center text-center mb-0" role="alert">
+            <?php echo BannerService::getInstance($w)->getLoginBanner(); ?>
+        </div>
+    <?php endif; ?>
+
     <div id="login-content" class='panel position-absolute top-50 start-50 translate-middle'>
         <div class='row mx-1'>
             <?php

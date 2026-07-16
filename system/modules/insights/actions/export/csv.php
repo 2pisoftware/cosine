@@ -12,6 +12,14 @@ function csv_ALL(Web $w)
     if (empty($insight)) {
         $w->error('No insight found for class name', '/insights');
     }
+
+    if (!InsightService::getInstance($w)->canViewInsight(
+        AuthService::getInstance($w)->user()->id,
+        $p["insight_class"]
+    )) {
+        return $w->error("You do not have permission to view this insight", "/insights");
+    }
+
     $run_data = $insight->run($w, $_REQUEST);
 
     InsightService::getInstance($w)->exportcsv($run_data, $p['insight_class']);

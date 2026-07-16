@@ -2,7 +2,7 @@
 
 class TagService extends DbService
 {
-    
+
     /**
      * Gets tag by ID
      *
@@ -13,17 +13,43 @@ class TagService extends DbService
     {
         return $this->getObject("Tag", $id);
     }
-    
+
     /**
      * Gets all current tags
      *
-     * @return Array<Tag>
+     * @return Tag[]
      */
     public function getTags()
     {
         return $this->getObjects('Tag', ['is_deleted' => 0]);
     }
-    
+
+    /**
+     * Gets paginated tags with sorting
+     *
+     * @param int $page
+     * @param int $page_size
+     * @param string $sort
+     * @param string $sort_direction
+     * @return Tag[]
+     */
+    public function getTagsPaginated(int $page = 1, int $page_size = 20, string $sort = 'tag.tag', string $sort_direction = 'asc'): array
+    {
+        $query = $this->_db->get('tag')->where('is_deleted', 0)->orderBy("$sort $sort_direction")->paginate($page, $page_size);
+
+        return $this->getObjectsFromRows('Tag', $query->fetchAll());
+    }
+
+    /**
+     * Gets total count of tags
+     *
+     * @return int
+     */
+    public function getTagsCount(): int
+    {
+        return $this->_db->get('tag')->where('is_deleted', 0)->count();
+    }
+
 
     /**
      * Returns tags linked to an object
@@ -38,18 +64,18 @@ class TagService extends DbService
             $query = $this->_db->get('tag')->leftJoin('tag_assign on tag.id = tag_assign.tag_id')
                 ->where('object_class', get_class($object))->and('object_id', $object->id)
                 ->and('tag.is_deleted', 0)->and('tag_assign.is_deleted', 0)->fetchAll();
-            
+
             return $this->getObjectsFromRows('Tag', $query);
         }
         return null;
     }
-    
+
     public function objectHasTag(mixed $object, string $tag): bool
     {
         $query = $this->_db->get('tag')->leftJoin('tag_assign on tag.id = tag_assign.tag_id')
-                ->where('object_class', get_class($object))->and('object_id', $object->id)
-                ->and('tag.tag', $tag)
-                ->and('tag.is_deleted', 0)->and('tag_assign.is_deleted', 0);
+            ->where('object_class', get_class($object))->and('object_id', $object->id)
+            ->and('tag.tag', $tag)
+            ->and('tag.is_deleted', 0)->and('tag_assign.is_deleted', 0);
         return $query->count() > 0;
     }
 
@@ -62,18 +88,18 @@ class TagService extends DbService
     public function getTagsByObjectClass($object_class)
     {
         $query = $this->_db->get('tag')->leftJoin('tag_assign on tag.id = tag_assign.tag_id')
-                ->where('object_class', $object_class)
-                ->and('tag.is_deleted', 0)->and('tag_assign.is_deleted', 0)->orderBy('tag ASC')->fetchAll();
+            ->where('object_class', $object_class)
+            ->and('tag.is_deleted', 0)->and('tag_assign.is_deleted', 0)->orderBy('tag ASC')->fetchAll();
         return $this->getObjectsFromRows('Tag', $query);
     }
-    
+
     public function getAllTags($returnObjects = false)
     {
         //Loads a list of all tags that were ever created
-        
+
         return !!$returnObjects ? $this->getObjects('Tag', ['is_deleted' => 0]) : $this->_db->get('tag')->where('is_deleted', 0)->orderBy('tag ASC')->fetchAll();
     }
-    
+
     public function navigation(Web $w, $title = null, $nav = null)
     {
         if ($title) {

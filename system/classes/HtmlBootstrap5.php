@@ -433,7 +433,17 @@ HTML;
 
                             $default = !empty($field[5]) ? ($field[5] == "null" ? null : $field[5]) : "-- Select --";
                             $sl_class = !empty($field[6]) ? $field[6] : "form-select";
-                            $buffer .= HtmlBootstrap5::select($name, $items, $value, $sl_class, "width: 100%;", $default, ($readonly ? ' disabled="disabled" ' : null) . ' ' . $required);
+
+                            $buffer .= new \Html\Form\Select([
+                                "name|id" => $name,
+                                "class" => $sl_class,
+                                "required" => !empty($required) ? true : null,
+                                "disabled" => !empty($readonly) ? true : null,
+                                "style" => "width: 100%",
+                            ])
+                                ->setOptions($items, alphabetise: true, omit_default: empty($default))
+                                ->setSelectedOption($value)
+                                ->__toString();
                             break;
                         case "multiSelect":
                             $items = !empty($field[4]) ? $field[4] : null;
@@ -678,6 +688,7 @@ HTML;
             $dropdown_url_string .= (empty($url_parsed['query']) ? "?" : '?' . $url_parsed['query'] . '&') . $sort_query_param . '=' . $sort . '&' . $sort_direction_param . '=' . $sort_direction;
 
             for ($i = 1; $i <= $num_results; $i++) {
+                //phpcs:ignore
                 $buffer .= '<option' . ($i == $page ? ' selected="selected"' : '') . ' value="' . $dropdown_url_string . '&' . $page_query_param . '=' . $i . (!empty($url_parsed['fragment']) ? '#' . $url_parsed['fragment'] : '') . '">' . $i . '</option>';
             }
             $buffer .= '</select></div>';
@@ -699,6 +710,7 @@ HTML;
                     $sort_asc_string = $url_parsed['path'] . (empty($url_parsed['query']) ? '?' : '?' . $url_parsed['query'] . '&') . $sort_direction_asc_query . (!empty($url_parsed['fragment']) ? '#' . $url_parsed['fragment'] : '');
                     $sort_desc_string = $url_parsed['path'] . (empty($url_parsed['query']) ? '?' : '?' . $url_parsed['query'] . '&') . $sort_direction_desc_query . (!empty($url_parsed['fragment']) ? '#' . $url_parsed['fragment'] : '');
                 }
+                //phpcs:ignore
                 $buffer .= '<th' . (is_array($title) && $title[0] === $sort ? ' class="sorted_column"' : '') . '>' . (is_array($title) ? '<a href="' . ($title[0] === $sort && $sort_direction === 'asc' ? $sort_desc_string : $sort_asc_string) . '">' . $title[1] . '</a>' : $title)
                     . (is_array($title) ? '<div class="float-end">'
                         . ($title[0] !== $sort || ($title[0] === $sort && $sort_direction !== 'asc') ? '<a class="sort-ascending" href="' . $sort_asc_string . '"><i class="bi bi-chevron-up"></i></a>' : '')
@@ -764,7 +776,7 @@ HTML;
     {
         // This will pretty much be a redesigned HtmlBootstrap5::form layout
         if (empty($data)) {
-            return;
+            return '';
         }
 
         $form = new \Html\FormBootstrap5();
@@ -846,6 +858,7 @@ HTML;
             switch ($type) {
                 case "text":
                 case "password":
+                    //phpcs:ignore
                     $buffer .= '<input' . $readonly . ' style="width:100%;"  type="' . $type . '" name="' . $name . '" value="' . (empty($value) ? '' : htmlspecialchars($value)) . '" size="' . (!empty($row[4]) ? $row[4] : null) . '" id="' . $name . '"/>';
                     break;
                 case "autocomplete":
@@ -980,24 +993,38 @@ HTML;
 
         $links = [];
 
-        if ($currentpage > 1) {
-            $links[] = $makeElem(1, false);
-        }
-
-        if ($currentpage > 2) {
-            $links[] = $makeElem($currentpage - 1, false);
-        }
-
-        $links[] = $makeElem($currentpage, true);
-
         $lastPage = ceil($totalresults / $pagesize);
 
-        if ($currentpage < $lastPage - 1) {
-            $links[] = $makeElem($currentpage + 1, false);
-        }
+        if ($lastPage <= 5) {
+            // If we have a small number of pages, just render all the buttons
+            for ($i = 0; $i < $lastPage; $i++) {
+                $links[] = $makeElem($i + 1, $i + 1 == $currentpage);
+            }
+        } else {
+            // Otherwise, render only the first, prev, current, next, and last
 
-        if ($currentpage < $lastPage) {
-            $links[] = $makeElem($lastPage, false);
+            // first page link
+            if ($currentpage > 1) {
+                $links[] = $makeElem(1, false);
+            }
+
+            // prev page link
+            if ($currentpage > 2) {
+                $links[] = $makeElem($currentpage - 1, false);
+            }
+
+            // current page link
+            $links[] = $makeElem($currentpage, true);
+
+            // next page link
+            if ($currentpage < $lastPage - 1) {
+                $links[] = $makeElem($currentpage + 1, false);
+            }
+
+            // last page link
+            if ($currentpage < $lastPage) {
+                $links[] = $makeElem($lastPage, false);
+            }
         }
 
         $links_str = implode("", $links);
@@ -1022,11 +1049,15 @@ HTML;
      */
     public static function alertBox($msg, $type = "alert-info", $include_close = true): string
     {
-        if ($type !== "alert-info" && $type !== "alert-warning" && $type !== "alert-danger" && $type !== "alert-success") {
+        $allowed_types = ["alert-info", "alert-warning", "alert-danger", "alert-success", "alert-secondary"];
+        if (!in_array($type, $allowed_types)) {
             $type = "alert-info";
         }
 
-        return "<div data-alert class='alert alert-box {$type}'>{$msg}" . (!!$include_close ? "<a href='#' class='close'>&times;</a>" : '') . "</div>";
+        $dismissClass = $include_close ? " alert-dismissible fade show" : "";
+        $closeButton = $include_close ? '<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>' : "";
+
+        return "<div class='alert {$type}{$dismissClass}' role='alert'>{$msg}{$closeButton}</div>";
     }
 
     public static function dataCard(string $header, array $data)
@@ -1071,7 +1102,7 @@ HTML;
     public static function autocomplete($name, $options, $value = null, $class = null, $style = null, $minLength = 1, $required = null)
     {
         return (new \Html\Form\Html5Autocomplete([
-            "id|name" => "title",
+            "id|name" => $name,
             "class" => "form-control " . $class,
             "label" => "Title",
             "maxItems" => 1,

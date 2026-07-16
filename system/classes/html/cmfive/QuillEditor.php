@@ -41,6 +41,8 @@ class QuillEditor extends \Html\Form\InputField
     {
         $value = strip_tags($this->value ?? '', $this->tag_allow_list);
 
+        //phpcs:disable
         return '<textarea name="' . $this->name . '" id="' . $this->id . '" style="display:none">' . $value . '</textarea><div class="quill-editor" data-quill-options=\'' . json_encode($this->options) . '\' id="quill_' . $this->id . '">' . $value . '</div>';
+        //phpcs:enable
     }
 }

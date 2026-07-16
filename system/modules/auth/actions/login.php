@@ -50,6 +50,7 @@ function login_POST(Web $w)
 
     if (Config::get('auth.login.attempts.track_attempts', false) == true) {
         if ($user->is_locked == 1) {
+            //phpcs:ignore
             $w->out((new JsonResponse())->setErrorResponse("This account is locked, most likely due to too many login attempts. Please contact an Administrator to get your account unlocked", "This account is locked, most likely due to too many login attempts. Please contact an Administrator to get your account unlocked"));
             return;
         }

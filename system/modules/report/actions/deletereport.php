@@ -19,7 +19,7 @@ function deletereport_ALL(Web &$w)
 
             // need to check if there is a feed associated with this report
             $feed = ReportService::getInstance($w)->getFeedInfobyReportId($rep->id);
-                
+
             // if feed exists, set is_deleted flag. ie. delete feed as well as report
             if ($feed) {
                 $feed->is_deleted = 1;
@@ -27,9 +27,8 @@ function deletereport_ALL(Web &$w)
             }
             // return
             $w->msg("Report deleted", "/report/index/");
-        }
-        // if no report, say as much
-        else {
+        } else {
+            // if no report, say as much
             $w->msg("Report no longer exists?", "/report/index/");
         }
     }

@@ -156,6 +156,20 @@ class FileMultipartUploadService extends DbService
         return true;
     }
 
+    public static function sanitiseKey(string $key)
+    {
+        $allowed = "/[^(0-9a-zA-Z)!\-\_\.\*\'\(\)]/";
+
+        $out = preg_replace($allowed, "", $key);
+
+        if (!$out) {
+            throw new Exception("Failed to sanitise key");
+        }
+
+        return $out;
+    }
+
+
     private function makeClient()
     {
         return FileService::getInstance($this->w)->getS3Client();

@@ -1,11 +1,12 @@
 <script setup lang="ts">
 import * as s3 from "./multipart.js";
-import { ref, computed, useTemplateRef } from "../../../../templates/base/node_modules/vue";
+import { ref, computed } from "../../../../templates/base/node_modules/vue";
 
 import LocalFilePreview from "./LocalFilePreview.vue";
 
 const props = defineProps<{
     endpoint: string;
+    calculateHash?: boolean;
 }>();
 
 const endpoint = computed(() => props.endpoint.length ? props.endpoint : undefined);
@@ -30,31 +31,37 @@ const upload = async (e: SubmitEvent) => {
     disableUpload.value = true;
     disableSubmit.value = true;
 
+    is_initialising.value = true;
+
+    let uploadedChunks = 0;
     for (const file of files.value) {
         let upload_id: string | undefined = undefined;
         try {
-            upload_id = await s3.beginMultipartUpload(file, file.name, endpoint.value);
+            upload_id = await s3.beginMultipartUpload(
+                file,
+                file.name,
+                endpoint.value,
+                props.calculateHash ?? true
+            );
 
-            progress.value++;
+            is_initialising.value = false;
 
-            await s3.uploadParts(file, upload_id);
-
-            progress.value++;
+            await s3.uploadParts(file, upload_id, (chunk) => progress.value = chunk + uploadedChunks);
 
             await s3.completeUpload(upload_id);
 
-            progress.value++;
             success_count.value++;
         }
         catch (e) {
             if (upload_id)
                 await s3.abortUpload(upload_id).catch(() => { });
             failed_count.value++;
-
-            continue;
         }
+
+        uploadedChunks += Math.ceil(file.size / s3.CHUNK_SIZE);
     }
 
+    progress.value = total_progress.value;
     disableUpload.value = false;
     done.value = true;
 
@@ -87,17 +94,30 @@ const done = ref(false);
 const failed_count = ref(0);
 const success_count = ref(0);
 const progress = ref(0);
-const total_progress = computed(() => files.value.length * 3);
+const total_progress = computed(() => files.value.reduce((acc, curr) => acc + Math.ceil(curr.size / s3.CHUNK_SIZE), 0));
 const disableSubmit = ref(true);
 const disableUpload = ref(false);
+const is_initialising = ref(false);
 </script>
 
 <template>
     <div class="panel">
         <div v-if="uploading">
-            <div class="progress mb-2">
-                <div class="progress-bar" :style="`width: ${(progress / total_progress) * 100}%;`" role="progressbar"
-                    :aria-valuenow="progress" aria-valuemin="0" :aria-valuemax="(total_progress)">
+            <div class="progress-stacked mb-2">
+                <div class="progress" role="progressbar" :aria-valuenow="is_initialising ? 1 : 0" aria-valuemin="0"
+                    aria-valuemax="1" :style="`width: ${is_initialising ? 100 : 0}%`">
+                    <div class="progress-bar bg-info progress-bar-striped progress-bar-animated">Initialising</div>
+                </div>
+
+                <div class="progress" role="progressbar" :aria-valuenow="failed_count" aria-valuemin="0"
+                    :aria-valuemax="(files.size)" :style="`width: ${(failed_count / files.length) * 100}%;`">
+                    <div class="progress-bar bg-danger"></div>
+                </div>
+
+                <div class="progress" role="progressbar" :aria-valuenow="progress" aria-valuemin="0"
+                    :aria-valuemax="(total_progress)"
+                    :style="`width: ${((progress / total_progress) - (failed_count / files.length)) * 100}%;`">
+                    <div class="progress-bar progress-bar-striped"></div>
                 </div>
             </div>
             <p>Uploading {{ success_count + failed_count }} / {{ files.length }}</p>

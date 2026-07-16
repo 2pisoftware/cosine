@@ -7,7 +7,7 @@ class AttachmentType extends DbObject
     public $title;
     public $is_active;
 
-    function getDbTableName()
+    public function getDbTableName()
     {
         return "attachment_type";
     }
@@ -16,7 +16,7 @@ class AttachmentType extends DbObject
      * returns the title to be displayed in select boxes
      * @see web.lib/DbObject::getSelectOptionTitle()
      */
-    function getSelectOptionTitle()
+    public function getSelectOptionTitle()
     {
         return $this->title;
     }
@@ -25,7 +25,7 @@ class AttachmentType extends DbObject
      * return the value used in select boxes
      * @see web.lib/DbObject::getSelectOptionValue()
      */
-    function getSelectOptionValue()
+    public function getSelectOptionValue()
     {
         return $this->code;
     }

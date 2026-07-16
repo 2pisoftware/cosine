@@ -75,6 +75,8 @@ function tasklist_ALL(Web $w)
         $task_status,
         $dt_from,
         $dt_to,
+        $is_closed,
+        $filter_urgent,
         $sort,
         $sort_direction
     );
@@ -94,30 +96,13 @@ function tasklist_ALL(Web $w)
         $task_priority,
         $task_status,
         $dt_from,
-        $dt_to
+        $dt_to,
+        $is_closed,
+        $filter_urgent
     );
     $count = $count_query->count();
 
     $w->ctx("total_results", $count);
-
-    // Filter in or out closed tasks based on given is_closed filter parameter
-    if (!empty($task_objects) && empty($reset)) {
-        $task_objects = array_filter($task_objects, function ($task) use ($is_closed, $filter_urgent) {
-            if (!is_null($filter_urgent) && $filter_urgent == '1') {
-                if (is_null($is_closed) || $is_closed === '') {
-                    return $task->isUrgent();
-                } else {
-                    return $task->isUrgent() && ($is_closed == '0' ? !$task->getisTaskClosed() : $task->getisTaskClosed());
-                }
-            }
-
-            if (is_null($is_closed) || $is_closed === '') {
-                return true;
-            }
-
-            return ($is_closed == '0' ? !$task->getisTaskClosed() : $task->getisTaskClosed());
-        });
-    }
 
     $w->ctx('table_header', [
         ['task.id', "ID"],
@@ -189,7 +174,7 @@ function tasklist_ALL(Web $w)
             "options" => [
                 ["label" => "No", "value" => '0'],
                 ["label" => "Yes", "value" => '1'],
-                ["label" => "Both", "value" => '']
+                ["label" => "Both", "value" => '2']
             ],
             "selected_option" => $is_closed,
         ]))->setSelectedOption($is_closed),
@@ -219,8 +204,10 @@ function createQuery(
     $task_status,
     $dt_from,
     $dt_to,
+    $is_closed,
+    $filter_urgent,
     $sort = 'task.id',
-    $sort_direction = 'desc'
+    $sort_direction = 'desc',
 ) {
     /**
      * @var DbPDO
@@ -255,6 +242,10 @@ function createQuery(
         $query_object->where("task.status", $task_status);
     }
 
+    if ($is_closed !== "2") {
+        $query_object->where("task.is_closed", $is_closed == "1");
+    }
+
     // This part is why we want to make our query manually
     if (!empty($dt_from)) {
         if ($dt_from == "NULL") {
@@ -263,6 +254,7 @@ function createQuery(
             $query_object->where("task.dt_due >= ?", $dt_from);
         }
     }
+
     if (!empty($dt_to)) {
         if ($dt_to == "NULL") {
             $query_object->where("task.dt_due", null);
@@ -270,12 +262,38 @@ function createQuery(
             $query_object->where("task.dt_due <= ?", $dt_to);
         }
     }
+
+    if ($filter_urgent) {
+        // 'urgent' tasks have a urgent task type
+        // the urgent task types are defined by it's task group
+        // so in order to filter by urgent tasks in the database,
+        // we need to give a full list of all urgent task types
+        // that sucks, but luckily there aren't many task types.
+        // if there are ever in the future, they should be moved
+        // to the database rather than solely in php
+
+        $groupTypes = [];
+        foreach (Config::get("task") as $key => $value) {
+            if (!startsWith($key, "TaskGroupType_")) {
+                continue;
+            }
+
+            $groupTypes[] = $value["urgent-priorities"];
+        }
+
+        $groupTypes = array_unique(array_merge(...$groupTypes));
+
+        $query_object->where("task.task_type", array_values($groupTypes));
+    }
+
     $query_object->where("task.is_active", 1);
 
     // Standard wheres
     $query_object->where("task.is_deleted", [0, null]); //->where("task_group.is_active", 1)->where("task_group.is_deleted", 0);
 
     $query_object->orderBy("$sort $sort_direction");
+
+    $sql = $query_object->getSql();
 
     return $query_object;
 }

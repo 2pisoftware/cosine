@@ -18,6 +18,8 @@ class EmailNotificationTemplate extends CmfiveSeedMigration
         $email_template->module = "task";
         $email_template->category = "notification_email";
         $email_template->is_active = 1;
+
+        //phpcs:disable
         $email_template->template_body = '<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN" "http://www.w3.org/TR/REC-html40/loose.dtd">
 <html style="min-height: 100%; background: #f3f3f3;">
 <head><span class="preheader"></span></head>
@@ -437,8 +439,8 @@ class EmailNotificationTemplate extends CmfiveSeedMigration
 </body>
 </html>
 ';
-
         $email_template->test_body_json = '{"status":"[42] New task created","footer":"<p>The president has voiced the urgency to finish the detector ASAP, little does she know I have no idea what I\'m doing, people in the fleet are starting to attack one another!<\/p>","action_url":"http:\/\/cmfive.com","logo_url":"http:\/\/cmfive.com\/wp-content\/uploads\/2014\/05\/cmfive-logo-for-header.png","fields":{"Assigned to":"Gaius Baltar","Type":"Support Ticket","Title":"Finish Cylon Detector","Due":"04-05-2092","Status":"New","Priority":"Critical"},"can_view_task":true}';
+        //phpcs:enable
 
         $email_template->insert();
     }

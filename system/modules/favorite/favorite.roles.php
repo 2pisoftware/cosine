@@ -1,4 +1,5 @@
 <?php
+
 /**
  * favorites user roles
  *
@@ -7,5 +8,5 @@
 
 function role_favorites_user_allowed($w, $path)
 {
-    return startsWith($path, "favorite");
+    return $w->checkUrl($path, "favorite", "*", "*");
 }

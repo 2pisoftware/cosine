@@ -7,6 +7,7 @@ namespace Html;
  *
  * @author Adam Buckley <adam.buckley90@gmail.com>
  */
+// phpcs:ignore Squiz.Classes.ValidClassName.NotPascalCase
 class a
 {
     use GlobalAttributes;
@@ -43,7 +44,9 @@ class a
 
     // A static list of labels to exclude from the output string
     public static $_excludeFromOutput = [
-        "text", "onclick", "confirm"
+        "text",
+        "onclick",
+        "confirm"
     ];
 
     /**

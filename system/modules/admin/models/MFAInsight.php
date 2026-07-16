@@ -14,7 +14,6 @@ class MFAInsight extends InsightBaseClass
     //Displays insights for selections made in the above "Options"
     public function run(Web $w, $parameters = []): array
     {
-        //below service is referred to as $where in subsequent notes in this block for purpose of examples
         $users = AdminService::getInstance($w)->getUsers(['user.is_external' => 0, 'user.is_group' => 0, 'user.is_deleted' => 0]);
 
         $users_with_mfa = array_filter($users, function ($user) {
@@ -25,11 +24,29 @@ class MFAInsight extends InsightBaseClass
             return !$user->is_mfa_enabled;
         });
 
+        $passkeys = AuthService::getInstance($w)
+            ->_db->sql("SELECT DISTINCT user_id FROM web_authn_credential")
+            ->fetchAll();
+
+        $users_with_passkeys = array_column($passkeys, "user_id");
+
+        $users_without_any = array_filter(
+            $users_without_mfa,
+            fn($val) => !array_find(
+                $users_with_passkeys,
+                fn($id) => $val->id == $id
+            )
+        );
+
         $results = [];
-        $results[] = new InsightReportInterface('User MFA summary', ['# with MFA', '# without MFA'], [[count($users_with_mfa), count($users_without_mfa)]]);
+        $results[] = new InsightReportInterface(
+            'User MFA summary',
+            ['# with TOTP', "# with Passkey", '# without any MFA'],
+            [[count($users_with_mfa), count($users_with_passkeys), count($users_without_any)]]
+        );
 
         $mfa_breakdown = [];
-        foreach ($users_without_mfa as $no_mfa) {
+        foreach ($users_without_any as $no_mfa) {
             $contact = $no_mfa->getContact();
 
             $mfa_breakdown[] = [
@@ -41,6 +58,7 @@ class MFAInsight extends InsightBaseClass
         }
 
         $results[] = new InsightReportInterface('No MFA breakdown', ['Login', 'Name', 'Email', 'Last Login'], $mfa_breakdown);
+
         return $results;
     }
 }

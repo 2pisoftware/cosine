@@ -55,7 +55,7 @@ class TokensService extends DbService
         return $this->getJwtPayload($jwt)['client_id'] ?? "";
     }
 
-    function getBase64URL($plainText): string
+    public function getBase64URL($plainText): string
     {
         $base64 = base64_encode($plainText);
         $base64 = trim($base64, "=");

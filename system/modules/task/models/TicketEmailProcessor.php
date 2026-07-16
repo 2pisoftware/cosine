@@ -124,8 +124,8 @@ class TicketEmailProcessor extends ProcessorType
                     $user->contact_id = $contact->id;
                     $user->insert();
 
-                    LogService::getInstance($processor->w)->setLogger("HELPDESK")->info("External user created, id: ".$user->id);
-                    echo "External user created, id: ".$user->id."<br/>";
+                    LogService::getInstance($processor->w)->setLogger("HELPDESK")->info("External user created, id: " . $user->id);
+                    echo "External user created, id: " . $user->id . "<br/>";
                 } else {
                     // Ensure a user object exists for the contact
                     AuthService::getInstance($processor->w)->createExernalUserForContact($contact->id);
@@ -165,7 +165,7 @@ class TicketEmailProcessor extends ProcessorType
                         $new_task = false;
                     }
                 }
-                
+
                 $support_taskgroup = TaskTicketService::getInstance($processor->w)->getTaskGroup();
 
                 // Create task if necessary
@@ -199,11 +199,16 @@ class TicketEmailProcessor extends ProcessorType
                         if (!empty($from_email_address)) {
                             // Send accepted ticket email
                             LogService::getInstance($processor->w)->debug("Emailing sender");
-                            MailService::getInstance($processor->w)->sendMail($from_email_address, !empty($settings->support_email_address) ? $settings->support_email_address : "support@2pisoftware.com", "Accepted Ticket [{$task->id}] {$subject}", $template_body);
+                            MailService::getInstance($processor->w)->sendMail(
+                                $from_email_address,
+                                !empty($settings->support_email_address) ? $settings->support_email_address : "support@2pisoftware.com",
+                                "Accepted Ticket [{$task->id}] {$subject}",
+                                $template_body
+                            );
 
                             // Send notification email
                             if (!empty($email_address_notify)) {
-                                LogService::getInstance($processor->w)->debug("Sending notification email to ".$email_address_notify);
+                                LogService::getInstance($processor->w)->debug("Sending notification email to " . $email_address_notify);
                                 // Get attachments
                                 $attachments = FileService::getInstance($processor->w)->getAttachments($task, (!empty($task->id) ? $task->id : null));
                                 $attachments_to_email = [];
@@ -223,7 +228,7 @@ class TicketEmailProcessor extends ProcessorType
                                     to: $email_address_notify,
                                     replyto: $email_address_notify,
                                     subject: "Ticket: $from_email_address - $subject",
-                                    body: "Ticket [{$task->id}]: {$subject}<br/><br/>Email:<br/>{$body}<br/><a href='".$processor->w->localUrl("/task/edit/".$task->id)."'>View the Task</a>",
+                                    body: "Ticket [{$task->id}]: {$subject}<br/><br/>Email:<br/>{$body}<br/><a href='" . $processor->w->localUrl("/task/edit/" . $task->id) . "'>View the Task</a>",
                                     attachments: $attachments_to_email
                                 );
                             }

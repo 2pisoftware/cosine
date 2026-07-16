@@ -14,12 +14,12 @@ class FormApplicationView extends DbObject
     public $description;
     public $template_id;
 
-    function getForm()
+    public function getForm()
     {
         return FormService::getInstance($this->w)->getForm($this->form_id);
     }
 
-    function getApplication()
+    public function getApplication()
     {
         return FormService::getInstance($this->w)->getFormApplication($this->application_id);
     }
@@ -28,7 +28,7 @@ class FormApplicationView extends DbObject
      * loads the data and applies the template to it. Then
      * returns the template outpout as a string.
      */
-    function toString()
+    public function toString()
     {
         if (!empty($this->template)) {
             if (!empty($form_id)) {

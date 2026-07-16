@@ -9,7 +9,7 @@
  *
  */
 
-// Why supress warnings when using require?
+// Why suppress warnings when using require?
 require_once ROOT_PATH . "/system/classes/DbMigration.php";
 
 function datamigration_GET(Web $w)

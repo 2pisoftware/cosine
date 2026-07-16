@@ -21,7 +21,12 @@ if (!empty($channels)) {
                             HtmlBootstrap5::b("/channels/listmessages/{$base_channel->id}", "Messages", null, null, false, "dropdown-item btn-sm text-start"),
                             ($c->_channeltype == 'email' ? HtmlBootstrap5::b("/channels-email/test/{$base_channel->id}", 'Test Connection', null, null, false, "dropdown-item btn-sm text-start") : ''),
                             '<hr class="dropdown-divider">',
-                            HtmlBootstrap5::b("/channels-{$c->_channeltype}/delete/{$base_channel->id}", "Delete", "Are you sure you want to delete " . (!empty($base_channel->name) ? 'the ' . addslashes($base_channel->name) . ' channel' : "this channel") . "?", null, false, "dropdown-item btn-sm text-start text-danger")
+                            HtmlBootstrap5::b(
+                                href: "/channels-{$c->_channeltype}/delete/{$base_channel->id}",
+                                title: "Delete",
+                                confirm: "Are you sure you want to delete " . (!empty($base_channel->name) ? 'the ' . addslashes($base_channel->name) . ' channel' : "this channel") . "?",
+                                class: "dropdown-item btn-sm text-start text-danger"
+                            )
                         ],
                         "btn-info btn btn-sm rounded-0 rounded-end-1"
                     )

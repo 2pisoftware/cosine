@@ -1,6 +1,11 @@
 <?php if (!empty($info)) : ?>
     <div class="row-fluid">
-        <h3 style="text-align: center;"><?php echo $info['username']; ?> • <?php echo $info['stats']['all_time']['sent']; ?> sent since <?php echo date('d/m/Y', strtotime($info['created_at'])); ?> • <a href="/admin/testemail" target="_blank">Test email</a></h3>
+        <h3 style="text-align: center;">
+            <?php echo $info['username']; ?> •
+            <?php echo $info['stats']['all_time']['sent']; ?> sent since
+            <?php echo date('d/m/Y', strtotime($info['created_at'])); ?> •
+            <a href="/admin/testemail" target="_blank">Test email</a>
+        </h3>
     </div>
     <div class="row-fluid clearfix" style="text-align: center;">
         <h4 style="text-align: center;">Stats for today</h4>
@@ -23,7 +28,15 @@
 
 <?php if (!empty($messages)) : ?>
     <table class="small-12 columns">
-        <thead><tr><th>Time</th><th>Status</th><th>Email</th><th>Subject</th><th>Opens</th></tr></thead>
+        <thead>
+            <tr>
+                <th>Time</th>
+                <th>Status</th>
+                <th>Email</th>
+                <th>Subject</th>
+                <th>Opens</th>
+            </tr>
+        </thead>
         <tbody>
             <?php foreach ($messages as $message) : ?>
                 <tr>

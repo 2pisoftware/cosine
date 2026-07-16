@@ -33,6 +33,7 @@ class SearchMySQLStopwords extends CmfiveMigration
 
     public function description()
     {
+        //phpcs:ignore
         return "Migration that creates the stopwords table to overide the mysql default stopword table. Also reindexes objects in the object_index table to account for the change in the stopwords list as well as converting object_index table to InnoDB engine.";
     }
 }

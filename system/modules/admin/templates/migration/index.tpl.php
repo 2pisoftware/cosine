@@ -20,6 +20,7 @@ use Carbon\Carbon; ?>
                         <?php
                         $active = true;
                         if (!empty($not_installed)) {
+                            //phpcs:ignore
                             echo '<li class="list-group-item list-group-item-action d-flex justify-content-between align-items-center active" id="not-installed-tab" data-bs-toggle="list" href="#not-installed" role="tab" aria-controls="not-installed">Not Installed</li>';
                             $active = false;
                         }
@@ -32,6 +33,7 @@ use Carbon\Carbon; ?>
                                 $control = "batch" . $batch_no;
                                 $target = "#batch" . $batch_no;
 
+                                //phpcs:ignore
                                 echo '<li class="list-group-item list-group-item-action d-flex justify-content-between align-items-start' . ($active ? ' active' : '') . '" id="' . $id . '" data-bs-toggle="list" href="' . $target . '" role="tab" aria-controls="' . $control . '">Batch ' . $batch_no . '</li>';
                                 $active = false;
                             }
@@ -117,7 +119,15 @@ use Carbon\Carbon; ?>
                             <?php
                             $active = true;
                             foreach ($available as $module => $available_in_module) : ?>
-                                <li class="list-group-item list-group-item-action d-flex justify-content-between align-items-start <?php echo $active ? 'active' : ''; ?>" id="<?php echo $module; ?>-tab" data-bs-toggle="list" href="#<?php echo $module; ?>" role="tab" aria-controls="<?php echo $module; ?>"><?php echo ucfirst($module); ?>
+                                <li class="list-group-item list-group-item-action d-flex justify-content-between align-items-start <?php echo $active ? 'active' : ''; ?>"
+                                    id="<?php echo $module; ?>-tab"
+                                    data-bs-toggle="list"
+                                    href="#<?php echo $module; ?>"
+                                    role="tab"
+                                    aria-controls="<?php echo $module; ?>">
+
+                                    <?php echo ucfirst($module); ?>
+
                                     <?php $active = false;
                                     $installed_count = is_array($installed[$module]) ? count($installed[$module]) : 0; ?>
                                     <span class="right" role="status" aria-label="installation status">
@@ -146,9 +156,14 @@ use Carbon\Carbon; ?>
                                 button: true,
                                 class: "btn btn-sm btn-primary"
                             );
-                            
+
                             if (count($available[$module]) > 0) {
-                                echo HtmlBootstrap5::b("/admin-migration/run/" . $module . "?ignoremessages=false&prevpage=individual", "Run all " . $module . " migrations", "Are you sure you want to run all outstanding migrations for this module?", null, false, "btn btn-sm btn-primary");
+                                echo HtmlBootstrap5::b(
+                                    href: "/admin-migration/run/" . $module . "?ignoremessages=false&prevpage=individual",
+                                    title: "Run all " . $module . " migrations",
+                                    confirm: "Are you sure you want to run all outstanding migrations for this module?",
+                                    class: "btn btn-sm btn-primary"
+                                );
                                 $header = ["Name", "Description", "Date run", "Pre Text", "Post Text", "Actions"];
                                 $data = [];
                                 foreach ($available_in_module as $a_migration_path => $migration_data) {
@@ -158,19 +173,29 @@ use Carbon\Carbon; ?>
                                     $migration = MigrationService::getInstance($w)->getMigrationByClassname($migration_data['class_name']);
 
                                     $row[] = MigrationService::getInstance($w)->isInstalled($migration_data['class_name']) ?
-                                            "<span data-tooltip aria-haspopup='true' title='" . @formatDate($migration->dt_created, "d-M-Y \a\\t H:i") . "'>Run " . Carbon::createFromTimeStamp($migration->dt_created)->diffForHumans() . " by " .
-                                                (!empty($migration->creator_id) && !empty(AuthService::getInstance($w)->getUser($migration->creator_id)) ?
-                                                    AuthService::getInstance($w)->getUser($migration->creator_id)->getContact()->getFullName() :
-                                                    "System"
-                                                ) . "</span>"
-                                            : "";
+                                        "<span data-tooltip aria-haspopup='true' title='" . @formatDate($migration->dt_created, "d-M-Y \a\\t H:i") . "'>Run " . Carbon::createFromTimeStamp($migration->dt_created)->diffForHumans() . " by " .
+                                        (!empty($migration->creator_id) && !empty(AuthService::getInstance($w)->getUser($migration->creator_id)) ?
+                                            AuthService::getInstance($w)->getUser($migration->creator_id)->getContact()->getFullName() :
+                                            "System"
+                                        ) . "</span>"
+                                        : "";
                                     $row[] = $migration_data['pretext'];
                                     $row[] = $migration_data['posttext'];
 
                                     if (MigrationService::getInstance($w)->isInstalled($migration_data['class_name'])) {
-                                        $row[] = HtmlBootstrap5::b('/admin-migration/rollback/' . $module . '/' . basename($a_migration_path, ".php"), "Rollback to here", "Are you 110% sure you want to rollback a migration? DATA COULD BE LOST PERMANENTLY!", null, false, "btn btn-sm btn-danger");
+                                        $row[] = HtmlBootstrap5::b(
+                                            href: '/admin-migration/rollback/' . $module . '/' . basename($a_migration_path, ".php"),
+                                            title: "Rollback to here",
+                                            confirm: "Are you 110% sure you want to rollback a migration? DATA COULD BE LOST PERMANENTLY!",
+                                            class: "btn btn-sm btn-danger"
+                                        );
                                     } else {
-                                        $row[] = HtmlBootstrap5::b('/admin-migration/run/' . $module . '/' . basename($a_migration_path, ".php") . "?ignoremessages=false&prevpage=individual", "Migrate to here", "Are you sure you want to run a migration?", null, false, "btn btn-sm btn-primary");
+                                        $row[] = HtmlBootstrap5::b(
+                                            href: '/admin-migration/run/' . $module . '/' . basename($a_migration_path, ".php") . "?ignoremessages=false&prevpage=individual",
+                                            title: "Migrate to here",
+                                            confirm: "Are you sure you want to run a migration?",
+                                            class: "btn btn-sm btn-primary"
+                                        );
                                     }
 
                                     $data[] = $row;
@@ -239,7 +264,7 @@ use Carbon\Carbon; ?>
                                             <span class="badge bg-success rounded-pill" aria-label="installed"><?php echo $seed_status_counts[$module][0]; ?></span>
                                         <?php endif; ?>
                                         <?php if ($seed_status_counts[$module][1] > 0) : ?>
-                                            <span class="badge bg-warning rounded-pill" style="margin-left: 5px"  aria-label="not installed"><?php echo $seed_status_counts[$module][1]; ?></span>
+                                            <span class="badge bg-warning rounded-pill" style="margin-left: 5px" aria-label="not installed"><?php echo $seed_status_counts[$module][1]; ?></span>
                                         <?php endif; ?>
                                     </span>
                                 </li>
