@@ -22,6 +22,8 @@ abstract class InsightBaseClass
      *  ],
      *  [...] // more sub reports
      * ]
+     *
+     * @return InsightReportInterface[]
      */
     abstract public function run(Web $w, array $params = []): array;
 

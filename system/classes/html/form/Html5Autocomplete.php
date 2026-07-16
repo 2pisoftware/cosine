@@ -115,7 +115,17 @@ class Html5Autocomplete extends \Html\Form\InputField
             json_encode([
                 "options" => $this->options ?
                     array_map(
-                        fn($val) => $this->convertOption($val),
+                        function ($val) {
+                            $opts = $this->convertOption($val);
+
+                            // We are passing these values to JSON,
+                            // and html entities will collide with the json encoding of these characters
+                            return [
+                                "text" => !empty($opts["text"]) ? html_entity_decode($opts["text"]) : null,
+                                "type" => !empty($opts["type"]) ? html_entity_decode($opts["type"]) : null,
+                                "value" => !empty($opts["value"]) ? html_entity_decode($opts["value"]) : null,
+                            ];
+                        },
                         $this->options
                     )
                     : null,

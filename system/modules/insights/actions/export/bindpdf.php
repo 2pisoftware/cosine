@@ -18,6 +18,13 @@ function bindpdf_GET(Web $w)
         $w->error('No insight found for class name', '/insights');
     }
 
+    if (!InsightService::getInstance($w)->canViewInsight(
+        AuthService::getInstance($w)->user()->id,
+        $p["insight_class"]
+    )) {
+        return $w->error("You do not have permission to view this insight", "/insights");
+    }
+
     $requestedTemplate = $_GET['template_id'] ?? null;
     $_GET['template_id'] = null;
     $refreshedParameters = http_build_query($_GET);

@@ -13,7 +13,9 @@ function ajax_multipart_POST(Web $w)
 
     $filename = $body["filename"];
     $prefix = Config::get("file.adapters.s3.options.directory");
-    $key = $prefix . "/" . hash("md5", $filename);
+
+    $md5 = $body["md5"];
+    $key = $prefix . "/" . FileMultipartUploadService::sanitiseKey($md5);
 
     $mime = $body["mime"];
 

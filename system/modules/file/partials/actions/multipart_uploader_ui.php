@@ -11,4 +11,5 @@ function multipart_uploader_ui(Web $w, array $params)
     );
 
     $w->ctx("endpoint", empty($params["endpoint"]) ? null : $params["endpoint"]);
+    $w->ctx("calculateHash", $params["calculateHash"]);
 }

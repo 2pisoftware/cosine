@@ -11,6 +11,10 @@ function manageMembers_ALL(Web $w)
     //var_dump($insight_class);
     //die;
 
+    if (!InsightService::getInstance($w)->isInsightOwner(AuthService::getInstance($w)->user()->id, $insight_class)) {
+        return $w->error("You do not have permission to manage insight members", "/insights");
+    }
+
     //define member id for edit and delete buttons
     $p = $w->pathMatch('id');
     $member = InsightService::getInstance($w)->GetMemberForId($p['id']);
@@ -38,7 +42,7 @@ function manageMembers_ALL(Web $w)
             $actions = [];
             $actions[] = HtmlBootstrap5::buttonGroup(
                 HtmlBootstrap5::box("/insights-members/editMembers/$member->id?" . $member->insight_class, "Edit", true, false, null, null, "isbox", "editbutton", 'btn-sm btn-primary') .
-                HtmlBootstrap5::b("/insights-members/deleteMembers/$member->id?" . $member->insight_class, "Delete", 'Are you sure you want to delete this member?', "deletebutton", false, 'btn-sm btn-danger')
+                    HtmlBootstrap5::b("/insights-members/deleteMembers/$member->id?" . $member->insight_class, "Delete", 'Are you sure you want to delete this member?', "deletebutton", false, 'btn-sm btn-danger')
             );
             $row[] = implode('', $actions);
             $table[] = $row;

@@ -138,11 +138,38 @@ class InsightService extends DbService
         }
     }
 
-    // export a recordset as CSV
-    public function exportcsv($run_data, $title)
+    public function canViewInsight(string $user_id, string $insight_class)
     {
-        // set filename
-        $filename = str_replace(" ", "_", $title) . "_" . date("Y.m.d-H.i") . ".csv";
+        if ($this->isMember($insight_class, $user_id)) {
+            return true;
+        }
+
+        $allMembers = $this->getAllMembersForInsightClass($insight_class);
+        foreach ($allMembers as $member) {
+            if (AuthService::getInstance($this->w)->isUserGroupMemberRecursive($member->user_id, $user_id)) {
+                // $member->user_id may be a user or a group
+                return true;
+            }
+        }
+    }
+
+    // export a recordset as CSV
+    public function exportcsv($run_data, string $insightClass)
+    {
+        $zip = new ZipArchive();
+
+        $name = str_replace(" ", "_", $insightClass) . "_" . date("Y.m.d-H.i") . ".zip";
+
+        try {
+            unlink($name);
+        } catch (Exception $e) {
+            // ignore
+        }
+
+        $zip->open($name, ZipArchive::CREATE);
+
+        $csvNamesUsed = [];
+
         foreach ($run_data as $table) {
             if (!empty($table)) {
                 $title = $table->title;
@@ -150,18 +177,36 @@ class InsightService extends DbService
                 foreach ($table->header as $hd) {
                     $hds[$hd] = $hd;
                 }
+
+                $csvName = str_replace(" ", "_", $title);
+
+                $csvNamesUsed[$csvName] = !empty($csvNamesUsed[$csvName]) ? $csvNamesUsed[$csvName] : 0;
+                $csvNamesUsed[$csvName] += 1;
+
+                if ($csvNamesUsed[$csvName] > 1) {
+                    $csvName .= "_" . $csvNamesUsed[$csvName];
+                }
+
+                $csvName .= ".csv";
+
                 $csv = new ParseCsv\Csv();
-                $csv->output_filename = $filename;
-                // ignore lib wrapper csv->output, to keep control over header re-sends!
-                $output_data = array_map(fn ($row) => array_map(fn ($col) => strip_tags($col), $row), $table->data);
-                $this->w->out($csv->unparse(data: $output_data, fields: $hds));
-                // can't use this way without commenting out header section, which composer won't like
+                $csv->output_filename = $csvName;
+
+                $zip->addFromString(
+                    $csvName,
+                    $csv->unparse($table->data, $hds, null, null, null)
+                );
             }
         }
 
-        $this->w->sendHeader("Content-type", "application/csv");
-        $this->w->sendHeader("Content-Disposition", "attachment; filename=" . $filename);
+        $zip->close();
+
+        header('Content-Type: application/zip');
+        header('Content-disposition: attachment; filename="' . str_replace(" ", "_", $insightClass) . "_" . date("Y.m.d-H.i") . ".zip");
+        header('Content-Length: ' . filesize($name));
         $this->w->setLayout(null);
+
+        readfile($name);
     }
 
     // export a recordset as PDF
