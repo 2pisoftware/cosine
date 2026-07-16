@@ -17,6 +17,13 @@ function runInsight_GET(Web $w)
         $w->error('Insight class could not resolve', '/insights');
     }
 
+    if (!InsightService::getInstance($w)->canViewInsight(
+        AuthService::getInstance($w)->user()->id,
+        $p["insight_class"]
+    )) {
+        return $w->error("You do not have permission to view this insight", "/insights");
+    }
+
     $w->ctx('insight_class_name', $p['insight_class']);
     $w->ctx('insight', $insight);
     $w->ctx('title', $insight->name);

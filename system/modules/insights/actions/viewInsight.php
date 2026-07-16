@@ -18,6 +18,13 @@ function viewInsight_GET(Web $w)
         $w->error('Insight does not exist', '/insights');
     }
 
+    if (!InsightService::getInstance($w)->canViewInsight(
+        AuthService::getInstance($w)->user()->id,
+        $insight_class
+    )) {
+        return $w->error("You do not have permission to view this insight", "/insights");
+    }
+
     if (empty($insight->getfilters($w, $_REQUEST))) {
         $w->redirect("/insights/runInsight/" . $insight_class);
     }
