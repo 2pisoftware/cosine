@@ -25,17 +25,17 @@ class DbPDO extends PDO
     {
         // Set up our PDO class
         switch ($config['driver']) {
-                // MsSQL
+            // MsSQL
             case 'sqlsrv':
                 $port = isset($config['port']) && !empty($config['port']) ? "," . $config['port'] : "";
                 $url = "{$config['driver']}:Server={$config['hostname']}{$port};Database={$config['database']}";
                 break;
-                // Linux Apache2 driver
+            // Linux Apache2 driver
             case 'dblib':
                 $port = isset($config['port']) && !empty($config['port']) ? "," . $config['port'] : "";
                 $url = "{$config['driver']}:host={$config['hostname']}{$port};dbname={$config['database']}";
                 break;
-                // MySQL
+            // MySQL
             case 'mysql':
             default:
                 $port = isset($config['port']) && !empty($config['port']) ? ";port=" . $config['port'] : "";
@@ -43,12 +43,12 @@ class DbPDO extends PDO
         }
 
         $options = [
-            PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES 'utf8mb4', time_zone='" . date("e") . "'",
+            PDO\Mysql::ATTR_INIT_COMMAND => "SET NAMES 'utf8mb4', time_zone='" . date("e") . "'",
         ];
 
         if (!empty($config['ssl_cert_path'])) {
-            $options[PDO::MYSQL_ATTR_SSL_CA] = $config['ssl_cert_path'];
-            $options[PDO::MYSQL_ATTR_SSL_VERIFY_SERVER_CERT] = false;
+            $options[PDO\Mysql::ATTR_SSL_CA] = $config['ssl_cert_path'];
+            $options[PDO\Mysql::ATTR_SSL_VERIFY_SERVER_CERT] = false;
         }
 
         parent::__construct($url, $config["username"], $config["password"], $options);
