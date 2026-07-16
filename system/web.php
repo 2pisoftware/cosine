@@ -553,11 +553,11 @@ class Web
     public function start($init_database = true)
     {
         try {
-            if (Config::get("system.environment") !== "development") {
+            if (Config::get("system.environment") === "development") {
                 set_error_handler(function ($errno, $errstr, $errfile, $errline) {
                     $logger = empty($this->currentModule()) ? "CMFIVE" : strtoupper($this->currentModule());
                     LogService::getInstance($this)->setLogger($logger)->error("Number: {$errno}, String: {$errstr}, File: {$errfile}, Line: {$errline}");
-                    $this->ctx('error', "An error occoured, if this message persists please contact your administrator.");
+                    $this->ctx('error', "A non-fatal error occurred. Check logs for details.");
                 });
             }
 
