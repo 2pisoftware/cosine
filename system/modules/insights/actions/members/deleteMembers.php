@@ -1,4 +1,5 @@
 <?php
+
 /**@author Alice Hutley <alice@2pisoftware.com> */
 
 function deleteMembers_ALL(Web $w)
@@ -6,6 +7,10 @@ function deleteMembers_ALL(Web $w)
 
     //retrieve correct insight to delete member from and redirect to
     $insight_class_name = Request::string('insight_class');
+
+    if (!InsightService::getInstance($w)->isInsightOwner(AuthService::getInstance($w)->user()->id, $insight_class_name)) {
+        return $w->error("You do not have permission to manage insight members", "/insights");
+    }
 
     // start by finding the member id included in the URL
     $p = $w->pathMatch('id');
@@ -25,5 +30,5 @@ function deleteMembers_ALL(Web $w)
     // delete the member
     $member->delete();
     // redirect the user back to the Member list with a message
-    $w->msg('Member deleted', '/insights/manageMembers?insight_class='.$member->insight_class_name);
+    $w->msg('Member deleted', '/insights/manageMembers?insight_class=' . $member->insight_class_name);
 }

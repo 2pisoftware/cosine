@@ -18,6 +18,10 @@ function editMembers_GET(Web &$w)
     //retrieve correct insight to add new member to
     $insight_class_name = !empty($member->id) ? $member->insight_class_name : Request::string('insight_class');
 
+    if (!InsightService::getInstance($w)->isInsightOwner(AuthService::getInstance($w)->user()->id, $insight_class_name)) {
+        return $w->error("You do not have permission to manage insight members", "/insights");
+    }
+
     //action title for adding new member and editing existing member
     $insight = InsightService::getInstance($w)->getInsightInstance($insight_class_name);
     $w->ctx('title', (!empty($p['id']) ? 'Edit member' : 'Add new member') . " for $insight->name");
@@ -37,16 +41,16 @@ function editMembers_GET(Web &$w)
             }
         }
     }
-    
+
     $addMemberForm = [["", "hidden", "insight_class_name", $insight_class_name]];
 
     if (empty($p['id'])) {
         $addMemberForm[] = (new Select([
-                    'id|name' => 'user_id',
-                    'label' => 'Add Member',
-                    'options' => $users,
-                    'required' => true,
-                ]));
+            'id|name' => 'user_id',
+            'label' => 'Add Member',
+            'options' => $users,
+            'required' => true,
+        ]));
     } else {
         $user = AuthService::getInstance($w)->getUser($member->user_id);
         $addMemberForm[] = ["Add Member", "text", "-user_id", $user->is_group ?  $user->login : $user->getContact()->getFullName()];
@@ -73,6 +77,10 @@ function editMembers_POST(Web $w)
     //As in the get function we need to check if we are editing an exisiting member
     $p = $w->pathMatch('id');
     $member = !empty($p['id']) ? InsightService::getInstance($w)->GetMemberForId($p['id']) : new InsightMembers($w);
+
+    if (!InsightService::getInstance($w)->isInsightOwner(AuthService::getInstance($w)->user()->id, $member->insight_class_name)) {
+        return $w->error("You do not have permission to manage insight members", "/insights");
+    }
 
     //use the fill function to fill input field data into properties with matching names
     if (empty($member->id)) {

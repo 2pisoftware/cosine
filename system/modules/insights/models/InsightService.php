@@ -138,12 +138,27 @@ class InsightService extends DbService
         }
     }
 
+    public function canViewInsight(string $user_id, string $insight_class)
+    {
+        if ($this->isMember($insight_class, $user_id)) {
+            return true;
+        }
+
+        $allMembers = $this->getAllMembersForInsightClass($insight_class);
+        foreach ($allMembers as $member) {
+            if (AuthService::getInstance($this->w)->isUserGroupMemberRecursive($member->user_id, $user_id)) {
+                // $member->user_id may be a user or a group
+                return true;
+            }
+        }
+    }
+
     // export a recordset as CSV
     public function exportcsv($run_data, string $insightClass)
     {
         $zip = new ZipArchive();
 
-        $name = "insight.zip";
+        $name = str_replace(" ", "_", $insightClass) . "_" . date("Y.m.d-H.i") . ".zip";
 
         try {
             unlink($name);
