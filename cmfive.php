@@ -56,6 +56,12 @@ $menuMaker = [
         'param' => null
     ],
     [
+        "option" => "Revert last migration batch",
+        "message" => "Reverting",
+        "function" => "revertMigrationBatch",
+        "param" => null,
+    ],
+    [
         'option' => "Seed admin user",
         'message' => "Setting up admin user",
         'function' => "seedAdminUser",
@@ -100,6 +106,14 @@ $cmdMaker = [
             'message' => "Installing migrations",
             'function' => "installMigrations",
             'args' => false
+        ],
+    ],
+    "revert" => [
+        [
+            "request" => "migrations",
+            "message" => "Reverting last migration batch",
+            "function" => "revertMigrationBatch",
+            "args" => false,
         ]
     ],
     'seed' => [
@@ -420,6 +434,28 @@ function installMigrations()
         MigrationService::getInstance($w)->installInitialMigration();
         MigrationService::getInstance($w)->runMigrations("all");
         echo "Migrations have run\n";
+    } catch (Exception $e) {
+        echo $e->getMessage();
+    }
+}
+
+function revertMigrationBatch()
+{
+    if (strtoupper(substr(PHP_OS, 0, 3)) === 'WIN') {
+        echo exec('del .\cache\config.cache');
+    } else {
+        echo exec('rm -f cache/config.cache');
+    }
+
+    if (!stepOneYieldsWeb()) {
+        return false;
+    }
+    $w = new Web();
+    $w->initDB();
+    $_SESSION = [];
+
+    try {
+        MigrationService::getInstance($w)->batchRollback();
     } catch (Exception $e) {
         echo $e->getMessage();
     }
