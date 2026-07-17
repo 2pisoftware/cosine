@@ -72,7 +72,7 @@ $theme_setting = AuthService::getInstance($w)->getSettingByKey('bs5-theme');
                             class="bi bi-gear-fill"></i></a></li>
             </ul>
             <div class="accordion" id="accordion_menu">
-                <?php $injectedModules = $w->callHook('core_template', 'topmenu');
+                <?php $injectedModules = $w->callHook('core_template', 'topmenu') ?? [];
                 $base_modules = $w->modules();
                 $base_modules_ref = $w->modules();
                 array_push($base_modules, ...array_merge(...array_values($injectedModules)));
@@ -193,7 +193,7 @@ $theme_setting = AuthService::getInstance($w)->getSettingByKey('bs5-theme');
                         <ul class="navbar-nav me-auto mb-2 mb-lg-0 d-none d-lg-flex">
                             <?php
                             // This feature allows modules to inject top level menu items
-                            $injectedModules = array_merge(...array_values($w->callHook('core_template', 'topmenu')));
+                            $injectedModules = array_merge(...array_values($w->callHook('core_template', 'topmenu') ?? []));
                             $base_modules = $w->modules();
                             array_push($base_modules, ...$injectedModules);
 
@@ -210,7 +210,7 @@ $theme_setting = AuthService::getInstance($w)->getSettingByKey('bs5-theme');
 
                                 return $w->_module == $module ? 'active' : '';
                             };
-
+                            asort($base_modules);
                             foreach ($base_modules as $module) :
                                 $module_service = ucfirst($module) . "Service";
 
