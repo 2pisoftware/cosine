@@ -17,6 +17,11 @@ class TaskTaskCompletionDateFix extends CmfiveMigration
         $this->w->db->sql($query);
     }
 
+    public function down()
+    {
+        // intentionally blank
+    }
+
     public function preText()
     {
         return null;
