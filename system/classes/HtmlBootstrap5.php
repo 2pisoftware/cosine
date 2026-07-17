@@ -299,7 +299,16 @@ HTML;
         foreach ($data as $section => $rows) {
             // Print section header
             $buffer .= "<div class='card clearfix mb-2'>";
-            $buffer .= "<div class='row g-0 clearfix card-header section-header'><h4 class='col'>{$section}<span class='changed_status position-absolute bg-danger rounded p-1 d-none' style='right: 1rem; top: 0.5rem; font-size: 1rem'>Changed</span></h4></div>";
+            $buffer .= <<<HEREDOC
+                <div class='row g-0 clearfix card-header section-header'>
+                    <h4 class='col'>
+                        {$section}
+                        <span class='changed_status position-absolute bg-danger rounded p-1 d-none' style='right: 1rem; top: 0.5rem; font-size: 1rem'>
+                            Changed
+                        </span>
+                    </h4>
+                </div>
+            HEREDOC;
 
             // Loop through each row
             $buffer .= "<div class='card-body'>";
