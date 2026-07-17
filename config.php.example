@@ -122,3 +122,4 @@ Config::set('system.rest_include', [
 
 // Development mode
 Config::set('system.environment', 'development');
+Config::set('system.menu_sorting', false); // If set to true the main menu will be sorted
