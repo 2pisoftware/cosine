@@ -124,12 +124,16 @@ $theme_setting = AuthService::getInstance($w)->getSettingByKey('bs5-theme');
                                         aria-labelledby="accordion_menu_<?php echo $module; ?>_heading"
                                         data-bs-parent="#accordion_menu">
                                         <ul class="nav flex-column">
-                                            <?php foreach ($module_navigation as $module_nav) :
+                                            <?php
+                                            if (Config::get('system.menu_sorting') == true) {
+                                                asort($module_navigation);
+                                            }
+                                            foreach ($module_navigation as $module_nav) :
                                                 if (is_string($module_nav)) : ?>
                                                     <li class="nav-item"><?php echo $module_nav; ?></li>
                                                 <?php else : ?>
                                                     <li class="nav-item"><a <?php echo $module_nav->type == MenuLinkType::Modal ? 'data-modal-target' : 'href'; ?>="<?php echo $module_nav->url; ?>"><?php echo $module_nav->title; ?></a></li>
-                                                <?php endif;
+                                            <?php endif;
                                             endforeach; ?>
                                         </ul>
                                     </div>
@@ -141,7 +145,7 @@ $theme_setting = AuthService::getInstance($w)->getSettingByKey('bs5-theme');
                                     </h2>
                                 </div>
                             <?php endif; ?>
-                        <?php endif;
+                <?php endif;
                     endif;
                     Config::disableSandbox();
                 endforeach; ?>
@@ -209,8 +213,10 @@ $theme_setting = AuthService::getInstance($w)->getSettingByKey('bs5-theme');
                                 }
 
                                 return $w->_module == $module ? 'active' : '';
-                            };
-                            asort($base_modules);
+                                };
+                            if (Config::get('system.menu_sorting') == true) {
+                                asort($base_modules);
+                            }
                             foreach ($base_modules as $module) :
                                 $module_service = ucfirst($module) . "Service";
 
@@ -274,7 +280,7 @@ $theme_setting = AuthService::getInstance($w)->getSettingByKey('bs5-theme');
                                             <li class="nav-item <?php echo $printActiveFlag($module, $module_service); ?>">
                                                 <?php echo $menu_link; ?></li>
                                         <?php endif; ?>
-                                    <?php endif;
+                            <?php endif;
                                     Config::disableSandbox();
                                 endif;
                             endforeach; ?>
@@ -306,7 +312,7 @@ $theme_setting = AuthService::getInstance($w)->getSettingByKey('bs5-theme');
                         if (empty($breadcrumbs)) : ?>
                             <li class="breadcrumb-item active align-middle" aria-current="page">Your history will appear
                                 here</li>
-                        <?php endif;
+                            <?php endif;
                         $isFirst = true && $breadcrumbs !== null && ($_SERVER['REQUEST_URI'] === key($breadcrumbs));
                         foreach ($breadcrumbs ?? [] as $path => $value) :
                             if (!AuthService::getInstance($w)->allowed($path)) {
@@ -322,7 +328,7 @@ $theme_setting = AuthService::getInstance($w)->getSettingByKey('bs5-theme');
                                     <a href='<?php echo $path; ?>' data-bs-toggle="tooltip" data-bs-placement="bottom"
                                         title="<?php echo html_entity_decode($value['name']); ?>"><?php echo html_entity_decode($value['name']); ?></a>
                                 </li>
-                            <?php endif;
+                        <?php endif;
                             $isFirst = false;
                         endforeach; ?>
                     </ol>
