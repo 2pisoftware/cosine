@@ -27,6 +27,7 @@ COPY modules/ modules/
 
 # Install dependencies
 COPY system/templates/base/package*.json system/templates/base/
+COPY system/templates/base/postinstall.js system/templates/base/postinstall.js
 RUN cd system/templates/base/ && (npm ci || npm install)
 
 # Build the theme

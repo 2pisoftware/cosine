@@ -94,7 +94,7 @@ export class Cmfive {
 
         let modalContent = document.querySelector(target + ' .modal-content');
         if (modalContent) {
-            modalContent.innerHTML = '<button type="button" class="btn-close" data-bs-dismiss="modal" data-bs-target="' + target + '" aria-label="Close"></button>';
+            modalContent.innerHTML = '<button type="button" class="btn-close p-3" data-bs-dismiss="modal" data-bs-target="' + target + '" aria-label="Close"></button>';
         }
 
         Cmfive.currentModal.show();
