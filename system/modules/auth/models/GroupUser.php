@@ -1,9 +1,16 @@
 <?php
 class GroupUser extends DbObject
 {
+    /** @var int */
     public $group_id;
+
+    /** @var int */
     public $user_id;
+
+    /** @var string */
     public $role;
+
+    /** @var boolean */
     public $is_active;
 
     public function getGroup()
