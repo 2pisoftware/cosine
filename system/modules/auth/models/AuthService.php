@@ -559,7 +559,10 @@ class AuthService extends DbService
         $groupMembers = $this->getGroupMembers($group_id);
         if (!empty($groupMembers)) {
             foreach ($groupMembers as $groupMember) {
-                if ($groupMember->user_id === $user_id) {
+                // `groupMember->user_id` is an int, and `user_id` is either a string or int
+                // so a strict equality check here will fail sometimes.
+                // use loose equality here intentionally
+                if ($groupMember->user_id == $user_id) {
                     return true;
                 } elseif ($this->getUser($groupMember->user_id)->is_group) {
                     if ($this->isUserGroupMemberRecursive($groupMember->user_id, $user_id)) {
