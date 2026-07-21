@@ -131,7 +131,7 @@ class EmailChannelOption extends DbObject
 
                     foreach ($message->getParts() as $part) {
                         try {
-                            $contentType = strtok($part->getSubtype(), ';');
+                            $contentType = strtolower(strtok($part->getSubtype(), ';'));
 
                             switch ($contentType) {
                                 case "plain":
