@@ -6,7 +6,7 @@ class ReportService extends DbService
 
     /**
      * Get report by id
-     * 
+     *
      * @param int $id
      * @return Report|null
      */
@@ -17,7 +17,7 @@ class ReportService extends DbService
 
     /**
      * Get all reports
-     * 
+     *
      * @return Report[]
      */
     public function getReports(): array
@@ -27,7 +27,7 @@ class ReportService extends DbService
 
     /**
      * Get report by module and category
-     * 
+     *
      * @param string $module
      * @param string $category
      * @return Report|null
@@ -39,7 +39,7 @@ class ReportService extends DbService
 
     /**
      * Return list of members attached to a report for given report ID
-     * 
+     *
      * @param int $id
      * @return ReportMember[]
      */
@@ -50,7 +50,7 @@ class ReportService extends DbService
 
     /**
      * Get report member
-     * 
+     *
      * @param int $id
      * @param int $uid
      * @return ReportMember|null
@@ -74,7 +74,7 @@ class ReportService extends DbService
 
     /**
      * Helper function to decide whether or not a user has access to a given report
-     * 
+     *
      * @param Report $report
      * @param ReportMember $member
      * @return bool
@@ -127,7 +127,7 @@ class ReportService extends DbService
 
     /**
      * Get report connection by id
-     * 
+     *
      * @param int $id
      * @return ReportConnection|null
      */
@@ -139,7 +139,7 @@ class ReportService extends DbService
     // function to sort lists by date schedule
     /**
      * Function to sort lists by date schedule
-     * 
+     *
      * @param mixed $a
      * @param mixed $b
      * @return int
@@ -168,7 +168,7 @@ class ReportService extends DbService
 
     /**
      * static list of group permissions
-     * 
+     *
      * @return array
      */
     public function getReportPermissions(): array
@@ -178,7 +178,7 @@ class ReportService extends DbService
 
     /**
      * Return a report given its ID
-     * 
+     *
      * @param int $id
      * @return Report|null
      */
@@ -189,7 +189,7 @@ class ReportService extends DbService
 
     /**
      * Return list of feeds
-     * 
+     *
      * @return ReportFeed[]
      */
     public function getFeeds(): array
@@ -199,7 +199,7 @@ class ReportService extends DbService
 
     /**
      * Return a feed given its id
-     * 
+     *
      * @param int $id
      * @return ReportFeed|null
      */
@@ -210,9 +210,9 @@ class ReportService extends DbService
 
     /**
      * Return a feed given its report id
-     * 
+     *
      * @param int $id
-     * 
+     *
      */
     public function getFeedInfobyReportId(int $id)
     {
@@ -221,7 +221,7 @@ class ReportService extends DbService
 
     /**
      * Return a feed given its key
-     * 
+     *
      * @param string $key
      * @return ReportFeed|null
      */
@@ -232,7 +232,7 @@ class ReportService extends DbService
 
     /**
      * Return list of APPROVED and NOT DELETED report IDs for a given a user ID and a where clause
-     * 
+     *
      * @param int $id
      * @param string $where
      * @return Report[]
@@ -312,7 +312,7 @@ class ReportService extends DbService
 
     /**
      * Return list of APPROVED and NOT DELETED report IDs for a given a user ID as member
-     * 
+     *
      * @param int $id
      * @return ReportMember[]
      */
@@ -344,7 +344,7 @@ class ReportService extends DbService
 
     /**
      * Return list of APPROVED and NOT DELETED report IDs for a given a user ID and Module
-     * 
+     *
      * @return Report[]
      */
     public function getReportsbyModuleId(): array
@@ -379,7 +379,7 @@ class ReportService extends DbService
 
     /**
      * Return menu links of APPROVED and NOT DELETED report IDs for a given a user ID as member
-     * 
+     *
      * @return array
      */
     public function getReportsforNav(): array
@@ -397,7 +397,7 @@ class ReportService extends DbService
 
     /**
      * Return a users full name given their user ID
-     * 
+     *
      * @param int $id
      * @return string
      */
@@ -410,7 +410,7 @@ class ReportService extends DbService
     /**
      * For parameter dropdowns, run SQL statement and return an array(value,title) for display
      * DANGEROUS
-     * 
+     *
      * @param string $sql
      * @param DbPDO|PDO $connection
      * @return array
@@ -431,7 +431,7 @@ class ReportService extends DbService
     /**
      * Given a report SQL statement, return recordset
      * DANGEROUS
-     * 
+     *
      * @param string $sql
      * @param null|DbPDO|PDO $connection
      * @return bool
@@ -443,7 +443,7 @@ class ReportService extends DbService
 
     /**
      * Convert dd/mm/yyyy date to yyy-mm-dd for SQL statements
-     * 
+     *
      * @param string $date
      * @return string
      */
@@ -458,7 +458,7 @@ class ReportService extends DbService
 
     /**
      * Return all tables in the DB for display
-     * 
+     *
      * @return array
      */
     public function getAllDBTables(): array
@@ -474,7 +474,7 @@ class ReportService extends DbService
 
     /**
      * Return array of fields/type in a given table
-     * 
+     *
      * @param string $table
      * @return string
      */
@@ -508,7 +508,7 @@ class ReportService extends DbService
 
     /**
      * Get SQL Statement Type
-     * 
+     *
      * @param string $report_code
      * @return string
      */
@@ -539,7 +539,7 @@ class ReportService extends DbService
 
     /**
      * Create an array of available report output formats for inclusion in the parameters form
-     * 
+     *
      * @return array
      */
     public function selectReportFormat(): array
@@ -556,7 +556,7 @@ class ReportService extends DbService
 
     /**
      * Export a recordset as CSV
-     * 
+     *
      * @param array $rows
      * @param string $title
      */
@@ -612,7 +612,7 @@ class ReportService extends DbService
 
     /**
      * Export a recordset as PDF
-     * 
+     *
      * @param array $rows
      * @param string $title
      * @param ReportTemplate|null $report_template
@@ -702,7 +702,7 @@ class ReportService extends DbService
 
     /**
      * Export a recordset as XML
-     * 
+     *
      * @param array $rows
      * @param string $title
      */
@@ -750,7 +750,7 @@ class ReportService extends DbService
 
     /**
      * Function to substitute special terms
-     * 
+     *
      * @param string $sql
      * @return array|string
      */
@@ -784,10 +784,10 @@ class ReportService extends DbService
         return preg_replace($special, $replace, $sql);
     }
 
-    // 
+    //
     /**
      * Function to check syntax of report SQL statement
-     * 
+     *
      * @param string $sql
      * @param PDO $connection
      * @return bool
@@ -810,7 +810,7 @@ class ReportService extends DbService
 
     /**
      * Get report template by ID
-     * 
+     *
      * @param int $id
      * @return ReportTemplate|null
      */
@@ -819,10 +819,10 @@ class ReportService extends DbService
         return $this->getObject("ReportTemplate", $id);
     }
 
-    // 
+    //
     /**
      * Build the Report navigation
-     * 
+     *
      * @param Web $w
      * @param string|null $title
      * @param array|null $nav
@@ -852,7 +852,7 @@ class ReportService extends DbService
 
     /**
      * Nav list
-     * 
+     *
      * @return array
      */
     public function navList(): array
