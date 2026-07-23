@@ -16,7 +16,7 @@ function editmember_GET(Web &$w)
         "Edit Member" => [
             [new Hidden([
                 "id|name" => "report_id",
-                "value" => $p["id"]
+                "value" => $p["repid"]
             ])],
             [
                 (new Select([
