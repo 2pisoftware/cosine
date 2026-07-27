@@ -12,7 +12,7 @@
 # NOTE: See the .dockerignore file to see what is excluded from the image.
 
 # Define the Alpine version to use
-ARG ALPINE_VERSION=3.22
+ARG ALPINE_VERSION=3.24
 
 # ==========================================================================
 # STAGE 1: Build the theme
@@ -42,7 +42,7 @@ FROM alpine:${ALPINE_VERSION}
 
 # PHP version
 # note: see Alpine packages for available versions
-ARG PHP_VERSION=84
+ARG PHP_VERSION=85
 ENV PHP_VERSION=$PHP_VERSION
 ARG UID=1000
 ARG GID=1000
@@ -77,7 +77,6 @@ RUN apk --no-cache add \
     php$PHP_VERSION-session \
     php$PHP_VERSION-simplexml \
     php$PHP_VERSION-fileinfo \
-    php$PHP_VERSION-opcache \
     php$PHP_VERSION-dom \
     php$PHP_VERSION-xmlwriter \
     nginx \
@@ -92,9 +91,6 @@ RUN apk --no-cache add \
     unzip \
     icu-data-full \
     git
-
-# Link PHP cli
-RUN ln -s /usr/bin/php${PHP_VERSION} /usr/bin/php
 
 # Create necessary directories
 RUN mkdir -p /var/www && \
