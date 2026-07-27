@@ -811,15 +811,17 @@ class ReportService extends DbService
     /**
      * Get report template by ID
      *
-     * @param int $id
+     * @param int|null $id
      * @return ReportTemplate|null
      */
-    public function getReportTemplate(int $id): ReportTemplate|null
+    public function getReportTemplate(int|null $id): ReportTemplate|null
     {
+        if (null === $id) {
+            return null;
+        }
         return $this->getObject("ReportTemplate", $id);
     }
 
-    //
     /**
      * Build the Report navigation
      *
