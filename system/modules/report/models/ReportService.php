@@ -2,31 +2,60 @@
 
 class ReportService extends DbService
 {
-    private static $tables;
+    private static array $tables;
 
-    public function getReport($id)
+    /**
+     * Get report by id
+     *
+     * @param int $id
+     * @return Report|null
+     */
+    public function getReport(int $id): Report|null
     {
         return $this->getObject("Report", $id);
     }
 
-    public function getReports()
+    /**
+     * Get all reports
+     *
+     * @return Report[]
+     */
+    public function getReports(): array
     {
         return $this->getObjects("Report", ["is_deleted" => 0]);
     }
 
-    public function getReportByModuleAndCategory($module, $category)
+    /**
+     * Get report by module and category
+     *
+     * @param string $module
+     * @param string $category
+     * @return Report|null
+     */
+    public function getReportByModuleAndCategory(string $module, string $category): Report|null
     {
         return $this->getObject('Report', ['module' => $module, 'category' => $category, 'is_deleted' => 0]);
     }
 
-    // return list of members attached to a report for given report ID
-    public function getReportMembers($id)
+    /**
+     * Return list of members attached to a report for given report ID
+     *
+     * @param int $id
+     * @return ReportMember[]
+     */
+    public function getReportMembers(int $id): array
     {
         return $this->getObjects("ReportMember", ["report_id" => $id, "is_deleted" => 0]);
     }
 
-    // return member for given report ID and user id
-    public function getReportMember($id, $uid)
+    /**
+     * Get report member
+     *
+     * @param int $id
+     * @param int $uid
+     * @return ReportMember|null
+     */
+    public function getReportMember(int $id, int $uid): ReportMember|null
     {
         $conferred = [];
         $conferred[] = $this->getObject("ReportMember", ["report_id" => $id, "user_id" => $uid, "is_deleted" => 0]);
@@ -34,15 +63,23 @@ class ReportService extends DbService
 
         foreach ($groups ?? [] as $group) {
             if (AuthService::getInstance($this->w)->getUser($uid)->inGroup($group)) {
-                $conferred[] = $this->getObject("ReportMember", ["report_id" => $id, "user_id" => $group->id, "is_deleted" => 0]);
+                $report_member = $this->getObject("ReportMember", ["report_id" => $id, "user_id" => $group->id, "is_deleted" => 0]);
+                if (!empty($report_member)) {
+                    $conferred[] = $report_member;
+                }
             }
         }
-        $conferred = array_filter($conferred);
         return end($conferred);
     }
 
-    // Helper function to decide whether or not a user has access to a given report
-    public function canUserEditReport($report, $member)
+    /**
+     * Helper function to decide whether or not a user has access to a given report
+     *
+     * @param Report $report
+     * @param ReportMember $member
+     * @return bool
+     */
+    public function canUserEditReport(Report $report, ReportMember $member): bool
     {
         // First, is logged in user a system admin
         if (AuthService::getInstance($this->w)->user()->is_admin == 1) {
@@ -88,13 +125,26 @@ class ReportService extends DbService
         return $this->getObjects("ReportConnection", ["is_deleted" => "0"]);
     }
 
-    public function getConnection($id)
+    /**
+     * Get report connection by id
+     *
+     * @param int $id
+     * @return ReportConnection|null
+     */
+    public function getConnection(int $id): ReportConnection|null
     {
         return $this->getObject("ReportConnection", ["id" => $id, "is_deleted" => "0"]);
     }
 
     // function to sort lists by date schedule
-    public static function sortBySchedule($a, $b)
+    /**
+     * Function to sort lists by date schedule
+     *
+     * @param mixed $a
+     * @param mixed $b
+     * @return int
+     */
+    public static function sortBySchedule(mixed $a, mixed $b): int
     {
         if ($a->dt_schedule == $b->dt_schedule) {
             return 0;
@@ -102,7 +152,9 @@ class ReportService extends DbService
         return ($a->dt_schedule < $b->dt_schedule) ? +1 : -1;
     }
 
-    // get list of modules for HtmlBootstrap5::select
+    /**
+     * get list of modules for HtmlBootstrap5::select
+     */
     public function getModules()
     {
         $modules = $this->w->modules();
@@ -114,44 +166,78 @@ class ReportService extends DbService
         return $parsed_modules;
     }
 
-    // static list of group permissions
-    public function getReportPermissions()
+    /**
+     * static list of group permissions
+     *
+     * @return array
+     */
+    public function getReportPermissions(): array
     {
         return ["USER", "EDITOR"];
     }
 
-    // return a report given its ID
-    public function getReportInfo($id)
+    /**
+     * Return a report given its ID
+     *
+     * @param int $id
+     * @return Report|null
+     */
+    public function getReportInfo($id): Report|null
     {
-        return $this->getObject("Report", ["id" => $id]);
+        return $this->getReport($id);
     }
 
-    // return list of feeds
-    public function getFeeds()
+    /**
+     * Return list of feeds
+     *
+     * @return ReportFeed[]
+     */
+    public function getFeeds(): array
     {
         return $this->getObjects("ReportFeed", ["is_deleted" => 0]);
     }
 
-    // return a feed given its id
-    public function getFeedInfobyId($id)
+    /**
+     * Return a feed given its id
+     *
+     * @param int $id
+     * @return ReportFeed|null
+     */
+    public function getFeedInfobyId(int $id): ReportFeed|null
     {
         return $this->getObject("ReportFeed", ["id" => $id, "is_deleted" => 0]);
     }
 
-    // return a feed given its report id
-    public function getFeedInfobyReportId($id)
+    /**
+     * Return a feed given its report id
+     *
+     * @param int $id
+     *
+     */
+    public function getFeedInfobyReportId(int $id)
     {
         return $this->getObject("ReportFeed", ["report_id" => $id, "is_deleted" => 0]);
     }
 
-    // return a feed given its key
-    public function getFeedInfobyKey($key)
+    /**
+     * Return a feed given its key
+     *
+     * @param string $key
+     * @return ReportFeed|null
+     */
+    public function getFeedInfobyKey(string $key): ReportFeed|null
     {
         return $this->getObject("ReportFeed", ["report_key" => $key, "is_deleted" => 0]);
     }
 
-    // return list of APPROVED and NOT DELETED report IDs for a given a user ID and a where clause
-    public function getReportsbyUserWhere($id, $where)
+    /**
+     * Return list of APPROVED and NOT DELETED report IDs for a given a user ID and a where clause
+     *
+     * @param int $id
+     * @param string $where
+     * @return Report[]
+     */
+    public function getReportsbyUserWhere(int $id, string $where): array
     {
         // Clause for admin user
         if (AuthService::getInstance($this->w)->user()->hasRole("report_admin")) {
@@ -185,7 +271,7 @@ class ReportService extends DbService
     }
 
     /**
-     * unitary approach to form an 'and' clause for 'where' from text or key values
+     * Unitary approach to form an 'and' clause for 'where' from text or key values
      *
      * @param string $where
      * @param array $where
@@ -206,25 +292,31 @@ class ReportService extends DbService
                 end($column) => $match
             ];
         }
-        $filter="";
+        $filter = "";
         // enforce literal quoted match as r.[columnName] = 'something'
         foreach ($where as $term => $check) {
             if (!empty($check)) {
-                $tmp=explode(".", $term);
-                $term=trim(end($tmp));
-                $tmp=explode(" ", $term);
-                $term=trim(end($tmp));
+                $tmp = explode(".", $term);
+                $term = trim(end($tmp));
+                $tmp = explode(" ", $term);
+                $term = trim(end($tmp));
                 $check = str_replace("'", "", $check);
                 $term = str_replace("'", "", $term);
                 $term = str_replace("--", "", $term);
                 $term = str_replace(";", "", $term);
-                $filter .= " and r.".$term." = ".$this->_db->quote($check)." ";
+                $filter .= " and r." . $term . " = " . $this->_db->quote($check) . " ";
             }
         }
         return $filter;
     }
-    // return list of APPROVED and NOT DELETED report IDs for a given a user ID as member
-    public function getReportsbyUserId($id)
+
+    /**
+     * Return list of APPROVED and NOT DELETED report IDs for a given a user ID as member
+     *
+     * @param int $id
+     * @return ReportMember[]
+     */
+    public function getReportsbyUserId(int $id): array
     {
         // need to get reports for me and my groups
         // me
@@ -250,8 +342,12 @@ class ReportService extends DbService
         return $this->fillObjects("ReportMember", $results);
     }
 
-    // return list of APPROVED and NOT DELETED report IDs for a given a user ID and Module
-    public function getReportsbyModuleId()
+    /**
+     * Return list of APPROVED and NOT DELETED report IDs for a given a user ID and Module
+     *
+     * @return Report[]
+     */
+    public function getReportsbyModuleId(): array
     {
         // need to get reports for me and my groups
         // me
@@ -281,8 +377,12 @@ class ReportService extends DbService
         return $this->fillObjects("Report", $results);
     }
 
-    // return menu links of APPROVED and NOT DELETED report IDs for a given a user ID as member
-    public function getReportsforNav()
+    /**
+     * Return menu links of APPROVED and NOT DELETED report IDs for a given a user ID as member
+     *
+     * @return array
+     */
+    public function getReportsforNav(): array
     {
         $repts = [];
         $reports = $this->getReportsbyModuleId();
@@ -295,16 +395,27 @@ class ReportService extends DbService
         return $repts;
     }
 
-    // return a users full name given their user ID
-    public function getUserById($id)
+    /**
+     * Return a users full name given their user ID
+     *
+     * @param int $id
+     * @return string
+     */
+    public function getUserById($id): string
     {
         $u = AuthService::getInstance($this->w)->getUser($id);
         return $u ? $u->getFullName() : "";
     }
 
-    // for parameter dropdowns, run SQL statement and return an array(value,title) for display
-    // DANGEROUS
-    public function getFormDatafromSQL($sql, $connection)
+    /**
+     * For parameter dropdowns, run SQL statement and return an array(value,title) for display
+     * DANGEROUS
+     *
+     * @param string $sql
+     * @param DbPDO|PDO $connection
+     * @return array
+     */
+    public function getFormDatafromSQL($sql, DbPDO|PDO $connection): array
     {
         $rows = $connection->query(trim($sql))->fetchAll();
 
@@ -317,24 +428,40 @@ class ReportService extends DbService
         return $arr;
     }
 
-    // given a report SQL statement, return recordset
-    // DANGEROUS
-    public function getExefromSQL($sql, $connection = null)
+    /**
+     * Given a report SQL statement, return recordset
+     * DANGEROUS
+     *
+     * @param string $sql
+     * @param null|DbPDO|PDO $connection
+     * @return bool
+     */
+    public function getExefromSQL(string $sql, null|DbPDO|PDO $connection = null): bool
     {
         return $connection->query($sql)->execute();
     }
 
-    // convert dd/mm/yyyy date to yyy-mm-dd for SQL statements
-    public function date2db($date)
+    /**
+     * Convert dd/mm/yyyy date to yyy-mm-dd for SQL statements
+     *
+     * @param string $date
+     * @return string
+     */
+    public function date2db(string $date): string
     {
         if ($date) {
             list($d, $m, $y) = preg_split("/\/|-|\./", $date);
             return $y . "-" . $m . "-" . $d;
         }
+        return '';
     }
 
-    // return all tables in the DB for display
-    public function getAllDBTables()
+    /**
+     * Return all tables in the DB for display
+     *
+     * @return array
+     */
+    public function getAllDBTables(): array
     {
         $dbtbl = [];
         foreach ($this->_db->_query("show tables")->fetchAll(PDO::FETCH_NUM) as $table) {
@@ -345,8 +472,13 @@ class ReportService extends DbService
         return $dbtbl;
     }
 
-    // return array of fields/type in a given table
-    public function getFieldsinTable($table)
+    /**
+     * Return array of fields/type in a given table
+     *
+     * @param string $table
+     * @return string
+     */
+    public function getFieldsinTable(string $table): string
     {
         $output = "";
 
@@ -374,7 +506,13 @@ class ReportService extends DbService
         return $output;
     }
 
-    public function getSQLStatementType($report_code)
+    /**
+     * Get SQL Statement Type
+     *
+     * @param string $report_code
+     * @return string
+     */
+    public function getSQLStatementType(string $report_code): string
     {
         // return our list of SQL statements
         preg_match_all("/@@.*?@@/", preg_replace("/\n/", " ", $report_code), $arrsql);
@@ -399,8 +537,12 @@ class ReportService extends DbService
         }
     }
 
-    // create an array of available report output formats for inclusion in the parameters form
-    public function selectReportFormat()
+    /**
+     * Create an array of available report output formats for inclusion in the parameters form
+     *
+     * @return array
+     */
+    public function selectReportFormat(): array
     {
         $arr = [
             ["Web Page", "html"],
@@ -412,8 +554,13 @@ class ReportService extends DbService
         return [["Format", "select", "format", null, $arr]];
     }
 
-    // export a recordset as CSV
-    public function exportcsv($rows, $title)
+    /**
+     * Export a recordset as CSV
+     *
+     * @param array $rows
+     * @param string $title
+     */
+    public function exportcsv($rows, $title): void
     {
         // set filename
         $filename = str_replace(" ", "_", $title) . "_" . date("Y.m.d-H.i") . ".csv";
@@ -463,8 +610,14 @@ class ReportService extends DbService
         }
     }
 
-    // export a recordset as PDF
-    public function exportpdf($rows, $title, $report_template = null)
+    /**
+     * Export a recordset as PDF
+     *
+     * @param array $rows
+     * @param string $title
+     * @param ReportTemplate|null $report_template
+     */
+    public function exportpdf($rows, $title, ReportTemplate|null $report_template = null): void
     {
         $filename = str_replace(" ", "_", $title) . "_" . date("Y.m.d-H.i") . ".pdf";
 
@@ -547,8 +700,13 @@ class ReportService extends DbService
         $pdf->Output($filename, 'D');
     }
 
-    // export a recordset as XML
-    public function exportxml($rows, $title)
+    /**
+     * Export a recordset as XML
+     *
+     * @param array $rows
+     * @param string $title
+     */
+    public function exportxml($rows, $title): void
     {
         $filename = str_replace(" ", "_", $title) . "_" . date("Y.m.d-H.i") . ".xml";
 
@@ -590,38 +748,51 @@ class ReportService extends DbService
         $this->w->setLayout(null);
     }
 
-    // function to substitute special terms
-    public function putSpecialSQL($sql)
+    /**
+     * Function to substitute special terms
+     *
+     * @param string $sql
+     * @return array|string
+     */
+    public function putSpecialSQL(string $sql): array|string
     {
-        if ($sql != "") {
-            $special = [];
-            $replace = [];
-
-            // get user roles
-            $usr = AuthService::getInstance($this->w)->user();
-            $roles = '';
-            if (!empty($usr)) {
-                foreach ($usr->getRoles() as $role) {
-                    $roles .= "'" . $role . "',";
-                }
-                $roles = rtrim($roles, ",");
-            }
-
-            // $special must be in terms of a regexp for preg_match
-            $special[0] = "/\{\{current_user_id\}\}/";
-            $replace[0] = $_SESSION["user_id"];
-            $special[1] = "/\{\{roles\}\}/";
-            $replace[1] = $roles;
-            $special[2] = "/\{\{webroot\}\}/";
-            $replace[2] = $this->w->localUrl();
-
-            // replace and return
-            return preg_replace($special, $replace, $sql);
+        if ("" == $sql) {
+            return '';
         }
+        $special = [];
+        $replace = [];
+
+        // get user roles
+        $usr = AuthService::getInstance($this->w)->user();
+        $roles = '';
+        if (!empty($usr)) {
+            foreach ($usr->getRoles() as $role) {
+                $roles .= "'" . $role . "',";
+            }
+            $roles = rtrim($roles, ",");
+        }
+
+        // $special must be in terms of a regexp for preg_match
+        $special[0] = "/\{\{current_user_id\}\}/";
+        $replace[0] = $_SESSION["user_id"];
+        $special[1] = "/\{\{roles\}\}/";
+        $replace[1] = $roles;
+        $special[2] = "/\{\{webroot\}\}/";
+        $replace[2] = $this->w->localUrl();
+
+        // replace and return
+        return preg_replace($special, $replace, $sql);
     }
 
-    // function to check syntax of report SQL statememnt
-    public function getcheckSQL($sql, PDO $connection)
+    //
+    /**
+     * Function to check syntax of report SQL statement
+     *
+     * @param string $sql
+     * @param PDO $connection
+     * @return bool
+     */
+    public function getcheckSQL($sql, PDO $connection): bool
     {
         // checking for rows will return false if no data is returned, even if SQL is ok
         // so let's just run the statement and try to catch any exceptions otherwise SQL runs ok
@@ -637,13 +808,29 @@ class ReportService extends DbService
         }
     }
 
-    public function getReportTemplate($id)
+    /**
+     * Get report template by ID
+     *
+     * @param int|null $id
+     * @return ReportTemplate|null
+     */
+    public function getReportTemplate(int|null $id): ReportTemplate|null
     {
+        if (null === $id) {
+            return null;
+        }
         return $this->getObject("ReportTemplate", $id);
     }
 
-    // build the Report navigation
-    public function navigation(Web $w, $title = null, $nav = null)
+    /**
+     * Build the Report navigation
+     *
+     * @param Web $w
+     * @param string|null $title
+     * @param array|null $nav
+     * @return array
+     */
+    public function navigation(Web $w, $title = null, $nav = null): array
     {
         if (!empty($title)) {
             $w->ctx("title", $title);
@@ -665,6 +852,11 @@ class ReportService extends DbService
         return $nav;
     }
 
+    /**
+     * Nav list
+     *
+     * @return array
+     */
     public function navList(): array
     {
         $list = [
