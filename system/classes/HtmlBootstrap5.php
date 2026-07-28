@@ -303,7 +303,7 @@ HTML;
                 <div class='row g-0 clearfix card-header section-header'>
                     <h4 class='col mb-0'>
                         {$section}
-                        <span class='changed_status position-absolute bg-danger rounded p-1 d-none' style='right: 1rem; top: 0.5rem; font-size: 1rem'>
+                        <span class='text-white changed_status position-absolute bg-danger rounded p-1 d-none' style='right: 1rem; top: 0.5rem; font-size: 1rem'>
                             Changed
                         </span>
                     </h4>
