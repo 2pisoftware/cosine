@@ -43,5 +43,9 @@
     "vite-plugin-commonjs": "^0.10.1",
     "vite-plugin-static-copy": "^2.2.0",
     "vue-loader": "^17.4.2"
+  },
+  "allowScripts": {
+    "esbuild@0.21.5": true,
+    "@parcel/watcher@2.5.6": true
   }
 }
