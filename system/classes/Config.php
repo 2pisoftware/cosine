@@ -67,7 +67,9 @@ class Config
      */
     public static function set($key, $value)
     {
-        $exploded_key = explode('.', $key);
+        // Allow escaping "." with "\"
+        $exploded_key = preg_split('/\\\\\.(*SKIP)(*FAIL)|\./', $key, -1, PREG_SPLIT_DELIM_CAPTURE);
+        // $exploded_key = explode('.', $key);
         if (!empty($exploded_key)) {
             $register = &self::$register;
             if (self::$_use_sandbox === true) {
@@ -77,6 +79,9 @@ class Config
             // Loop through each key
             foreach ($exploded_key as $ekey) {
                 if (is_array($register) && !array_key_exists($ekey, $register)) {
+                    // Replace escaped periods with normal periods
+                    $ekey = str_replace("\\.", ".", $ekey);
+
                     $register[$ekey] = [];
                 }
                 $register = &$register[$ekey];
@@ -243,7 +248,7 @@ class Config
     {
         self::$shadow_register = $shadow_register;
     }
-    
+
     public static function promoteSandbox()
     {
         if (self::isSandboxing()) {
@@ -395,8 +400,8 @@ class Config
                 ]);
             }
             $result = self::$ssm_client->getParameter([
-                    'Name' => $parameterName,
-                    'WithDecryption' => true
+                'Name' => $parameterName,
+                'WithDecryption' => true
             ]);
             $value = $result['Parameter']['Value'];
             $data = json_decode($value, true);
