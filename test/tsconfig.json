@@ -5,6 +5,9 @@
         "moduleResolution": "nodenext",
         "sourceMap": true,
         "outDir": "./dist",
+        "lib": [
+            "ES2025.Collection"
+        ],
         "esModuleInterop": true,
         "forceConsistentCasingInFileNames": true,
         "strict": true,

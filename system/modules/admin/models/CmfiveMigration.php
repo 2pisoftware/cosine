@@ -73,6 +73,7 @@ class CmfiveMigration extends Phinx\Migration\AbstractMigration
         if ($this->hasTable($table_name)) {
             $table = $this->table($table_name);
             $table->rename(date('YmdHis') . $table_name);
+            $table->update();
         }
     }
 
