@@ -538,10 +538,8 @@ HTML;
                 } else {
                     $buffer .= "<td class='" . ($column[1] === true ? "show-for-medium-up" : (is_scalar($column[1]) ? $column[1] : '')) . "' ";
 
-                    if (is_array($column[1])) {
-                        if (!empty($column[1]["sort"])) {
-                            $buffer .= "data-sort-order='" . $column[1]["sort"] . "' ";
-                        }
+                    if (is_array($column[1]) && !empty($column[1]["sort"])) {
+                        $buffer .= "data-sort-order='" . $column[1]["sort"] . "' ";
                     }
 
                     $buffer .= ">{$column[0]}</td>";
