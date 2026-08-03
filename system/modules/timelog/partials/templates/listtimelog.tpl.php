@@ -9,9 +9,9 @@ $header = ["Name", "From", "To", "Duration", "Time Type", "Description", "Action
 echo HtmlBootstrap5::table(array_map(function ($val) use ($w, $redirect) {
     $row = [
         $val->getFullName(),
-        formatDate($val->dt_start, "d-m-Y H:i:s"),
-        formatDate($val->dt_end, "d-m-Y H:i:s"),
-        $val->isRunning ? "See Timer" : $val->getHoursWorked() . ':' . str_pad($val->getMinutesWorked(), 2, '0', STR_PAD_LEFT),
+        [formatDate($val->dt_start, "d-m-Y H:i:s"), ["sort" => $val->dt_start]],
+        [formatDate($val->dt_end, "d-m-Y H:i:s"), ["sort" => $val->dt_end]],
+        [$val->isRunning ? "See Timer" : $val->getHoursWorked() . ':' . str_pad($val->getMinutesWorked(), 2, '0', STR_PAD_LEFT), !$val->isRunning ? ["sort" => $val->getHoursWorked() + ($val->getMinutesWorked() / 60)] : null],
         $val->time_type,
         "<pre class='break-pre text-truncate d-block mt-1 mb-0' style='width: 250px;'>" . strip_tags($val->getComment()->comment) . "</pre>",
     ];
