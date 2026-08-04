@@ -973,10 +973,6 @@ HTML;
         $makeUrl = function (int $page) use ($parsed_url, $pageparam, $pagesizeparam, $pagesize, $totalresultsparam, $totalresults) {
             $ret = $parsed_url["path"];
 
-            if (!empty($parsed_url["fragment"])) {
-                $ret .= "#" . $parsed_url["fragment"];
-            }
-
             if (!empty($parsed_url["query"])) {
                 $ret .= "?" . $parsed_url["query"] . "&";
             } else {
@@ -984,6 +980,10 @@ HTML;
             }
 
             $ret .= "$pageparam=$page&$pagesizeparam=$pagesize&$totalresultsparam=$totalresults";
+
+            if (!empty($parsed_url["fragment"])) {
+                $ret .= "#" . $parsed_url["fragment"];
+            }
 
             return $ret;
         };
