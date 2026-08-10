@@ -773,7 +773,6 @@ class Web
                 // load the module file
                 require_once $reqpath;
             } else {
-                LogService::getInstance($this)->error("System: No Action found for: " . $reqpath);
                 $this->notFoundPage();
             }
 
@@ -1416,7 +1415,6 @@ class Web
      */
     public function notFoundPage()
     {
-        LogService::getInstance($this)->warning("System: Action not found: " . $this->_module . "/" . $this->_action);
         $this->ctx("w", $this);
 
         // We want to fail gracefully for ajax requests
