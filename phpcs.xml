@@ -3,6 +3,13 @@
     xsi:noNamespaceSchemaLocation="phpcs.xsd">
     <description>The coding standard for Cmfive.</description>
 
+    <rule ref="Generic.PHP.ForbiddenFunctions">
+        <properties>
+            <property name="forbiddenFunctions" type="array"
+                value="sizeof=>count,is_null=>null,create_function=>null,list=>null,eval=>null" />
+        </properties>
+    </rule>
+
     <rule
         ref="PSR2">
         <!-- Cmfive requires the use of underscore prefixes to determine
