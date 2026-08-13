@@ -678,12 +678,12 @@ class Web
             $this->_paths = $this->_getCommandPath();
 
             // first find the module file
-            if ($this->_paths && sizeof($this->_paths) > 0) {
+            if ($this->_paths && count($this->_paths) > 0) {
                 $this->_module = array_shift($this->_paths);
             }
 
             // then find the action
-            if ($this->_paths && sizeof($this->_paths) > 0) {
+            if ($this->_paths && count($this->_paths) > 0) {
                 $this->_action = array_shift($this->_paths);
             }
 
@@ -2023,7 +2023,7 @@ class Web
      */
     public function validate($valarray)
     {
-        if (!$valarray || !sizeof($valarray)) {
+        if (!$valarray || !count($valarray)) {
             return null;
         }
 
@@ -2277,7 +2277,7 @@ class Web
             // see if the module is a sub module
             // eg. /sales-report/showreport/1..
             $hsplit = explode("-", $paths['module']);
-            if (sizeof($hsplit) == 2) {
+            if (count($hsplit) == 2) {
                 $paths['module'] = array_shift($hsplit);
                 $paths['submodule'] = array_shift($hsplit);
             }

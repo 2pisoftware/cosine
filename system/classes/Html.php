@@ -281,16 +281,16 @@ class Html
      */
     public static function ul($array, $id = null, $class = null, $subclass = null, $type = "ul")
     {
-        if (!$array || sizeof($array) < 1) {
+        if (!$array || count($array) < 1) {
             return "";
         }
 
         $id = $id ? ' id="' . $id . '"' : null;
         $class = $class ? ' class="' . $class . '"' : null;
         $buf = "<{$type}" . $id . $class . ">\n";
-        for ($i = 0; $i < sizeof($array); $i++) {
+        for ($i = 0; $i < count($array); $i++) {
             $cur = $array[$i];
-            $next = $i < sizeof($array) - 1 ? $array[$i + 1] : null;
+            $next = $i < count($array) - 1 ? $array[$i + 1] : null;
             $buf .= "<li>" . $cur;
             if (is_array($next)) {
                 $buf .= self::ul($next, null, $subclass);
@@ -1032,7 +1032,7 @@ class Html
      */
     public static function validate($valarray, $values = null)
     {
-        if (!$valarray || !sizeof($valarray)) {
+        if (!$valarray || !count($valarray)) {
             return null;
         }
         $error = [];

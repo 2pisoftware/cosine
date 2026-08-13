@@ -124,7 +124,7 @@ abstract class TaskGroupType
             return $value;
         } else {
             $statusarray = $this->getStatusArray();
-            if (!empty($statusarray) && sizeof($statusarray) > 0) {
+            if (!empty($statusarray) && count($statusarray) > 0) {
                 return $statusarray[0][0];
             } else {
                 return "";

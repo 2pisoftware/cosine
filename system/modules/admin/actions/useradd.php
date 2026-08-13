@@ -118,7 +118,7 @@ function useradd_POST(Web &$w)
     if ($_REQUEST['password2'] != $_REQUEST['password']) {
         $errors[] = "Passwords don't match";
     }
-    if (sizeof($errors) != 0) {
+    if (count($errors) != 0) {
         $w->error(implode("<br/>\n", $errors), "/admin/useradd");
     }
 
