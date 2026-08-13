@@ -11,6 +11,7 @@
                 <element key="create_function" value="null" />
                 <element key="eval" value="null" />
                 <element key="list" value="null" />
+                <element key="array" value="null" />
             </property>
         </properties>
     </rule>
