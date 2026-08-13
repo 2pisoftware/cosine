@@ -9,8 +9,15 @@
                 <element key="sizeof" value="count" />
                 <element key="create_function" value="null" />
                 <element key="eval" value="null" />
-                <element key="list" value="null" />
                 <element key="array" value="null" />
+            </property>
+        </properties>
+    </rule>
+
+    <rule ref="Squiz.PHP.DiscouragedFunctions">
+        <properties>
+            <property name="forbiddenFunctions" type="array">
+                <element key="list" value="null" />
             </property>
         </properties>
     </rule>
