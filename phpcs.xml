@@ -3,6 +3,17 @@
     xsi:noNamespaceSchemaLocation="phpcs.xsd">
     <description>The coding standard for Cmfive.</description>
 
+    <rule ref="Generic.PHP.ForbiddenFunctions">
+        <properties>
+            <property name="forbiddenFunctions" type="array">
+                <element key="sizeof" value="count" />
+                <element key="create_function" value="null" />
+                <element key="eval" value="null" />
+                <element key="array" value="null" />
+            </property>
+        </properties>
+    </rule>
+
     <rule
         ref="PSR2">
         <!-- Cmfive requires the use of underscore prefixes to determine
@@ -14,6 +25,8 @@
         <!-- Cmfive classes aren't using namespaces and requiring such
              would take a very long time to implement -->
         <exclude name="PSR1.Classes.ClassDeclaration" />
+
+        <exclude name="PSR1.Methods.CamelCapsMethodName.NotCamelCaps" />
     </rule>
 
     <rule ref="PSR1.Files.SideEffects.FoundWithSymbols">
@@ -31,8 +44,7 @@
         </properties>
     </rule>
 
-    <rule
-        ref="Generic.Arrays.DisallowLongArraySyntax"></rule>
+    <rule ref="Generic.Arrays.DisallowLongArraySyntax"></rule>
 
     <rule
         ref="Internal.NoCodeFound">
