@@ -31,8 +31,8 @@ function listtimelog(\Web $w, $params)
 
     $timelogs = \TimelogService::getInstance($w)
         ->getObjects(
-            "Timelog",
-            [
+            class: "Timelog",
+            where: [
                 "object_class" => get_class($target),
                 "object_id" => $target->id,
             ],
