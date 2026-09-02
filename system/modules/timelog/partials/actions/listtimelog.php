@@ -1,5 +1,7 @@
 <?php
 
+namespace System\Modules\Timelog;
+
 function listtimelog(\Web $w, $params)
 {
     if (empty($params['object_class']) || empty($params['object_id'])) {
@@ -8,13 +10,13 @@ function listtimelog(\Web $w, $params)
 
     $redirect = $params['redirect'] ?: "";
 
-    $target = TimelogService::getInstance($w)
+    $target = \TimelogService::getInstance($w)
         ->getObject($params["object_class"], $params["object_id"]);
 
-    $page = Request::int("p", 1);
-    $page_size = Request::int("ps", 50);
+    $page = \Request::int("p", 1);
+    $page_size = \Request::int("ps", 50);
 
-    $count = TimelogService::getInstance($w)
+    $count = \TimelogService::getInstance($w)
         ->countTimelogsForObject($target);
 
     $stmt = $w->db->prepare(
@@ -27,7 +29,7 @@ function listtimelog(\Web $w, $params)
     $stmt->execute();
     $total = intval($stmt->fetchColumn(0));
 
-    $timelogs = TimelogService::getInstance($w)
+    $timelogs = \TimelogService::getInstance($w)
         ->getObjects(
             "Timelog",
             [
@@ -39,7 +41,7 @@ function listtimelog(\Web $w, $params)
             limit: $page_size,
         );
 
-    $pagination = HtmlBootstrap5::pagination(
+    $pagination = \HtmlBootstrap5::pagination(
         currentpage: $page,
         numpages: 0,    // unused
         pagesize: $page_size,
@@ -48,7 +50,7 @@ function listtimelog(\Web $w, $params)
     );
 
     $header = ["Name", "From", "To", "Duration", "Time Type", "Description", "Actions"];
-    $table = HtmlBootstrap5::table(
+    $table = \HtmlBootstrap5::table(
         data: array_map(function ($val) use ($w, $redirect) {
             $row = [
                 $val->getFullName(),
@@ -67,15 +69,15 @@ function listtimelog(\Web $w, $params)
             ];
 
             $actions = [];
-            if ($val->canEdit(AuthService::getInstance($w)->user())) {
-                $actions[] = HtmlBootstrap5::box(
+            if ($val->canEdit(\AuthService::getInstance($w)->user())) {
+                $actions[] = \HtmlBootstrap5::box(
                     href: '/timelog/edit/' . $val->id . (!empty($redirect) ? "?redirect=$redirect" : ''),
                     title: 'Edit',
                     button: true,
                     class: "bg-primary btn-sm"
                 );
 
-                $actions[] = HtmlBootstrap5::box(
+                $actions[] = \HtmlBootstrap5::box(
                     href: '/timelog/move/' . $val->id . (!empty($redirect) ? "?redirect=$redirect" : ''),
                     title: 'Move',
                     button: true,
@@ -83,9 +85,9 @@ function listtimelog(\Web $w, $params)
                 );
             }
 
-            if ($val->canDelete(AuthService::getInstance($w)->user())) {
+            if ($val->canDelete(\AuthService::getInstance($w)->user())) {
                 $confirmation_message = implode("", $w->callHook("timelog", "before_display_timelog", $val));
-                $actions[] = HtmlBootstrap5::b(
+                $actions[] = \HtmlBootstrap5::b(
                     href: '/timelog/delete/' . $val->id . (!empty($redirect) ? "?redirect=$redirect" : ''),
                     title: 'Delete',
                     confirm: empty($confirmation_message) ? 'Are you sure you want to delete this timelog?' : $confirmation_message,
@@ -93,7 +95,7 @@ function listtimelog(\Web $w, $params)
                 );
             }
 
-            $row[] = HtmlBootstrap5::buttonGroup(implode("", $actions));
+            $row[] = \HtmlBootstrap5::buttonGroup(implode("", $actions));
 
             return $row;
         }, $timelogs),
