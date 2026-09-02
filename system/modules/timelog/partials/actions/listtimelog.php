@@ -14,37 +14,19 @@ function listtimelog(\Web $w, $params)
         ->getObject($params["object_class"], $params["object_id"]);
 
     $page = \Request::int("p", 1);
-    $page_size = \Request::int("ps", 50);
+    $pageSize = \Request::int("ps", 50);
 
-    $count = \TimelogService::getInstance($w)
-        ->countTimelogsForObject($target);
-
-    $stmt = $w->db->prepare(
-        "SELECT SUM(TIMESTAMPDIFF(SECOND, timelog.dt_start, timelog.dt_end))
-        FROM timelog
-        WHERE timelog.object_class = ? AND timelog.object_id = ?"
-    );
-    $stmt->bindValue(1, get_class($target));
-    $stmt->bindValue(2, $target->id);
-    $stmt->execute();
-    $total = intval($stmt->fetchColumn(0));
-
-    $timelogs = \TimelogService::getInstance($w)
-        ->getObjects(
-            class: "Timelog",
-            where: [
-                "object_class" => get_class($target),
-                "object_id" => $target->id,
-            ],
-            order_by: "dt_start ASC",
-            offset: $page_size * ($page - 1),
-            limit: $page_size,
-        );
+    [
+        "count" => $count,
+        "totalTime" => $total,
+        "timelogs" => $timelogs
+    ] = \TimelogService::getInstance($w)
+        ->paginateTimelogsForObject($target, $page - 1, $pageSize);
 
     $pagination = \HtmlBootstrap5::pagination(
         currentpage: $page,
         numpages: 0,    // unused
-        pagesize: $page_size,
+        pagesize: $pageSize,
         totalresults: $count,
         baseurl: $w->localUrl($redirect),
     );
