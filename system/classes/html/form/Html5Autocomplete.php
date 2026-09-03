@@ -181,8 +181,8 @@ class Html5Autocomplete extends \Html\Form\InputField
             ];
         } elseif (is_array($val) && count($val) === 2) {
             return [
-                "value" => $val[0],
-                "text" => $val[1],
+                "value" => $val[1],
+                "text" => $val[0],
             ];
         } else {
             // can't log cause don't have $w
