@@ -27,6 +27,15 @@ abstract class InsightBaseClass
      */
     abstract public function run(Web $w, array $params = []): array;
 
+    /**
+     * Run the insight and return raw data to be exported as CSV/PDF
+     * This function MUST return data if 'run' does.
+     */
+    public function raw(Web $w, array $params = []): array
+    {
+        return [];
+    }
+
     public function getMembers(Web $w)
     {
         return InsightService::getInstance($w)->getAllMembersForInsightClass(get_class($this));
