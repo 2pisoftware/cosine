@@ -20,7 +20,9 @@ function csv_ALL(Web $w)
         return $w->error("You do not have permission to view this insight", "/insights");
     }
 
-    $run_data = $insight->run($w, $_REQUEST);
+    // If 'raw' isn't implemented, the default impl is used which returns an empty array
+    // And this fallbacks to calling run instead
+    $run_data = $insight->raw($w, $_REQUEST) ?: $insight->run($w, $_REQUEST);
 
     InsightService::getInstance($w)->exportcsv($run_data, $p['insight_class']);
 }
