@@ -875,6 +875,8 @@ class Web
                 $this->notFoundPage();
             }
         } catch (Throwable $t) {
+            $this->callHook("core_web", "error", $t);
+
             $logger = empty($this->currentModule()) ? "CMFIVE" : strtoupper($this->currentModule());
             LogService::getInstance($this)->setLogger($logger)->error("Throwable caught in Web: {$t->getMessage()} Trace: {$t->getTraceAsString()}");
             echo Html::alertBox("An error occurred, if this message persists please contact your administrator.", "alert");
