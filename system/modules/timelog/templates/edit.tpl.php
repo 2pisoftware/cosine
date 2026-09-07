@@ -1,5 +1,17 @@
 <?php
 
+/**
+ * @var Web $w
+ * @var Timelog $timelog
+ * @var string $redirect
+ * @var string[] $select_indexes
+ * @var string $tracking_id
+ * @var string $tracking_class
+ * @var DbObject|null $object
+ * @var array $form
+ * @var User[] $options
+ */
+
 use Html\Cmfive\QuillEditor;
 use Html\Form\Html5Autocomplete;
 use Html\Form\InputField\Date;
@@ -76,7 +88,7 @@ use Html\Form\Select;
                 "value" => $timelog->object_id ?: [$tracking_id],
                 "options" => !empty($object) ? [$object] : null,
                 "required" => "required",
-                "source" => $w->localUrl("/timelog/ajaxSearch?index={" . (!empty($timelog) ? $timelog->object_class : $tracking_class) . "}"),
+                "source" => $w->localUrl("/timelog/ajaxSearch?index=" . (!empty($timelog) ? $timelog->object_class : $tracking_class)),
                 "maxItems" => 1,
             ]);
             ?>
