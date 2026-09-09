@@ -18,7 +18,7 @@ ARG ALPINE_VERSION=3.24
 # STAGE 1: Build the theme
 # ==========================================================================
 
-FROM --platform=$BUILDPLATFORM node:20 AS theme-build
+FROM --platform=$BUILDPLATFORM node:24-alpine AS theme-build
 WORKDIR /var/www/html
 
 # Copy modules for the build
