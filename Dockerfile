@@ -40,6 +40,10 @@ RUN cd system/templates/base/ && npm run prod
 
 FROM alpine:${ALPINE_VERSION}
 
+# Define the MySQL version thats compatible with this image
+ARG MYSQL_VERSION=8.4
+LABEL org.2pisoftware.cosine.mysql-version="$MYSQL_VERSION"
+
 # PHP version
 # note: see Alpine packages for available versions
 ARG PHP_VERSION=85
