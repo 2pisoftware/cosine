@@ -26,6 +26,16 @@ use Aws\SecretsManager\SecretsManagerClient;
  */
 class Config
 {
+    /**
+     * The reserved section of a config document listing keys to replace.
+     */
+    private const SET_KEY = '@set';
+
+    /**
+     * The reserved section of a config document listing keys to append to.
+     */
+    private const APPEND_KEY = '@append';
+
     // Storage array
     private static $register = [];
     private static $_config_cache = [];
@@ -58,11 +68,10 @@ class Config
     private static $secrets_manager_client;
 
     /**
-     * This function will set a key in an array
-     * to the value given
+     * Set a configuration value using dot notation.
      *
-     * @param string $key
-     * @param mixed $value
+     * @param string $key config key (e.g. "system.timeout")
+     * @param mixed $value the value to set
      * @return null
      */
     public static function set($key, $value)
@@ -87,15 +96,55 @@ class Config
                 $register = &$register[$ekey];
             }
             $register = $value;
+            self::invalidateCacheByKey($key);
         }
     }
 
     /**
-     * This function will attempt to return a
-     * key out of the array
+     * Remove the cached lookups that a write to $key makes wrong: the entry
+     * for $key itself, and every entry cached below it.
      *
-     * @param string $key
-     * @return mixed the value
+     * Ancestors are left alone. A cached ancestor holds a reference to the
+     * register and sees the write through it, and a cached miss is stored as
+     * null, which get() treats as a miss and resolves again.
+     *
+     * @param string $key config key that has just been written
+     * @return void
+     */
+    private static function invalidateCacheByKey(string $key): void
+    {
+        $prefix = $key . '.';
+        $prefix_length = strlen($prefix);
+
+        if (self::$_use_sandbox === true) {
+            unset(self::$_shadow_config_cache[$key]);
+            foreach (array_keys(self::$_shadow_config_cache) as $cached_key) {
+                if (strncmp((string)$cached_key, $prefix, $prefix_length) === 0) {
+                    unset(self::$_shadow_config_cache[$cached_key]);
+                }
+            }
+        } else {
+            unset(self::$_config_cache[$key]);
+            foreach (array_keys(self::$_config_cache) as $cached_key) {
+                if (strncmp((string)$cached_key, $prefix, $prefix_length) === 0) {
+                    unset(self::$_config_cache[$cached_key]);
+                }
+            }
+        }
+
+        if (self::$_use_sandbox === true) {
+            self::$_shadow_keys_cache = [];
+        } else {
+            self::$_keys_cache = [];
+        }
+    }
+
+    /**
+     * Get a configuration value using dot notation.
+     *
+     * @param string $key config key (e.g. "system.timeout")
+     * @param mixed $default value to return if key is not found
+     * @return mixed the configuration value or default
      */
     public static function get($key, $default = null)
     {
@@ -247,6 +296,8 @@ class Config
     public static function setSandbox($shadow_register = [])
     {
         self::$shadow_register = $shadow_register;
+        self::$_shadow_config_cache = [];
+        self::$_shadow_keys_cache = [];
     }
 
     public static function promoteSandbox()
@@ -254,6 +305,8 @@ class Config
         if (self::isSandboxing()) {
             if (!empty(self::$register)) {
                 self::$shadow_register = array_merge(self::$shadow_register, self::$register);
+                self::$_shadow_config_cache = [];
+                self::$_shadow_keys_cache = [];
             }
         }
     }
@@ -263,6 +316,8 @@ class Config
         if (self::isSandboxing()) {
             if (!empty(self::$shadow_register)) {
                 self::$register = array_merge(self::$register, self::$shadow_register);
+                self::$_config_cache = [];
+                self::$_keys_cache = [];
             }
             self::clearSandbox();
         }
@@ -293,12 +348,14 @@ class Config
     public static function fromJson($string)
     {
         self::$register = json_decode($string, true);
+        self::$_config_cache = [];
+        self::$_keys_cache = [];
     }
 
     /**
-     * Extends the config by loading in additional JSON data using the $string parameter.
+     * Extend the config by merging in a JSON document.
      *
-     * @param string $string
+     * @param string $string JSON config document
      * @return void
      */
     public static function extendFromJson(string $string): void
@@ -310,20 +367,54 @@ class Config
 
         // decode
         $source = json_decode($string, true);
-        if (empty($source)) {
+        if (empty($source) || !is_array($source)) {
             return;
         }
 
-        self::merge($source);
+        self::extend($source);
     }
 
     /**
-     * Merge config in $source into the existing config. Non-associative arrays
-     * are appended and deduped; associative arrays are merged key-by-key, with
-     * scalar values replaced.
+     * Extend the config with a decoded config document.
      *
-     * @param array $source decoded config to merge in
-     * @param string $prefix config key prefix carried through recursion
+     * Config sections are merged first, then special items under "@set" then
+     * "@append" are applied after. Items defined under "@set" will completely
+     * replace the given section in the config (see Config::set). Items
+     * defined under "@append" will then be added on to existing config (see
+     * Config::append).
+     *
+     * @param array $source decoded config document
+     * @return void
+     */
+    private static function extend(array $source): void
+    {
+        $set = $source[self::SET_KEY] ?? null;
+        $append = $source[self::APPEND_KEY] ?? null;
+        unset($source[self::SET_KEY], $source[self::APPEND_KEY]);
+
+        if (!empty($source)) {
+            self::merge($source);
+        }
+
+        if (is_array($set) && is_complete_associative_array($set)) {
+            foreach ($set as $key => $value) {
+                self::set($key, $value);
+            }
+        }
+
+        if (is_array($append) && is_complete_associative_array($append)) {
+            foreach ($append as $key => $value) {
+                self::append($key, $value);
+            }
+        }
+    }
+
+    /**
+     * Recursively merge a config array into the existing config. Associative
+     * arrays are merged; list arrays are appended and deduplicated.
+     *
+     * @param array $source config to merge in
+     * @param string $prefix current key path (used internally for recursion)
      * @return void
      */
     private static function merge(array $source, string $prefix = ''): void
@@ -372,11 +463,11 @@ class Config
         ]);
 
         $data = json_decode($result->get('Body'), true);
-        if (empty($data)) {
+        if (empty($data) || !is_array($data)) {
             throw new Exception("Failed to decode config data from $bucket/$key");
         }
 
-        Config::merge($data);
+        self::extend($data);
     }
 
     /**
@@ -405,10 +496,10 @@ class Config
             ]);
             $value = $result['Parameter']['Value'];
             $data = json_decode($value, true);
-            if (empty($data)) {
+            if (empty($data) || !is_array($data)) {
                 throw new Exception("Failed to decode config data from parameter store");
             }
-            Config::merge($data);
+            self::extend($data);
             return;
         }
         throw new Exception("No parameter name provided");
@@ -438,10 +529,10 @@ class Config
             ]);
             $value = $result->toArray()['SecretString'];
             $data = json_decode($value, true);
-            if (empty($data)) {
+            if (empty($data) || !is_array($data)) {
                 throw new Exception("Failed to decode config data from secrets manager");
             }
-            Config::merge($data);
+            self::extend($data);
             return;
         }
         throw new Exception("No secret name provided");

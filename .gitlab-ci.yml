@@ -1,7 +1,7 @@
 stages:
+  - php
   - docker
-  - lint
-  - cosine-test
+  - test
 
 workflow:
   auto_cancel:
@@ -17,9 +17,12 @@ include:
 
   - component: $CI_SERVER_FQDN/2pisoftware/pipelines/php/lint@2.2.1
     inputs:
+      stage: php
       ignore: "*.js,*.css,system/lib/*"
 
   - component: $CI_SERVER_FQDN/2pisoftware/pipelines/php/test@2.2.1
+    inputs:
+      stage: test
 
 php-lint:
   interruptible: true
@@ -32,3 +35,23 @@ docker-build:
 
 cosine-test:
   interruptible: true
+
+# Run PHP unit tests against the checked out source code
+php-unit:
+  stage: php
+  interruptible: true
+  image: $CI_REGISTRY_IMAGE:develop # uses pinned develop image
+  variables:
+    PHPUNIT: "10"
+  before_script:
+    # phpunit needs two extensions the runtime image does not ship
+    - apk add --no-cache php$PHP_VERSION-ctype php$PHP_VERSION-tokenizer
+    - curl -sSL https://phar.phpunit.de/phpunit-${PHPUNIT}.phar -o /usr/local/bin/phpunit
+    - chmod +x /usr/local/bin/phpunit
+  script:
+    - phpunit --configuration test/php/phpunit.xml --log-junit phpunit-junit.xml --do-not-cache-result
+  artifacts:
+    when: always
+    reports:
+      junit: phpunit-junit.xml
+    expire_in: 1 day
