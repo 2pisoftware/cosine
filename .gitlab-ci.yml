@@ -1,6 +1,6 @@
 stages:
+  - php
   - docker
-  - lint
   - test
 
 workflow:
@@ -17,6 +17,7 @@ include:
 
   - component: $CI_SERVER_FQDN/2pisoftware/pipelines/php/lint@2.2.1
     inputs:
+      stage: php
       ignore: "*.js,*.css,system/lib/*"
 
   - component: $CI_SERVER_FQDN/2pisoftware/pipelines/php/test@2.2.1
@@ -35,18 +36,13 @@ docker-build:
 cosine-test:
   interruptible: true
 
+# Run PHP unit tests against the checked out source code
 php-unit:
-  stage: test
+  stage: php
   interruptible: true
-  # Run against the image this pipeline built, so the tests use the same PHP
-  # build the application uses. The docker component does not export the tag
-  # it computes, so this rebuilds the same reference.
-  image: $COSINE_IMAGE
+  image: $CI_REGISTRY_IMAGE:develop # uses pinned develop image
   variables:
-    COSINE_IMAGE: $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG
     PHPUNIT: "10"
-  needs:
-    - docker-build
   before_script:
     # phpunit needs two extensions the runtime image does not ship
     - apk add --no-cache php$PHP_VERSION-ctype php$PHP_VERSION-tokenizer
