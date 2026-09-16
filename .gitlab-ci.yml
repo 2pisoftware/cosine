@@ -1,7 +1,7 @@
 stages:
   - docker
   - lint
-  - cosine-test
+  - test
 
 workflow:
   auto_cancel:
@@ -20,6 +20,8 @@ include:
       ignore: "*.js,*.css,system/lib/*"
 
   - component: $CI_SERVER_FQDN/2pisoftware/pipelines/php/test@2.2.1
+    inputs:
+      stage: test
 
 php-lint:
   interruptible: true
@@ -32,3 +34,28 @@ docker-build:
 
 cosine-test:
   interruptible: true
+
+php-unit:
+  stage: test
+  interruptible: true
+  # Run against the image this pipeline built, so the tests use the same PHP
+  # build the application uses. The docker component does not export the tag
+  # it computes, so this rebuilds the same reference.
+  image: $COSINE_IMAGE
+  variables:
+    COSINE_IMAGE: $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG
+    PHPUNIT: "10"
+  needs:
+    - docker-build
+  before_script:
+    # phpunit needs two extensions the runtime image does not ship
+    - apk add --no-cache php$PHP_VERSION-ctype php$PHP_VERSION-tokenizer
+    - curl -sSL https://phar.phpunit.de/phpunit-${PHPUNIT}.phar -o /usr/local/bin/phpunit
+    - chmod +x /usr/local/bin/phpunit
+  script:
+    - phpunit --configuration test/php/phpunit.xml --log-junit phpunit-junit.xml --do-not-cache-result
+  artifacts:
+    when: always
+    reports:
+      junit: phpunit-junit.xml
+    expire_in: 1 day
