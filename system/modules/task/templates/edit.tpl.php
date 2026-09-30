@@ -387,15 +387,22 @@
         }, {
             '<?php echo \CSRF::getTokenId(); ?>': '<?php echo \CSRF::getTokenValue(); ?>'
         });
-        console.log("edit", edit);
+
+        // side field forms, as defined by the task type
+        const extraFields = [...new FormData(document.getElementById("form_fields_form"))].reduce((obj, [key, val]) => {
+            obj[`extra[${key}]`] = val;
+            return obj;
+        }, {});
+
+        const body = Object.assign({}, edit, extraFields);
+
         const action = e.target.getAttribute("action");
-        console.log("action", action);
+
         const res = await fetch(action, {
             method: "POST",
-            body: new URLSearchParams(edit)
+            body: new URLSearchParams(body)
         });
         const text = await res.text();
-        console.log("res", text);
 
         if (res.ok) window.location.href = `/task/edit/${text}`
         else window.location.reload();
