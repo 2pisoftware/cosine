@@ -96,7 +96,7 @@ class TimelogService extends DbService
         $stmt = $this->w->db->prepare(
             "SELECT SUM(TIMESTAMPDIFF(SECOND, timelog.dt_start, timelog.dt_end))
         FROM timelog
-        WHERE timelog.object_class = ? AND timelog.object_id = ?"
+        WHERE timelog.object_class = ? AND timelog.object_id = ? AND timelog.is_deleted = 0"
         );
         $stmt->bindValue(1, get_class($target));
         $stmt->bindValue(2, $target->id);
