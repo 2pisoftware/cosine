@@ -1,0 +1,5 @@
+licenses:
+  - id: GPL-3.0
+    paths:
+      - LICENSE
+    statement: Cosine's own licence, not a dependency

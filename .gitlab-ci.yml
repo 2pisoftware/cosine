@@ -24,6 +24,12 @@ include:
     inputs:
       stage: test
 
+  # Report dependency licences that are a problem for commercial use
+  - component: $CI_SERVER_FQDN/2pisoftware/pipelines/trivy/licence@main
+    inputs:
+      stage: test
+      skip_dirs: test # playwright dependencies, never shipped
+
 php-lint:
   interruptible: true
   allow_failure: true
@@ -34,6 +40,9 @@ docker-build:
     - largemem_x86
 
 cosine-test:
+  interruptible: true
+
+licence-scan:
   interruptible: true
 
 # Run PHP unit tests against the checked out source code
