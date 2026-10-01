@@ -1,8 +1,8 @@
 stages:
   - php
   - docker
-  - test
   - licence
+  - test
 
 workflow:
   auto_cancel:
