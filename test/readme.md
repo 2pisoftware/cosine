@@ -13,6 +13,11 @@ npx playwright install
 npx playwright install-deps
 ```
 
+## Layout
+
+`tests/` holds the Playwright end to end specs. `php/` holds the PHPUnit unit
+tests, which run with `phpunit --configuration test/php/phpunit.xml`.
+
 ## Running tests
 
 To run the tests locally, simply run `npm run test` in this directory.

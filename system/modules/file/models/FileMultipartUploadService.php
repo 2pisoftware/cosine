@@ -23,9 +23,9 @@ class FileMultipartUploadService extends DbService
         string $key,
         string $mime,
         string|null $bucket,
-        $parent = null,
+        object|null $parent = null,
         string|null $display_name = null,
-        $args = [],
+        array $args = [],
     ) {
         if (empty($bucket)) {
             $bucket = Config::get("file.adapters.s3.bucket");
@@ -147,7 +147,7 @@ class FileMultipartUploadService extends DbService
      * Must provide at least one of prefix, regex
      * On success, return true. Otherwise throw.
      */
-    public function deleteMatching(string $bucket, string $prefix = null, string $regex = null)
+    public function deleteMatching(string $bucket, string|null $prefix = null, string|null $regex = null)
     {
         $client = $this->makeClient();
 

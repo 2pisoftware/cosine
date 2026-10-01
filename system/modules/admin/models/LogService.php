@@ -25,6 +25,7 @@ class LogService
     private $logger;
     private static $system_logger = 'cmfive';
     private $formatter = null;
+    private $log_destination = null;
 
     private $retention_period = LOG_SERVICE_DEFAULT_RETENTION_PERIOD;
 
@@ -69,22 +70,23 @@ class LogService
         $this->loggers[$name] = new Logger($name);
 
         // Work out if we can reach aws (if it's our preferred destination) and fallback to file if we can't
-        $log_destination = Config::get('admin.logging.target', 'file');
-        if ($log_destination == 'aws') {
-            if (empty(Config::get("admin.logging.cloudwatch.credentials.key")) || empty(Config::get("admin.logging.cloudwatch.credentials.secret"))) {
+        if ($this->log_destination === null) {
+            $this->log_destination = Config::get('admin.logging.target', 'file');
+
+            if ($this->log_destination == 'aws'
+                && (empty(Config::get("admin.logging.cloudwatch.credentials.key"))
+                    || empty(Config::get("admin.logging.cloudwatch.credentials.secret")))) {
                 // I doubt this URL will change but it may be worth putting this in the config
                 $response = (new HttpRequest("http://169.254.169.254/latest/meta-data/instance-id"))->execute();
 
                 if (!empty($response['error'])) {
-                    // LogService::getInstance($this->w)->error("Could not authenticate instance ID with AWS, falling back to local filesystem");
                     syslog(LOG_ERR, "LogService: Could not authenticate instance ID with AWS, falling back to local filesystem");
-                    Config::set('admin.logging.target', 'file');
-                    $log_destination = 'file';
+                    $this->log_destination = 'file';
                 }
             }
         }
 
-        switch (Config::get('admin.logging.target', 'file')) {
+        switch ($this->log_destination) {
             case 'aws':
                 try {
                     $args = [

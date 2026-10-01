@@ -18,7 +18,7 @@ ARG ALPINE_VERSION=3.24
 # STAGE 1: Build the theme
 # ==========================================================================
 
-FROM --platform=$BUILDPLATFORM node:20 AS theme-build
+FROM --platform=$BUILDPLATFORM node:24-alpine AS theme-build
 WORKDIR /var/www/html
 
 # Copy modules for the build
@@ -39,6 +39,10 @@ RUN cd system/templates/base/ && npm run prod
 # ==========================================================================
 
 FROM alpine:${ALPINE_VERSION}
+
+# Define the MySQL version thats compatible with this image
+ARG MYSQL_VERSION=8.4
+LABEL org.2pisoftware.cosine.mysql-version="$MYSQL_VERSION"
 
 # PHP version
 # note: see Alpine packages for available versions
