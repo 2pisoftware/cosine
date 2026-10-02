@@ -290,7 +290,7 @@
         const task_type = document.getElementById("task_type").value;
         const json = await fetch(`/task/ajaxGetExtraDetails/${task_id}/${task_type}`)
             .then(x => x.json());
-        if (json.length === 0) return;
+        if (json.length === 0 || json[0] == null) return;
         document.getElementById("formdetails").innerHTML = json[0];
         document.getElementById("formdetails").style.display = "block";
     }
