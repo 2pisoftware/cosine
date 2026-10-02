@@ -40,7 +40,7 @@
                         formatDate($val->dt_end, "H:i:s"),
                         class_exists($val->object_class) ? ($val->getLinkedObject() ? get_class(object: $val->getLinkedObject()) . ": " . $val->getLinkedObject()->toLink() : '') : 'Invalid Timelog object',
 
-                        !Config::get("timelog.display.full_comments")
+                        !Config::get("timelog.display.full_comments", false)
                             ? "<pre class='break-pre text-truncate d-block m-0''>" . strip_tags($val->getComment()->comment ?? '') . "</pre>"
                             : StringSanitiser::stripTags($val->getComment()->comment, StringSanitiser::$QUILL_TAGS)
                     ];
