@@ -875,11 +875,13 @@ class Web
                 $this->notFoundPage();
             }
         } catch (Throwable $t) {
+            $this->callHook("core_web", "error", $t);
+
             $logger = empty($this->currentModule()) ? "CMFIVE" : strtoupper($this->currentModule());
             LogService::getInstance($this)->setLogger($logger)->error("Throwable caught in Web: {$t->getMessage()} Trace: {$t->getTraceAsString()}");
             echo Html::alertBox("An error occurred, if this message persists please contact your administrator.", "alert");
         } finally {
-            $this->_callWebHooks("cleanup");
+            $this->callHook("core_web", "cleanup");
         }
     }
 
@@ -888,7 +890,6 @@ class Web
      *
      * core_web_before
      * core_web_after
-     * core_web_cleanup
      * core_web_before_get
      * core_web_before_get_[module]
      * core_web_before_get_[module]_[action]
@@ -926,7 +927,6 @@ class Web
         $this->callHook("core_web", $type); // anything
         $this->callHook("core_web", $type . "_" . $request_method); // GET /*
         $this->callHook("core_web", $type . "_" . $request_method . "_" . $this->_module); // GET /module
-        $this->callHook("core_web", "cleanup"); // Calls cleanup hooks for any action.
 
         // Only call submodule hooks if a submodule is present, else call the module/action hook
         if (!empty($this->_submodule)) {
