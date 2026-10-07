@@ -293,6 +293,8 @@
         if (json.length === 0 || json[0] == null) return;
         document.getElementById("formdetails").innerHTML = json[0];
         document.getElementById("formdetails").style.display = "block";
+
+        window.cmfiveEventBus?.dispatchEvent(new CustomEvent('dom-update', { detail: document.getElementById("formdetails") }));
     }
 
     populateTaskExtraDetails();
@@ -323,6 +325,8 @@
         container.innerHTML = json.current;
         container.style.display = "block";
         container.getElementsByTagName("form")[0].classList.remove("columns");
+
+        window.cmfiveEventBus?.dispatchEvent(new CustomEvent('dom-update', { detail: document.getElementById("formfields") }));
     }
 
     populateTaskFormFields();
