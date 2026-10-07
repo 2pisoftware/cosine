@@ -68,8 +68,6 @@ function form_core_template_tab_content(Web $w, $params)
         ) . '</div>';
     }
 
-    // var_dump($forms_list);
-
     return $forms_list;
 }
 
