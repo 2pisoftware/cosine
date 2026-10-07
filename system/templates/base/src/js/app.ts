@@ -38,11 +38,6 @@ export class Cmfive {
         window.cmfiveEventBus.dispatchEvent(new CustomEvent('theme-change', { detail: { theme } }));
     }
 
-    static toggleNavSettings() {
-        const navBackup = document.getElementById('accordion_menu').innerHTML;
-
-    }
-
     static menuOpenClickListener = function () {
         if (!document.getElementById('menu-overlay').classList.contains('active')) {
             document.getElementById('menu-overlay').classList.add('active');
@@ -170,12 +165,6 @@ export class Cmfive {
         target?.querySelectorAll('[data-toggle-theme]')?.forEach(t => {
             t.removeEventListener('click', Cmfive.toggleTheme);
             t.addEventListener('click', Cmfive.toggleTheme);
-        })
-
-        // Nav settings toggle
-        target?.querySelectorAll('[data-toggle-nav-settings]')?.forEach(t => {
-            t.removeEventListener('click', Cmfive.toggleNavSettings);
-            t.addEventListener('click', Cmfive.toggleNavSettings);
         })
 
         // Menu toggle

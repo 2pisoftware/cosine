@@ -1,6 +1,7 @@
 stages:
   - php
   - docker
+  - licence
   - test
 
 workflow:
@@ -24,6 +25,12 @@ include:
     inputs:
       stage: test
 
+  # Report dependency licences that are a problem for commercial use
+  - component: $CI_SERVER_FQDN/2pisoftware/pipelines/trivy/licence@v1.0.0
+    inputs:
+      stage: licence
+      skip_dirs: test # playwright dependencies, never shipped
+
 php-lint:
   interruptible: true
   allow_failure: true
@@ -35,6 +42,10 @@ docker-build:
 
 cosine-test:
   interruptible: true
+
+licence-scan:
+  interruptible: true
+  needs: [docker-build] # start once the image exists, not after cosine-test
 
 # Run PHP unit tests against the checked out source code
 php-unit:
