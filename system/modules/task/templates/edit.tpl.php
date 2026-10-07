@@ -290,7 +290,7 @@
         const task_type = document.getElementById("task_type").value;
         const json = await fetch(`/task/ajaxGetExtraDetails/${task_id}/${task_type}`)
             .then(x => x.json());
-        if (json.length === 0) return;
+        if (json.length === 0 || json[0] == null) return;
         document.getElementById("formdetails").innerHTML = json[0];
         document.getElementById("formdetails").style.display = "block";
     }
@@ -387,15 +387,23 @@
         }, {
             '<?php echo \CSRF::getTokenId(); ?>': '<?php echo \CSRF::getTokenValue(); ?>'
         });
-        console.log("edit", edit);
+
+        // side field forms, as defined by the task type
+        const extraFieldsForm = document.getElementById("form_fields_form");
+        const extraFields = extraFieldsForm ? [...new FormData(extraFieldsForm)].reduce((obj, [key, val]) => {
+            obj[`extra[${key}]`] = val;
+            return obj;
+        }, {}) : {};
+
+        const body = Object.assign({}, edit, extraFields);
+
         const action = e.target.getAttribute("action");
-        console.log("action", action);
+
         const res = await fetch(action, {
             method: "POST",
-            body: new URLSearchParams(edit)
+            body: new URLSearchParams(body)
         });
         const text = await res.text();
-        console.log("res", text);
 
         if (res.ok) window.location.href = `/task/edit/${text}`
         else window.location.reload();

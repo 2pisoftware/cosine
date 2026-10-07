@@ -2,6 +2,22 @@
 
 class StringSanitiser
 {
+    // List of tags allowable from Quill inputs
+    // To be passed to StringSanitiser::stripTags
+    public static final $QUILL_TAGS = [
+        "p",
+        "strong",
+        "u",
+        "em",
+        "h1",
+        "h2",
+        "h3",
+        "ol",
+        "ul",
+        "li",
+        "a",
+    ];
+
     /**
      * Converts input data to encoded entities for safe display to screen
      *

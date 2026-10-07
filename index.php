@@ -1,7 +1,7 @@
 <?php
 
 ini_set("display_errors", 0); //Avoids 200 OK being sent when there are errors
-error_reporting(E_ALL);
+error_reporting(E_ALL & ~E_DEPRECATED & ~E_USER_DEPRECATED);
 
 // Display banners if they exist
 if (file_exists('banner_error.php')) {

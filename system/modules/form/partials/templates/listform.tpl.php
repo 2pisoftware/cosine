@@ -45,6 +45,7 @@
             <thead><?php echo $headers; ?></thead>
             <tbody>
                 <?php echo implode('', $instances); ?>
+                <?php echo $form->getSummaryRow($object); ?>
             </tbody>
         </table>
 
