@@ -395,12 +395,16 @@ class User extends DbObject
 
         foreach ($roles as $rn) {
             $rolefunc = "role_" . $rn . "_allowed";
-            if (function_exists($rolefunc)) {
-                if ($rolefunc($this->w, $path)) {
-                    return true;
+            if (!function_exists($rolefunc)) {
+                if (Config::get("system.environment") === "development") {
+                    LogService::getInstance($this->w)->error("Role '" . $rn . "' does not exist!");
                 }
-            } else {
-                LogService::getInstance($this->w)->error("Role '" . $rn . "' does not exist!");
+
+                continue;
+            }
+
+            if ($rolefunc($this->w, $path)) {
+                return true;
             }
         }
 

@@ -2,8 +2,8 @@ import { defineConfig, devices } from '@playwright/test';
 import path from "node:path";
 
 if (!process.env.CI) {
-    process.env.LOCAL_SYSTEM_DIR = path.join(import.meta.dirname, "..", "system");
-    process.env.LOCAL_MODULE_DIR = path.join(import.meta.dirname, "..", "..", "modules");
+	process.env.LOCAL_SYSTEM_DIR = path.join(import.meta.dirname, "..", "system");
+	process.env.LOCAL_MODULE_DIR = path.join(import.meta.dirname, "..", "..", "modules");
 }
 
 export default defineConfig({
@@ -22,29 +22,29 @@ export default defineConfig({
 		? Number.parseInt(process.env.RETRIES, 10)
 		: undefined,
 
-	reporter: [["junit", { outputFile: "./test-results/junit.xml" }]],
+	reporter: [["list"], ["junit", { outputFile: "./test-results/junit.xml" }]],
 	use: {
 		trace: "on",
 		screenshot: "on",
 	},
 
-  globalSetup: new URL(import.meta.resolve("@2pisoftware/cosine-tests/dist/global.setup.js")).pathname,
+	globalSetup: new URL(import.meta.resolve("@2pisoftware/cosine-tests/dist/global.setup.js")).pathname,
 
-  /* Configure projects for major browsers */
-  projects: [
-    {
-      name: 'chromium',
-      use: { ...devices['Desktop Chrome'] },
-    },
+	/* Configure projects for major browsers */
+	projects: [
+		{
+			name: 'chromium',
+			use: { ...devices['Desktop Chrome'] },
+		},
 
-    {
-      name: 'firefox',
-      use: { ...devices['Desktop Firefox'] },
-    },
+		{
+			name: 'firefox',
+			use: { ...devices['Desktop Firefox'] },
+		},
 
-    {
-      name: 'webkit',
-      use: { ...devices['Desktop Safari'] },
-    },
-  ],
+		{
+			name: 'webkit',
+			use: { ...devices['Desktop Safari'] },
+		},
+	],
 });

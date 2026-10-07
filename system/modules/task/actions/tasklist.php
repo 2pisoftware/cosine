@@ -183,7 +183,7 @@ function tasklist_ALL(Web $w)
     $w->ctx("filter_data", $filter_data);
     $w->ctx("table_data", array_map(fn(Task $item) => [
         $item->id,
-        $item->toLink(),
+        $item->toLink() . $w->partial("listTags", ["object" => $item], "tag"),
         $item->getTaskGroupTypeTitle(),
         TaskService::getInstance($w)->getUserById($item->assignee_id),
         $item->getTypeTitle(),

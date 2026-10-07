@@ -678,12 +678,12 @@ class Web
             $this->_paths = $this->_getCommandPath();
 
             // first find the module file
-            if ($this->_paths && sizeof($this->_paths) > 0) {
+            if ($this->_paths && count($this->_paths) > 0) {
                 $this->_module = array_shift($this->_paths);
             }
 
             // then find the action
-            if ($this->_paths && sizeof($this->_paths) > 0) {
+            if ($this->_paths && count($this->_paths) > 0) {
                 $this->_action = array_shift($this->_paths);
             }
 
@@ -773,7 +773,6 @@ class Web
                 // load the module file
                 require_once $reqpath;
             } else {
-                LogService::getInstance($this)->error("System: No Action found for: " . $reqpath);
                 $this->notFoundPage();
             }
 
@@ -875,11 +874,13 @@ class Web
                 $this->notFoundPage();
             }
         } catch (Throwable $t) {
+            $this->callHook("core_web", "error", $t);
+
             $logger = empty($this->currentModule()) ? "CMFIVE" : strtoupper($this->currentModule());
             LogService::getInstance($this)->setLogger($logger)->error("Throwable caught in Web: {$t->getMessage()} Trace: {$t->getTraceAsString()}");
             echo Html::alertBox("An error occurred, if this message persists please contact your administrator.", "alert");
         } finally {
-            $this->_callWebHooks("cleanup");
+            $this->callHook("core_web", "cleanup");
         }
     }
 
@@ -888,7 +889,6 @@ class Web
      *
      * core_web_before
      * core_web_after
-     * core_web_cleanup
      * core_web_before_get
      * core_web_before_get_[module]
      * core_web_before_get_[module]_[action]
@@ -926,7 +926,6 @@ class Web
         $this->callHook("core_web", $type); // anything
         $this->callHook("core_web", $type . "_" . $request_method); // GET /*
         $this->callHook("core_web", $type . "_" . $request_method . "_" . $this->_module); // GET /module
-        $this->callHook("core_web", "cleanup"); // Calls cleanup hooks for any action.
 
         // Only call submodule hooks if a submodule is present, else call the module/action hook
         if (!empty($this->_submodule)) {
@@ -1416,7 +1415,6 @@ class Web
      */
     public function notFoundPage()
     {
-        LogService::getInstance($this)->warning("System: Action not found: " . $this->_module . "/" . $this->_action);
         $this->ctx("w", $this);
 
         // We want to fail gracefully for ajax requests
@@ -2023,7 +2021,7 @@ class Web
      */
     public function validate($valarray)
     {
-        if (!$valarray || !sizeof($valarray)) {
+        if (!$valarray || !count($valarray)) {
             return null;
         }
 
@@ -2277,7 +2275,7 @@ class Web
             // see if the module is a sub module
             // eg. /sales-report/showreport/1..
             $hsplit = explode("-", $paths['module']);
-            if (sizeof($hsplit) == 2) {
+            if (count($hsplit) == 2) {
                 $paths['module'] = array_shift($hsplit);
                 $paths['submodule'] = array_shift($hsplit);
             }

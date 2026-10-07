@@ -276,7 +276,7 @@ function paginate(array $array, $pageSize)
  */
 function columnize(array $array, $noOfColumns)
 {
-    return array_chunk($array, sizeof($array) / $noOfColumns);
+    return array_chunk($array, count($array) / $noOfColumns);
 }
 
 /**
@@ -370,7 +370,7 @@ function startsWith($haystack, $needle)
 
     if (is_scalar($needle)) {
         return strpos($haystack, $needle) === 0;
-    } elseif (is_array($needle) && sizeof($needle) > 0) {
+    } elseif (is_array($needle) && count($needle) > 0) {
         foreach ($needle as $pref) {
             if (strpos($haystack, $pref) === 0) {
                 return true;

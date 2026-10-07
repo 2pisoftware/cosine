@@ -94,7 +94,7 @@ class AuditService extends DbService
         $users = [];
         $stmt = "SELECT distinct creator_id FROM audit where timediff(now(), dt_created) < " . $this->_db->quote("00:" . $idleMinutes  . ":00") . " and creator_id > 0";
         $res = $this->_db->sql($stmt)->fetchAll();
-        if ($res && sizeof($res)) {
+        if ($res && count($res)) {
             foreach ($res as $row) {
                 $users[] = $this->getObject("User", $row['creator_id']);
             }
