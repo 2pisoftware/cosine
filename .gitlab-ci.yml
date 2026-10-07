@@ -24,6 +24,7 @@ include:
   - component: $CI_SERVER_FQDN/2pisoftware/pipelines/php/test@2.2.1
     inputs:
       stage: test
+      retries: 0  # TODO: remove
 
   # Report dependency licences that are a problem for commercial use
   - component: $CI_SERVER_FQDN/2pisoftware/pipelines/trivy/licence@v1.0.0
