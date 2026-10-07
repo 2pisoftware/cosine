@@ -393,10 +393,11 @@
         });
 
         // side field forms, as defined by the task type
-        const extraFields = [...new FormData(document.getElementById("form_fields_form"))].reduce((obj, [key, val]) => {
+        const extraFieldsForm = document.getElementById("form_fields_form");
+        const extraFields = extraFieldsForm ? [...new FormData(extraFieldsForm)].reduce((obj, [key, val]) => {
             obj[`extra[${key}]`] = val;
             return obj;
-        }, {});
+        }, {}) : {};
 
         const body = Object.assign({}, edit, extraFields);
 
