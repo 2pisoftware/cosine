@@ -15,7 +15,6 @@ function listtimelog(\Web $w, $params)
 
     $page = \Request::int("p", 1);
     $pageSize = \Request::int("ps", 50);
-
     [
         "count" => $count,
         "totalTime" => $total,
@@ -47,7 +46,9 @@ function listtimelog(\Web $w, $params)
                         : null
                 ],
                 $val->time_type,
-                "<pre class='break-pre text-truncate d-block mt-1 mb-0' style='width: 250px;'>" . strip_tags($val->getComment()->comment) . "</pre>",
+                !\Config::get("timelog.display.full_comments", false)
+                    ? "<pre class='text-truncate d-block m-0' style='max-width: 250px;'>" . strip_tags($val->getComment()->comment ?? '') . "</pre>"
+                    : "<div class='text-break mt-3' style='min-width: 250px; white-space: pre-wrap;'>" . \StringSanitiser::stripTags($val->getComment()->comment, \StringSanitiser::$QUILL_TAGS) . "</div>"
             ];
 
             $actions = [];
