@@ -15,7 +15,6 @@ function listtimelog(\Web $w, $params)
 
     $page = \Request::int("p", 1);
     $pageSize = \Request::int("ps", 50);
-
     [
         "count" => $count,
         "totalTime" => $total,
