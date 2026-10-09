@@ -48,7 +48,7 @@ function listtimelog(\Web $w, $params)
                 $val->time_type,
                 !\Config::get("timelog.display.full_comments", false)
                     ? "<pre class='text-truncate d-block m-0' style='max-width: 250px;'>" . strip_tags($val->getComment()->comment ?? '') . "</pre>"
-                    : "<div class='text-break mt-3' style='min-width: 250px; white-space: pre-wrap;'>" . \StringSanitiser::stripTags($val->getComment()->comment, \StringSanitiser::$QUILL_TAGS) . "</div>"
+                    : "<div class='text-break mt-2 mb-2' style='min-width: 250px; white-space: pre-wrap;'>" . \StringSanitiser::stripTags($val->getComment()->comment, \StringSanitiser::$QUILL_TAGS) . "</div>"
             ];
 
             $actions = [];
