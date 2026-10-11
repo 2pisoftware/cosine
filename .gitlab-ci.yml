@@ -21,7 +21,7 @@ include:
       stage: php
       ignore: "*.js,*.css,system/lib/*"
 
-  - component: $CI_SERVER_FQDN/2pisoftware/pipelines/php/test@2.2.1
+  - component: $CI_SERVER_FQDN/2pisoftware/pipelines/php/test@2.2.4
     inputs:
       stage: test
 
@@ -34,7 +34,7 @@ include:
 php-lint:
   interruptible: true
   allow_failure: true
-   
+
 docker-build:
   interruptible: true
   tags:
