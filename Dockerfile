@@ -96,6 +96,9 @@ RUN apk --no-cache add \
     icu-data-full \
     git
 
+# Refuse to build with a PHP2Shell-vulnerable PHP (CVE-2026-109618/109619)
+RUN php${PHP_VERSION} -r 'if (version_compare(PHP_VERSION, "8.5.12", "<")) { fwrite(STDERR, "PHP " . PHP_VERSION . " is vulnerable to PHP2Shell; need 8.5.12+\n"); exit(1); }'
+
 # Create necessary directories
 RUN mkdir -p /var/www && \
     mkdir -p /run/nginx
