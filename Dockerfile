@@ -61,7 +61,7 @@ RUN mkdir -p /etc/php && \
 
 # Install required packages for PHP, Nginx etc
 RUN apk --no-cache add \
-    php$PHP_VERSION \
+    php85=8.5.12-r0 \
     php$PHP_VERSION-fpm \
     php$PHP_VERSION-cli \
     php$PHP_VERSION-curl \
@@ -95,6 +95,9 @@ RUN apk --no-cache add \
     unzip \
     icu-data-full \
     git
+
+# Refuse to build with a PHP2Shell-vulnerable PHP (CVE-2026-109618/109619)
+RUN php${PHP_VERSION} -r 'if (version_compare(PHP_VERSION, "8.5.12", "<")) { fwrite(STDERR, "PHP " . PHP_VERSION . " is vulnerable to PHP2Shell; need 8.5.12+\n"); exit(1); }'
 
 # Create necessary directories
 RUN mkdir -p /var/www && \
