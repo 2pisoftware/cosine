@@ -12,7 +12,7 @@
 # NOTE: See the .dockerignore file to see what is excluded from the image.
 
 # Define the Alpine version to use
-ARG ALPINE_VERSION=3.24
+ARG ALPINE_VERSION=3.24.3
 
 # ==========================================================================
 # STAGE 1: Build the theme
@@ -61,7 +61,7 @@ RUN mkdir -p /etc/php && \
 
 # Install required packages for PHP, Nginx etc
 RUN apk --no-cache add \
-    php85=8.5.12-r0 \
+    php$PHP_VERSION \
     php$PHP_VERSION-fpm \
     php$PHP_VERSION-cli \
     php$PHP_VERSION-curl \
