@@ -48,21 +48,21 @@ licence-scan:
   needs: [docker-build] # start once the image exists, not after cosine-test
 
 # Run PHP unit tests against the checked out source code
-# php-unit:
-#   stage: php
-#   interruptible: true
-#   image: $CI_REGISTRY_IMAGE:develop # uses pinned develop image
-#   variables:
-#     PHPUNIT: "10"
-#   before_script:
-#     # phpunit needs two extensions the runtime image does not ship
-#     - apk add --no-cache php$PHP_VERSION-ctype php$PHP_VERSION-tokenizer
-#     - curl -sSL https://phar.phpunit.de/phpunit-${PHPUNIT}.phar -o /usr/local/bin/phpunit
-#     - chmod +x /usr/local/bin/phpunit
-#   script:
-#     - phpunit --configuration test/php/phpunit.xml --log-junit phpunit-junit.xml --do-not-cache-result
-#   artifacts:
-#     when: always
-#     reports:
-#       junit: phpunit-junit.xml
-#     expire_in: 1 day
+php-unit:
+  stage: php
+  interruptible: true
+  image: $CI_REGISTRY_IMAGE:develop # uses pinned develop image
+  variables:
+    PHPUNIT: "10"
+  before_script:
+    # phpunit needs two extensions the runtime image does not ship
+    - apk add --no-cache php$PHP_VERSION-ctype php$PHP_VERSION-tokenizer
+    - curl -sSL https://phar.phpunit.de/phpunit-${PHPUNIT}.phar -o /usr/local/bin/phpunit
+    - chmod +x /usr/local/bin/phpunit
+  script:
+    - phpunit --configuration test/php/phpunit.xml --log-junit phpunit-junit.xml --do-not-cache-result
+  artifacts:
+    when: always
+    reports:
+      junit: phpunit-junit.xml
+    expire_in: 1 day
