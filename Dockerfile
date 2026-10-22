@@ -61,7 +61,7 @@ RUN mkdir -p /etc/php && \
 
 # Install required packages for PHP, Nginx etc
 RUN apk --no-cache add \
-    php85=8.5.12-r0 \
+    php$PHP_VERSION \
     php$PHP_VERSION-fpm \
     php$PHP_VERSION-cli \
     php$PHP_VERSION-curl \
