@@ -557,9 +557,9 @@ HTML;
                 if (!is_array($column)) {
                     $buffer .= "<td>{$column}</td>";
                 } else {
-                    $buffer .= "<td class='" . ($column[1] === true ? "show-for-medium-up" : (is_scalar($column[1]) ? $column[1] : '')) . "' ";
+                    $buffer .= "<td class='" . (($column[1] ?? null) === true ? "show-for-medium-up" : (is_scalar($column[1] ?? null) ? $column[1] : '')) . "' ";
 
-                    if (is_array($column[1]) && !empty($column[1]["sort"])) {
+                    if (is_array($column[1] ?? null) && !empty($column[1]["sort"])) {
                         $buffer .= "data-sort-order='" . $column[1]["sort"] . "' ";
                     }
 
@@ -585,7 +585,7 @@ HTML;
 
                     $buffer .= '<li class="list-group-item" ';
 
-                    if (is_array($column[1])) {
+                    if (is_array($column) && is_array($column[1] ?? null)) {
                         if (!empty($column[1]["sort"])) {
                             $buffer .= "data-sort-order='" . $column[1]["sort"] . "' ";
                         }
