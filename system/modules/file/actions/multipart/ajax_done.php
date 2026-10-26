@@ -26,7 +26,8 @@ function ajax_done_POST(Web $w)
         "multipart_upload_done",
         $attachment !== true
             ? [
-                "attachment" => $attachment
+                "attachment" => $attachment,
+                "s3" => $obj,
             ]
             : null
     );
