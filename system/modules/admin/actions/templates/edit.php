@@ -59,10 +59,9 @@ function edit_GET(Web $w)
     $newForm = [];
     $newForm["Template Title"] = [
         [
-            (new \Html\Form\InputField\Text([
+            (new \Html\Form\Textarea([
                 "id|name" => "template_title",
                 "value" => StringSanitiser::sanitise($t->template_title),
-                "maxlength" => 100
             ]))
         ]
     ];

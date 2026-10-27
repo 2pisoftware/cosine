@@ -136,7 +136,8 @@ class DbObject extends DbService
         }
         if (property_exists($this, $name)) {
             $reflection = new ReflectionProperty($this, $name);
-            $reflection->setAccessible($name);
+            // As of PHP 8.1.0, calling this method has no effect; all properties are accessible by default.
+            // $reflection->setAccessible($name);
             return $reflection->getValue($this);
         }
         return null;
