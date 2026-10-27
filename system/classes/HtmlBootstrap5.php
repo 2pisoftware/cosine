@@ -174,15 +174,18 @@ HTML;
                     break;
                 case "date":
                     $size = !empty($field[4]) ? $field[4] : '';
-                    $buffer .= HtmlBootstrap5::datePicker($name, $value, $size);
+                    $required = !empty($field[5]) ? $field[5] : '';
+                    $buffer .= HtmlBootstrap5::datePicker($name, $value, $size, $required);
                     break;
                 case "datetime":
                     $size = !empty($field[4]) ? $field[4] : '';
-                    $buffer .= HtmlBootstrap5::datetimePicker($name, $value, $size);
+                    $required = !empty($field[5]) ? $field[5] : '';
+                    $buffer .= HtmlBootstrap5::datetimePicker($name, $value, $size, $required);
                     break;
                 case "time":
                     $size = !empty($field[4]) ? $field[4] : '';
-                    $buffer .= HtmlBootstrap5::timePicker($name, $value, $size);
+                    $required = !empty($field[5]) ? $field[5] : '';
+                    $buffer .= HtmlBootstrap5::timePicker($name, $value, $size, $required);
                     break;
                 case "static":
                     $size = !empty($field[4]) ? $field[4] : '';
@@ -202,8 +205,16 @@ HTML;
                     $items = !empty($field[4]) ? $field[4] : '';
                     $default = !empty($field[5]) ? ($field[5] == "null" ? '' : $field[5]) : "-- Select --";
                     $class = !empty($field[6]) ? $field[6] : '';
+                    $required = !empty($field[7]) ? $field[7] : '';
                     if ($readonly == "") {
-                        $buffer .= HtmlBootstrap5::select($name, $items, $value, $class, "width: 100%;", $default, $readonly != "");
+                        $buffer .= new \Html\Form\Select([
+                            "id|name" => $name,
+                            "class" => $class,
+                            "required" => empty($required) ? null : $required,
+                            "style" => "width: 100%;",
+                        ])
+                            ->setOptions($items, alphabetise: true, omit_default: empty($default))
+                            ->setSelectedOption($value);
                     } else {
                         $buffer .= $value;
                     }
@@ -367,7 +378,7 @@ HTML;
                     $title = !empty($field[0]) ? $field[0] : null;
                     $type = !empty($field[1]) ? $field[1] : null;
                     $name = !empty($field[2]) ? $field[2] : null;
-                    $value = !empty($field[3]) ? $field[3] : null;
+                    $value = isset($field[3]) ? $field[3] : null;
 
                     // Exploit HTML5s inbuilt form validation
                     $required = null;
@@ -443,7 +454,6 @@ HTML;
 
                             $default = !empty($field[5]) ? ($field[5] == "null" ? null : $field[5]) : "-- Select --";
                             $sl_class = !empty($field[6]) ? $field[6] : "form-select";
-
                             $buffer .= new \Html\Form\Select([
                                 "name|id" => $name,
                                 "class" => $sl_class,
@@ -452,8 +462,7 @@ HTML;
                                 "style" => "width: 100%",
                             ])
                                 ->setOptions($items, alphabetise: true, omit_default: empty($default))
-                                ->setSelectedOption($value)
-                                ->__toString();
+                                ->setSelectedOption($value);
                             break;
                         case "multiSelect":
                             $items = !empty($field[4]) ? $field[4] : null;
@@ -466,7 +475,14 @@ HTML;
                         case "checkbox":
                             $defaultValue = !empty($field[4]) ? $field[4] : null;
                             $cb_class = !empty($field[5]) ? $field[5] : null;
-                            $buffer .= HtmlBootstrap5::checkbox($name, $value, $defaultValue, $cb_class);
+                            $default_value = $defaultValue === null ? '1' : $defaultValue;
+                            $checkbox_object = new \Html\Form\InputField\Checkbox([
+                                'id|name' => $name,
+                                'value' => $value,
+                                'class' => $cb_class,
+                                'checked' => ($value == $default_value),
+                            ]);
+                            $buffer .= $checkbox_object->__toString();
                             break;
                         case "radio":
                             $group = !empty($field[4]) ? $field[4] : null;

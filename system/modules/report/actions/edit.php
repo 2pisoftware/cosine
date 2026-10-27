@@ -9,24 +9,26 @@ function edit_GET(Web &$w)
 
     // Get or create report object
     $report = !empty($p['id']) ? ReportService::getInstance($w)->getReport($p['id']) : new Report($w);
-    if (!empty($p['id']) and empty($report->id)) {
+    if (!empty($p['id']) && empty($report->id)) {
         $w->error("Report not found", "/report");
     }
 
     // Check access rights
     // If user is editing, we need to check multiple things, detailed in the helper function
-    if (!empty($report->id)) {
-        // Get the report member object for the logged in user
-        $member = ReportService::getInstance($w)->getReportMember($report->id, AuthService::getInstance($w)->user()->id);
+    if (!AuthService::getInstance($w)->user()->is_admin) {
+        if (!empty($report->id)) {
+            // Get the report member object for the logged in user
+            $member = ReportService::getInstance($w)->getReportMember($report->id, AuthService::getInstance($w)->user()->id);
 
-        // Check if user can edit this report
-        if (!ReportService::getInstance($w)->canUserEditReport($report, $member)) {
-            $w->error("You do not have access to this report", "/report");
-        }
-    } else {
-        // If we're creating a report, check that the user has rights
-        if (AuthService::getInstance($w)->user()->is_admin == 0 && !AuthService::getInstance($w)->user()->hasAnyRole(['report_admin', 'report_editor'])) {
-            $w->error("You do not have create report permissions", "/report");
+            // Check if user can edit this report
+            if (!ReportService::getInstance($w)->canUserEditReport($report, $member)) {
+                $w->error("You do not have access to this report", "/report");
+            }
+        } else {
+            // If we're creating a report, check that the user has rights
+            if (AuthService::getInstance($w)->user()->is_admin == 0 && !AuthService::getInstance($w)->user()->hasAnyRole(['report_admin', 'report_editor'])) {
+                $w->error("You do not have create report permissions", "/report");
+            }
         }
     }
 
@@ -56,7 +58,8 @@ function edit_GET(Web &$w)
 
     $w->ctx("report", $report);
 
-    $form = [!empty($report->id) ? "Edit" : "Create a New" . " Report" =>
+    $form = [
+        !empty($report->id) ? "Edit" : "Create a New" . " Report" =>
         [
             [["Title", "text", "title", StringSanitiser::sanitise($report->title)]],
             [
@@ -136,7 +139,7 @@ function edit_GET(Web &$w)
                     $member->is_email_recipient ? "Yes" : "No",
                     $member->role,
                     HtmlBootstrap5::box(href: "/report/editmember/" . $report->id . "/" . $member->user_id, title: " Edit ", button: true, class: 'btn btn-secondary') .
-                    HtmlBootstrap5::box(href: "/report/deletemember/" . $report->id . "/" . $member->user_id, title: " Delete ", button: true, class: 'btn btn-danger'),
+                        HtmlBootstrap5::box(href: "/report/deletemember/" . $report->id . "/" . $member->user_id, title: " Delete ", button: true, class: 'btn btn-danger'),
                 ];
             }
         } else {
@@ -164,7 +167,7 @@ function edit_GET(Web &$w)
                     $report_template->is_email_template ? "Yes" : "No",
                     $report_template->type,
                     HtmlBootstrap5::box("/report-templates/edit/{$report->id}/{$report_template->id}", "Edit", true) .
-                    HtmlBootstrap5::b("/report-templates/delete/{$report_template->id}", "Delete", "Are you sure you want to delete this Report template entry?"),
+                        HtmlBootstrap5::b("/report-templates/delete/{$report_template->id}", "Delete", "Are you sure you want to delete this Report template entry?"),
                 ];
             }
         }

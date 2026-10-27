@@ -77,9 +77,7 @@ function index_ALL(Web &$w)
     // populate search dropdowns
     $modules = ReportService::getInstance($w)->getModules();
     $w->ctx("modules", $modules);
-    $type = [];
-    $w->ctx("type", HtmlBootstrap5::select("type", $type));
 
     // display list of reports, if any
-    $w->ctx("viewreports", HtmlBootstrap5::table($line, null, "tablesorter", true));
+    $w->ctx("view_reports", HtmlBootstrap5::table($line, null, "tablesorter", true));
 }
