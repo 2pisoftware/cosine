@@ -113,7 +113,7 @@ class Select extends \Html\Form\FormElement
         }
 
         if ($alphabetise) {
-            usort($this->options, fn($a, $b) => strnatcasecmp($a->label, $b->label));
+            usort($this->options, fn($a, $b) => strnatcasecmp($a->label ?? '', $b->label ?? ''));
         }
 
         if (!$omit_default) {

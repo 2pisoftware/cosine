@@ -12,6 +12,7 @@ class Report extends DbObject
     public $is_deleted; // is report deleted
     public $report_connection_id; // database connection object or null for default
     public $_modifiable; // employ the modifiable aspect
+    public $_validation = [];
     public static $_db_table = "report";
 
     /**
@@ -210,10 +211,17 @@ class Report extends DbObject
                         $name = $type = $label = $sql = null;
                         // list($name,$type,$label,$sql) = preg_split("/\|\|/", $f);
                         $split_arr = preg_split("/\|\|/", $f);
+
                         $name = trim(!empty($split_arr[0]) ? $split_arr[0] : '');
                         $type = trim(!empty($split_arr[1]) ? $split_arr[1] : '');
                         $label = trim(!empty($split_arr[2]) ? $split_arr[2] : '');
                         $sql = trim(!empty($split_arr[3]) ? $split_arr[3] : '');
+                        $required = !empty($split_arr[4]) ? trim($split_arr[4]) : null;
+
+                        if ('required' === $required) {
+                            $required = true;
+                            $this->_validation[] = $name;
+                        }
 
                         if ($sql !== "") {
                             $sql = ReportService::getInstance($this->w)->putSpecialSQL($sql);
@@ -244,14 +252,14 @@ class Report extends DbObject
                                     $values = ["No SQL statement"];
                                 }
                                 // complete array which becomes form dropdown
-                                $arr[] = [$label, $type, $name, Request::string($name), $values, ($type === "autocomplete" ? 3 : null)];
+                                $arr[] = [$label, $type, $name, Request::string($name), $values, ($type === "autocomplete" ? 3 : null), null, $required];
                                 break;
                             case "checkbox":
                             case "text":
                             case "date":
                             default:
                                 // complete array which becomes other form element type
-                                $arr[] = [$label, $type, $name, Request::string($name)];
+                                $arr[] = [$label, $type, $name, Request::string($name), null, $required ? 'required' : null];
                         }
                     }
                 }
@@ -398,7 +406,7 @@ class Report extends DbObject
                                 }
                             } else {
                                 // if we fail the SQL check, say as much
-                                $alltbl = [["ERROR"], ["There is a problem with your SQL statement:" . $sql]];
+                                $alltbl = [["ERROR"], ["There is a problem with your SQL statement:" . htmlspecialchars($sql)]];
                             }
                         } else {
                             // if we fail the SQL check, say as much

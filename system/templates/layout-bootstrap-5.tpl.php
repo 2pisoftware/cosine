@@ -98,7 +98,10 @@ $theme_setting = AuthService::getInstance($w)->getSettingByKey('bs5-theme');
                             );
 
                         if (!empty($menu_link)) :
-                            if (method_exists($module . "Service", "navList") || method_exists($module . "Service", "navigation")) : ?>
+                            if (class_exists($module . "Service")
+                                && (method_exists_overloaded($module_service::getInstance($w), "navList")
+                                    || method_exists($module . "Service", "navigation"))
+                            ) : ?>
                                 <div class="accordion-item">
                                     <h2 class="accordion-header" id="accordion_menu_<?php echo $module; ?>_heading">
                                         <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
@@ -241,7 +244,10 @@ $theme_setting = AuthService::getInstance($w)->getSettingByKey('bs5-theme');
                                         );
 
                                     if (!empty($menu_link)) :
-                                        if (method_exists($module . "Service", "navList") || method_exists($module . "Service", "navigation")) : ?>
+                                        if (class_exists($module . "Service") &&
+                                            (method_exists_overloaded($module_service::getInstance($w), "navList")
+                                                || method_exists($module . "Service", "navigation"))
+                                        ) : ?>
                                             <li class="nav-item dropdown <?php echo $printActiveFlag($module, $module_service); ?>"
                                                 id="topnav_<?php echo $module; ?>">
                                                 <a class="nav-link dropdown-toggle caret-off" href="#"

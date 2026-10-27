@@ -38,7 +38,7 @@ abstract class TaskType
      * task details.
      *
      */
-    public function getFieldFormArray(TaskGroup $taskgroup, Task $task = null)
+    public function getFieldFormArray(TaskGroup $taskgroup, Task|null $task = null)
     {
     }
 
@@ -113,7 +113,7 @@ abstract class TaskType
             $task->w->callHook("task", get_class($this) . "_on_after_delete", $task);
         }
     }
-    
+
     /**
      * Return an array of options for time types
      * - override in subclass
