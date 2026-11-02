@@ -479,7 +479,7 @@ HTML;
                             $checkbox_object = new \Html\Form\InputField\Checkbox([
                                 'id|name' => $name,
                                 'value' => $value,
-                                'class' => $cb_class,
+                                'class' => $cb_class . ' form-check-control',
                                 'checked' => ($value == $default_value),
                             ]);
                             $buffer .= $checkbox_object->__toString();
