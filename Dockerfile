@@ -12,7 +12,7 @@
 # NOTE: See the .dockerignore file to see what is excluded from the image.
 
 # Define the Alpine version to use
-ARG ALPINE_VERSION=3.24.4
+ARG ALPINE_VERSION=edge # change this back to 3.24.4 whenever we can
 
 # ==========================================================================
 # STAGE 1: Build the theme
