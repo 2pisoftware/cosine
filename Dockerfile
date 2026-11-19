@@ -12,7 +12,7 @@
 # NOTE: See the .dockerignore file to see what is excluded from the image.
 
 # Define the Alpine version to use
-ARG ALPINE_VERSION=3.24.3
+ARG ALPINE_VERSION=3.24.4
 
 # ==========================================================================
 # STAGE 1: Build the theme
