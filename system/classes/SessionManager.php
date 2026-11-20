@@ -4,51 +4,27 @@
 //                        Database Session Handling
 //
 ///////////////////////////////////////////////////////////////////////////////
-class SessionManager extends DbService
+class SessionManager extends DbService implements SessionHandlerInterface
 {
     private $tableName = 'sessions';
 
-    public function __construct(Web $w)
-    {
-        parent::__construct($w);
-
-        session_set_save_handler(
-            [$this, "open"],
-            [$this, "close"],
-            [$this, "read"],
-            [$this, "write"],
-            [$this, "destroy"],
-            [$this, "gc"]
-        );
-
-        register_shutdown_function('session_write_close');
-    }
-
     // Open and close aren't needed to be overloaded (this is handled in DbService)
-    public function open($save_path, $session_name)
-    {
-        return true;
-    }
-    public function close()
+    public function open(string $path, string $name): bool
     {
         return true;
     }
 
-    public function read($id)
+    public function close(): bool
     {
-        // Get session by id
-        $rs = $this->_db->get($this->tableName)->where("session_id", $id)->fetchAll();
-        // Should always only be one row
-        if (count($rs) == 1) {
-            return $rs[0]["session_data"];
-        }
-
-        // It doesnt exist, create it
-        $this->_db->insert($this->tableName, ['session_id' => $id, "expires" => time()])->execute();
-        return '';
+        return true;
     }
 
-    public function write($id, $data)
+    public function read(string $id): string|false
+    {
+        return $this->_db->get($this->tableName)->where("session_id", $id)->fetchElement("session_data") ?? '';
+    }
+
+    public function write(string $id, string $data): bool
     {
         $db_data = [
             'session_id' => $id,
@@ -56,30 +32,23 @@ class SessionManager extends DbService
             'expires' => time()
         ];
 
-        // Check is session id is already in db
-        $rs = $this->_db->get($this->tableName)->where("session_id", $id)->fetchAll();
-        // Should always only be one row
-        if (count($rs) !== 1) {
-            // Create if missing...?
-            $this->_db->insert($this->tableName, $db_data)->execute();
+        // Update the existing row, or insert one for a new session
+        if ($this->_db->get($this->tableName)->where("session_id", $id)->count() > 0) {
+            $this->_db->update($this->tableName, $db_data)->where("session_id", $id)->execute();
         } else {
-            // Update instead
-            $this->_db->update($this->tableName, $db_data)->execute();
+            $this->_db->insert($this->tableName, $db_data)->execute();
         }
         return true;
     }
 
-    public function destroy($id)
+    public function destroy(string $id): bool
     {
         $this->_db->delete($this->tableName)->where("session_id", $id)->execute();
         return true;
     }
 
-    public function gc($lifetime)
+    public function gc(int $max_lifetime): int|false
     {
-        // Garbage Collection
-        $this->_db->delete($this->tableName)->where("expires < ?", (time() - $lifetime))->execute();
-
-        return true;
+        return (int) $this->_db->delete($this->tableName)->where("expires < ?", time() - $max_lifetime)->execute();
     }
 }

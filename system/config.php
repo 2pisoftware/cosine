@@ -65,6 +65,7 @@ Config::set('email.transports', [
 ]);
 
 Config::set('system.gc_maxlifetime', 21600);
+Config::set('system.use_database_sessions', true); // set to false to store sessions on disk in storage/session
 
 Config::set('system.environment', ENVIRONMENT_PRODUCTION);
 
