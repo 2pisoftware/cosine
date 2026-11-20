@@ -476,12 +476,11 @@ HTML;
                             $defaultValue = !empty($field[4]) ? $field[4] : null;
                             $cb_class = !empty($field[5]) ? $field[5] : null;
                             $default_value = $defaultValue === null ? '1' : $defaultValue;
-                            $checkbox_object = new \Html\Form\InputField\Checkbox([
+                            $checkbox_object = (new \Html\Form\InputField\Checkbox([
                                 'id|name' => $name,
-                                'value' => $value,
-                                'class' => $cb_class,
-                                'checked' => ($value == $default_value),
-                            ]);
+                                'value' => $default_value,
+                                'class' => $cb_class . ' form-check-control',
+                            ]))->setChecked($value == $default_value);
                             $buffer .= $checkbox_object->__toString();
                             break;
                         case "radio":
