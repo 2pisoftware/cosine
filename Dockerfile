@@ -12,7 +12,7 @@
 # NOTE: See the .dockerignore file to see what is excluded from the image.
 
 # Define the Alpine version to use
-ARG ALPINE_VERSION=edge # change this back to 3.24.4 whenever we can
+ARG ALPINE_VERSION=3.24.4
 
 # ==========================================================================
 # STAGE 1: Build the theme
@@ -59,8 +59,9 @@ RUN addgroup -g ${GID} cmfive && \
 RUN mkdir -p /etc/php && \
     ln -s /etc/php /etc/php$PHP_VERSION
 
-# Install required packages for PHP, Nginx etc
-RUN apk --no-cache add \
+# Upgrade base packages and install required packages for PHP, Nginx etc
+RUN apk upgrade --no-cache && \
+    apk --no-cache add \
     php$PHP_VERSION \
     php$PHP_VERSION-fpm \
     php$PHP_VERSION-cli \
