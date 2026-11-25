@@ -25,6 +25,7 @@ class FileMultipartUploadService extends DbService
         string|null $bucket,
         object|null $parent = null,
         string|null $display_name = null,
+        int|null $size = null,
         array $args = [],
     ) {
         if (empty($bucket)) {
@@ -49,6 +50,7 @@ class FileMultipartUploadService extends DbService
         $obj->key_path = $key;
         $obj->mime = $mime;
         $obj->display_name = $display_name;
+        $obj->size = $size;
 
         if (!empty($parent)) {
             $obj->parent_id = $parent->id;
