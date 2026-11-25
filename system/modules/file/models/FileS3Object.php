@@ -34,6 +34,12 @@ class FileS3Object extends DbObject
     public $mime;
 
     /**
+     * The total size of the file in bytes.
+     * @var int|null
+     */
+    public $size;
+
+    /**
      * The table to attribute this upload to.
      * Once completed, a new Attachment will be made for this parent table
      *
