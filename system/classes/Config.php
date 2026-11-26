@@ -345,7 +345,7 @@ class Config
         return json_encode(self::$register);
     }
 
-    public static function fromJson($string)
+    public static function fromJson(string $string)
     {
         self::$register = json_decode($string, true);
         self::$_config_cache = [];
@@ -442,7 +442,7 @@ class Config
      */
     public static function setFromS3Object(string $bucket, string $key): void
     {
-        if (self::$s3_client === null) {
+        if (self::$s3_client == null) {
             $args = [
                 'region' => 'ap-southeast-2',
                 'version' => '2006-03-01',
@@ -484,7 +484,7 @@ class Config
         if (!empty($parameterName)) {
             //retrieve JSON from paramater store and merge with config
             // Create SSM Client
-            if (self::$ssm_client === null) {
+            if (self::$ssm_client == null) {
                 self::$ssm_client = new SsmClient([
                     'region' => getenv('AWS_REGION') ?: 'ap-southeast-2',
                     'version' => 'latest'
@@ -518,7 +518,7 @@ class Config
         if (!empty($secretName)) {
             //retrieve JSON from secrets manager and merge with config
             // Create Secrets Manager Client
-            if (self::$secrets_manager_client === null) {
+            if (self::$secrets_manager_client == null) {
                 self::$secrets_manager_client = new SecretsManagerClient([
                     'region' => getenv('AWS_REGION') ?: 'ap-southeast-2',
                     'version' => 'latest'
@@ -554,8 +554,9 @@ class ConfigDependencyLoader
      *
      * @param string $module
      * @param array $config
+     * @param string $include_path
      */
-    public static function registerModule($module, $config, $include_path)
+    public static function registerModule(string $module, array $config, string $include_path)
     {
         $stack_class = new stdClass();
         $stack_class->config = $config;
@@ -621,6 +622,12 @@ class ConfigDependencyLoader
             foreach ($node->config[$node->module_name]['depends_on'] as $_module_dependency) {
                 $_dependent_node = self::getRegisteredModule($_module_dependency);
                 if (empty($_dependent_node)) {
+                    // Check if our dependency is actually a system module and if so - assert that it is active
+                    if (Config::get($_module_dependency)) {
+                        if (Config::get($_module_dependency . '.path') == "system/modules" && Config::get($_module_dependency . '.active') === true) {
+                            continue;
+                        }
+                    }
                     throw new Exception($node->module_name . ' depends on ' . $_module_dependency . ' but it is not available');
                 }
 
