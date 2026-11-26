@@ -983,7 +983,7 @@ class Web
 
         // Load System modules config first
         $baseDir = SYSTEM_PATH . '/modules';
-        $this->scanModuleDirForConfigurationFiles($baseDir);
+        $this->scanModuleDirForConfigurationFiles($baseDir, true);
 
         // Load project module config second
         $baseDir = ROOT_PATH . '/modules';

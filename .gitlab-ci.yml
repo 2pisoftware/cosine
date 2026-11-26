@@ -15,13 +15,15 @@ include:
     inputs:
       stage: docker
       platforms: linux/amd64,linux/arm64
+      # Rebuild all docker layers
+      additional_args: "--no-cache --pull"
 
   - component: $CI_SERVER_FQDN/2pisoftware/pipelines/php/lint@2.2.1
     inputs:
       stage: php
       ignore: "*.js,*.css,system/lib/*"
 
-  - component: $CI_SERVER_FQDN/2pisoftware/pipelines/php/test@2.2.1
+  - component: $CI_SERVER_FQDN/2pisoftware/pipelines/php/test@2.2.4
     inputs:
       stage: test
 
@@ -34,7 +36,7 @@ include:
 php-lint:
   interruptible: true
   allow_failure: true
-   
+
 docker-build:
   interruptible: true
   tags:

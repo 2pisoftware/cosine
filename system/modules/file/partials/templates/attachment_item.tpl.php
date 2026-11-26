@@ -1,6 +1,14 @@
+<?php
+
+/**
+ * @var Attachment $attachment
+ * @var string $redirect 
+ * @var bool $is_mutable
+ */
+?>
 <div class="show-hover" style="max-width: 200px">
     <div>
-        <h3 class="mb-0 text-center display-0 text-truncate"><?php echo $attachment->title; ?></h3>
+        <h3 class="mb-0 text-center display-0 text-truncate" title="<?php echo StringSanitiser::sanitise($attachment->title); ?>"><?php echo StringSanitiser::sanitise($attachment->title); ?></h3>
         <!-- <p>Description: <?php echo $attachment->description; ?></p> -->
     </div>
     <div class="position-relative">
