@@ -5,12 +5,13 @@ use PhpNexus\Cwh\Handler\CloudWatch;
 use Monolog\Logger as Logger;
 use Monolog\Formatter\LineFormatter as LineFormatter;
 use Monolog\Handler\RotatingFileHandler as RotatingFileHandler;
+use Monolog\Handler\StreamHandler as StreamHandler;
 use Monolog\Processor\WebProcessor as WebProcessor;
 
 defined("LOG_SERVICE_DEFAULT_RETENTION_PERIOD") or define("LOG_SERVICE_DEFAULT_RETENTION_PERIOD", 30);
 
 /**
- * Class LogService - logs to file or aws
+ * Class LogService - logs to stdout, file or aws
  *
  * @method bool debug(string $message, array $context = array())
  * @method bool info(string $message, array $context = array())
@@ -71,7 +72,7 @@ class LogService
 
         // Work out if we can reach aws (if it's our preferred destination) and fallback to file if we can't
         if ($this->log_destination === null) {
-            $this->log_destination = Config::get('admin.logging.target', 'file');
+            $this->log_destination = Config::get('admin.logging.target', 'stdout');
 
             if ($this->log_destination == 'aws'
                 && (empty(Config::get("admin.logging.cloudwatch.credentials.key"))
@@ -87,6 +88,12 @@ class LogService
         }
 
         switch ($this->log_destination) {
+            case 'stdout':
+                // Goes to the container log through php-fpm
+                $handler = new StreamHandler("php://stderr", Config::get("admin.logging.level", Logger::DEBUG));
+                $handler->setFormatter($this->formatter);
+                $this->loggers[$name]->pushHandler($handler);
+                break;
             case 'aws':
                 try {
                     $args = [

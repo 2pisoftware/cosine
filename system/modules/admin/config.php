@@ -39,7 +39,7 @@ Config::set('admin', [
         "auth_user" => null
     ],
     'logging' => [
-        'target' => 'file',         // Can be 'file' or 'aws' (cloudwatch]
+        'target' => 'stdout',       // Can be 'stdout', 'file' or 'aws' (cloudwatch]
         'retention_period' => 30,   // In number of days
         'cloudwatch' => [
             'group_name' => 'cmfive-app-logs',
