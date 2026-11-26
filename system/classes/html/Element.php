@@ -1,4 +1,6 @@
-<?php namespace Html;
+<?php
+
+namespace Html;
 
 /**
  * The base class for a Cmfive HTML element, this class is intended to house
@@ -21,7 +23,10 @@ abstract class Element
             foreach ($fields as $key => $value) {
                 $keys = explode('|', $key);
                 foreach ($keys as $field_key) {
-                    if (property_exists($this, $field_key)) {
+                    $setterName = "set" . ucfirst($field_key);
+                    if (method_exists($this, $setterName)) {
+                        $this->{$setterName}($value);
+                    } elseif (property_exists($this, $field_key)) {
                         $this->{$field_key} = $value;
                     }
                 }
