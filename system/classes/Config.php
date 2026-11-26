@@ -622,12 +622,6 @@ class ConfigDependencyLoader
             foreach ($node->config[$node->module_name]['depends_on'] as $_module_dependency) {
                 $_dependent_node = self::getRegisteredModule($_module_dependency);
                 if (empty($_dependent_node)) {
-                    // Check if our dependency is actually a system module and if so - assert that it is active
-                    if (Config::get($_module_dependency)) {
-                        if (Config::get($_module_dependency . '.path') == "system/modules" && Config::get($_module_dependency . '.active') === true) {
-                            continue;
-                        }
-                    }
                     throw new Exception($node->module_name . ' depends on ' . $_module_dependency . ' but it is not available');
                 }
 
