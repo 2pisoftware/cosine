@@ -85,6 +85,12 @@ $menuMaker = [
         'function' => "generateEncryptionKeys",
         'param' => null
     ],
+    [
+        'option' => "Run cleanup",
+        'message' => "Running cleanup",
+        'function' => "cleanup",
+        'param' => null
+    ],
 ];
 
 $cmdMaker = [
@@ -142,6 +148,14 @@ $cmdMaker = [
             "message" => "Install all available database seeds.",
             "function" => "seedDatabase",
             "args" => false,
+        ]
+    ],
+    'cleanup' => [
+        [
+            'request' => "all",
+            'message' => "Running cleanup",
+            'function' => "cleanup",
+            'args' => false
         ]
     ],
     'cmfive' => [
@@ -458,6 +472,31 @@ function revertMigrationBatch()
         MigrationService::getInstance($w)->batchRollback();
     } catch (Exception $e) {
         echo $e->getMessage();
+    }
+}
+
+function cleanup()
+{
+    if (!stepOneYieldsWeb()) {
+        return false;
+    }
+    $w = new Web();
+    $w->initDB();
+
+    // Sessions
+    try {
+        if (in_array('sessions', $w->db->getAvailableTables())) {
+            $lifetime = Config::get('system.gc_maxlifetime');
+            if (empty($lifetime) || !is_numeric($lifetime) || $lifetime < 3600 || $lifetime > 2628000) {
+                $lifetime = ini_get('session.gc_maxlifetime');
+            }
+
+            $removed = SessionManager::getInstance($w)->gc((int) $lifetime);
+            echo "Removed $removed expired sessions\n";
+        }
+    } catch (Exception $e) {
+        LogService::getInstance($w)->setLogger("CORE")->error("Error removing expired sessions: " . $e->getMessage());
+        echo $e->getMessage() . "\n";
     }
 }
 
