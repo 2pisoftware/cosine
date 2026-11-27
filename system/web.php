@@ -630,13 +630,13 @@ class Web
                     session_name(SESSION_NAME);
                 }
 
-                // Store the sessions locally to avoid permission errors between OS's
-                // I.e. on Windows by default tries to save to C:\Temp
-                session_save_path(STORAGE_PATH . DIRECTORY_SEPARATOR . "session");
-
                 // Store the sessions in the database once the sessions table exists
                 if (Config::get('system.use_database_sessions') === true && !empty($this->db) && in_array('sessions', $this->db->getAvailableTables())) {
                     session_set_save_handler(SessionManager::getInstance($this), true);
+                } else {
+                    // Store the sessions locally to avoid permission errors between OS's
+                    // I.e. on Windows by default tries to save to C:\Temp
+                    session_save_path(STORAGE_PATH . DIRECTORY_SEPARATOR . "session");
                 }
 
                 if (Config::get("system.environment") !== "development") {
