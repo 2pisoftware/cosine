@@ -91,7 +91,7 @@ services:
       - default
     restart: unless-stopped
     healthcheck:
-      test: [ "CMD", "curl", "-f", "http://localhost:8025" ]
+      test: [ "CMD", "/mailpit", "readyz" ]
       interval: 10s
       timeout: 5m
       retries: 20

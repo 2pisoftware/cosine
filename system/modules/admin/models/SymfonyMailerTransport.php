@@ -40,8 +40,8 @@ class SymfonyMailerTransport implements GenericTransport
                 $port = Config::get('email.port');
                 $encryption = Config::get('email.encryption', Config::get('email.auth') == true ? 'ssl' : null);
 
-                $username = Config::get('email.username');
-                $password = Config::get('email.password');
+                $username = (string) Config::get('email.username');
+                $password = (string) Config::get('email.password');
 
                 return (new EsmtpTransport($host, $port, $encryption))
                     ->setUsername($username)
